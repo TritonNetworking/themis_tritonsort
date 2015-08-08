@@ -1,8 +1,6 @@
-====
-Themis MapReduce/TritonSort README
-2015
-Michael Conley
-====
+Themis MapReduce/TritonSort
+August 8, 2015
+http://themis.sysnet.ucsd.edu/
 
 This code is made available under 3-clause BSD (see LICENSE file), and is
 provided for mainly for eductional purposes. We will not be supporting this
