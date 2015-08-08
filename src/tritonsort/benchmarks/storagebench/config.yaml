@@ -1,0 +1,166 @@
+# ====
+# Benchmark experiment parameters
+# ====
+BENCHMARK_DATA_SIZE_PER_NODE:
+  storagebench: 10000000000 # 10 GB
+PARTITION_SIZE: 1000000000
+
+INPUT_DISK_LIST:
+  storagebench: "/mnt/disks/fioc/USERNAME/storagebench"
+OUTPUT_DISK_LIST:
+  storagebench: "/mnt/disks/fiod/USERNAME/storagebench"
+
+# READ and WRITE are used to configure the storage benchmark pipeline
+# READ = 1, WRITE = 1 gives the read/write pipeline:
+#   Reader -> Tagger -> Writer
+# READ = 1, WRITE = 0 gives the read only pipeline:
+#   Reader -> Sink
+# READ = 0, WRITE = 1 gives the write only pipeline:
+#   Generator -> Writer
+READ: 0
+WRITE: 1
+
+# If 0, generate buffers in round-robin order when using the write-only
+# pipeline. If 1, generate all buffers for a specific file before moving
+# on to the next file (simulates more or less what a reader would do).
+GENERATE_SEQUENTIAL_WRITE_BUFFERS: 1
+
+# ====
+# Core assignments and thread counts
+# ====
+
+THREAD_CPU_POLICY:
+  storagebench:
+    DEFAULT:
+      type: "free"
+      #mask:"012345678901234567890123456789012345678901234567"
+      mask: "111111111111111111111111111111111111111111111111"
+   #reader:
+   #tagger:
+   #generator:
+   #writer:
+
+NUM_WORKERS:
+  storagebench:
+    reader: 1
+    sink: 1
+    tagger: 1
+    generator: 1
+    writer: 1
+
+# ====
+# Memory parameters
+# ====
+DEFAULT_BUFFER_SIZE:
+  storagebench:
+    reader: 4194304
+    generator: 4194304
+
+MEMORY_QUOTAS:
+  storagebench:
+    writer: 1000000000 #1GB of outstanding writes
+
+# ====
+# Storage parameters
+# ====
+
+DIRECT_IO:
+  storagebench:
+    reader: 1
+    writer: 1
+
+ALIGNMENT_MULTIPLE: 512
+
+FILE_PREALLOCATION: 1
+
+DELETE_AFTER_READ:
+  storagebench: 0
+
+# If using asynchronous reads or writes, these values determine how many
+# operations of the appropriate type can be in flight simultaneously from
+# each worker thread.
+#
+# It should be noted that the implementation of the asynchronous reader causes
+# each file to be read one buffer at a time, which means a depth of D will cause
+# D files to be read simultaneously, not D reads from a single file. By
+# contrast, the asynchronous writer operates at the buffer level, so a depth of
+# D could cause D buffers for the same file to be written simultaneously.
+ASYNCHRONOUS_IO_DEPTH:
+  storagebench:
+    reader: 2
+    writer: 4
+
+# ====
+# Worker implementations
+# ====
+
+# Reader and writer can be changed to use asynchronous or synchronous I/O.
+#
+# reader:
+# ByteStreamReader - synchronous reads
+# LibAIOReader - async reads using libaio
+# PosixAIOReader - async reads using posix AIO
+#
+# writer:
+# Writer - synchronous writes
+# LibAIOWriter - async writes using libaio
+# PosixAIOWriter - async writes using posix AIO
+WORKER_IMPLS:
+  storagebench:
+    reader: "ByteStreamReader"
+    sink: "SinkMapper" # Do not modify
+    tagger: "Tagger" # Do not modify
+    generator: "Generator" # Do not modify
+    writer: "Writer"
+
+# ====
+# General config
+# ====
+
+MONITOR_PORT: 9999
+TCP_RECEIVE_BUFFER_SIZE: 0 # For monitor
+
+ENABLE_STAT_WRITER: true
+STAT_WRITER_DRAIN_INTERVAL_MICROS: 500000
+STAT_POLL_INTERVAL: 500000
+
+MEM_SIZE: 128000000000
+CORES_PER_NODE: 48
+
+# ====
+# Benchmark pipeline specific. Do not modify
+# ====
+
+WORK_QUEUEING_POLICY:
+  storagebench:
+    reader: "ReadRequestWorkQueueingPolicy"
+    tagger: "ByteStreamWorkQueueingPolicy"
+    writer: "PhysicalDiskWorkQueueingPolicy"
+
+PEER_LIST: "127.0.0.1" # Because BaseWriter requires an IP
+MYPEERID: 0
+NUM_INTERFACES: 1
+NUM_PEERS: 1
+NUM_PARTITION_GROUPS: 1
+
+# Readers use the existance of this flag to read into byte stream buffers
+FORMAT_READER.storagebench: "NULL"
+
+ALIGNMENT:
+  storagebench:
+    reader: 0
+    generator: 0
+    writer: 0
+
+# ====
+# Copied from mapreduce/defaults.yaml
+# ====
+
+# Print header for status log messages
+CHANNEL_STATUS_HEADER: "[STATUS]"
+
+# Print header for statistics log messages
+CHANNEL_STATISTIC_HEADER: "[STATISTIC]"
+
+# Print header for parameter log messages
+CHANNEL_PARAM_HEADER: "[PARAM]"

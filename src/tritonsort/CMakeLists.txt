@@ -1,0 +1,93 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(TritonSort)
+
+MARK_AS_ADVANCED(Boost_DIR)
+
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TritonSort_SOURCE_DIR}/cmake_tools")
+
+INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/RecurseCCFiles.cmake")
+
+# =============
+# BEGIN OPTIONS
+# =============
+
+OPTION(GATHER_STATISTICS "Turn statistics gathering on" on)
+OPTION(ENABLE_ASSERTS "Enable non-critical assert statements" off)
+OPTION(PROVENANCE_METADATA "Intermediate records have provenance metadata associated with them" off)
+
+IF(GATHER_STATISTICS)
+  SET(TRITONSORT_STATS 1)
+ENDIF(GATHER_STATISTICS)
+
+IF(ENABLE_ASSERTS)
+  SET(TRITONSORT_ASSERTS 1)
+ENDIF(ENABLE_ASSERTS)
+
+IF(PROVENANCE_METADATA)
+  SET(THEMIS_PROVENANCE_METADATA 1)
+ENDIF(PROVENANCE_METADATA)
+
+FIND_PACKAGE(Re2 REQUIRED)
+FIND_PACKAGE(GooglePerfTools REQUIRED)
+
+SET(MEMORY_MANAGER "tcmalloc" CACHE STRING "The memory manager to which tests, IO benchmarks, phase zero, and phase one are linked; valid values are malloc, jemalloc, tcmalloc")
+SET(MEMORY_MANAGER_PHASE_TWO "tcmalloc" CACHE STRING "The memory manager to which phase two is linked; valid values are malloc, jemalloc, tcmalloc")
+
+FIND_PACKAGE(JeMalloc REQUIRED)
+FIND_PACKAGE(GooglePerfTools REQUIRED)
+
+IF(${MEMORY_MANAGER} STREQUAL "malloc")
+  # Using the normal memory manager; do nothing
+ELSEIF(${MEMORY_MANAGER} STREQUAL "tcmalloc")
+  SET(MEMORY_MGMT_LINK_LIBRARY ${tcmalloc_LIBRARY})
+  SET(MEMORY_MGMT_CXX_FLAG "-ltcmalloc")
+ELSEIF(${MEMORY_MANAGER} STREQUAL "jemalloc")
+  SET(MEMORY_MGMT_LINK_LIBRARY ${JEMALLOC_LIBRARY})
+  SET(MEMORY_MGMT_CXX_FLAG "-ljemalloc")
+ELSE(${MEMORY_MANAGER} STREQUAL "malloc")
+  MESSAGE(FATAL_ERROR "Unknown memory manager '${MEMORY_MANAGER}'. Valid options are: 'malloc', 'jemalloc', 'tcmalloc'")
+ENDIF(${MEMORY_MANAGER} STREQUAL "malloc")
+
+IF(${MEMORY_MANAGER_PHASE_TWO} STREQUAL "malloc")
+  # Using the normal memory manager; do nothing
+ELSEIF(${MEMORY_MANAGER_PHASE_TWO} STREQUAL "tcmalloc")
+  SET(MEMORY_MGMT_PHASE_TWO_LINK_LIBRARY ${tcmalloc_LIBRARY})
+  SET(MEMORY_MGMT_PHASE_TWO_CXX_FLAG "-ltcmalloc")
+ELSEIF(${MEMORY_MANAGER_PHASE_TWO} STREQUAL "jemalloc")
+  SET(MEMORY_MGMT_PHASE_TWO_LINK_LIBRARY ${JEMALLOC_LIBRARY})
+  SET(MEMORY_MGMT_PHASE_TWO_CXX_FLAG "-ljemalloc")
+ELSE(${MEMORY_MANAGER_PHASE_TWO} STREQUAL "malloc")
+  MESSAGE(FATAL_ERROR "Unknown memory manager '${MEMORY_MANAGER_PHASE_TWO}'. Valid options are: 'malloc', 'jemalloc', 'tcmalloc'")
+ENDIF(${MEMORY_MANAGER_PHASE_TWO} STREQUAL "malloc")
+
+MARK_AS_ADVANCED(MEMORY_MGMT_LINK_LIBRARY MEMORY_MGMT_CXX_FLAG)
+MARK_AS_ADVANCED(MEMORY_MGMT_PHASE_TWO_LINK_LIBRARY MEMORY_MGMT_PHASE_TWO_CXX_FLAG)
+
+# ===========
+# END OPTIONS
+# ===========
+
+SET(EXTRA_COMPILE_FLAGS "-Wall -Werror")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${EXTRA_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${EXTRA_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${EXTRA_COMPILE_FLAGS}")
+
+INCLUDE_DIRECTORIES(${TritonSort_SOURCE_DIR} ${TritonSort_BINARY_DIR}
+  ${ThirdParty_SOURCE_DIR}/jsoncpp/include ${Re2_INCLUDE_DIR}
+  ${JEMALLOC_INCLUDE_DIR} ${GooglePerfTools_INCLUDE_DIR}
+  ${ThirdParty_SOURCE_DIR})
+
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.in
+  ${PROJECT_SOURCE_DIR}/config.h)
+
+ADD_SUBDIRECTORY(benchmarks)
+ADD_SUBDIRECTORY(core)
+RECURSE_CC_FILES(common)
+ADD_SUBDIRECTORY(mapreduce)
+ADD_SUBDIRECTORY(tests)
+
+ADD_LIBRARY(tritonsort_common STATIC ${common_Files} ${PROTO_CC_FILES})
+TARGET_LINK_LIBRARIES(tritonsort_common tritonsort_core ${Re2_LIBRARY})
+SET_TARGET_PROPERTIES(tritonsort_common PROPERTIES LINKER_LANGUAGE CXX)

@@ -1,0 +1,100 @@
+{
+    "Reader" :
+    {
+        "impls" : ["Reader"]
+    },
+    "Mapper" :
+    {
+        "impls" : ["Mapper", "SinkMapper"]
+    },
+    "Sender" :
+    {
+        "impls" : ["Sender", "FakeSender", "SinkSender"]
+    },
+    "Receiver" :
+    {
+        "impls" : ["Receiver", "SinkReceiver", "SyntheticReceiver",
+                   "FastSyntheticReceiver"]
+    },
+    "ByteStreamConverter" :
+    {
+        "impls" : ["ByteStreamConverter", "FileByteStreamConverter",
+                   "NetworkByteStreamConverter"]
+    },
+    "TupleDemux" :
+    {
+        "impls" : ["TupleDemux"]
+    },
+    "Chainer" :
+    {
+        "impls" : ["Chainer"]
+    },
+    "Coalescer" :
+    {
+        "impls" : ["Coalescer", "SyntheticCoalescer", "SinkCoalescer"]
+    },
+    "Writer" :
+    {
+        "impls" : ["Writer", "SinkWriter"]
+    },
+    "Sorter" :
+    {
+        "impls" : ["Sorter", "NopSorter"]
+    },
+    "Reducer" :
+    {
+        "impls" : ["Reducer", "SinkReducer"]
+    },
+    "TrieDeserializer" :
+    {
+        "impls" : ["TrieDeserializer"]
+    },
+    "PartitionCalculator":
+    {
+        "impls" : ["PartitionCalculator"]
+    },
+    "TrieBroadcaster" :
+    {
+        "impls" : ["TrieBroadcaster"]
+    },
+    "TrieDeserializer" :
+    {
+        "impls" : ["TrieDeserializer"]
+    },
+    "TrieMerger" :
+    {
+        "impls" : ["TrieMerger"]
+    },
+    "TrieRouter" :
+    {
+        "impls" : ["TrieRouter"]
+    },
+    "ItemHolder" :
+    {
+        "impls" : ["ItemHolder"]
+    },
+    "Sampler" :
+    {
+        "impls" : ["Sampler"]
+    },
+    "KeyExtractor" :
+    {
+        "impls" : ["KeyExtractor"]
+    },
+    "BoundaryCalculator" :
+    {
+        "impls" : ["BoundaryCalculator"]
+    },
+    "BoundaryDeserializer" :
+    {
+        "impls" : ["BoundaryDeserializer"]
+    },
+    "Generator" :
+    {
+        "impls" : ["Generator"]
+    },
+    "Tagger" :
+    {
+        "impls" : ["Tagger"]
+    }
+}

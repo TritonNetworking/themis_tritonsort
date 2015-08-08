@@ -1,0 +1,34 @@
+{
+    "phases" : ["networkbench"],
+    "networkbench" :
+    {
+        "stages" : {
+            "sender" :
+            {
+                "type" : "Sender"
+            },
+            "receiver" :
+            {
+                "type" : "Receiver"
+            },
+            "sink" :
+            {
+                "type" : "Mapper"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "receiver",
+                "dest" : "sink"
+            }
+        ],
+        "network connections" : [
+            {
+                "src" : "sender",
+                "dest" : "receiver",
+                "type" : "many-to-many",
+                "bypass_localhost" : true
+            }
+        ]
+    }
+}

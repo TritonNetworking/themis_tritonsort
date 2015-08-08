@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>Themis Clusters</title>
+    <style type="text/css" media="screen">
+      th {
+      background: #0000ff;
+      color: #ffffff;
+      }
+      .button_wrapper {
+      text-align: center;
+      }
+    </style>
+    <script src="/static/sorttable.js"></script>
+  </head>
+  <body>
+    <h1>Themis Clusters</h1>
+    As of {{ now }}<br/><br/>
+
+    <a href="/new_amazon_cluster">New Amazon Cluster</a>
+    <a href="/new_google_cluster">New Google Cluster</a><br/><br/>
+
+    <form name="status" action="/" method="POST">
+    <table class = "sortable" border="1" cellpadding="8">
+      <tr>
+        <th>Cluster Name</th>
+        <th>Cluster ID</th>
+        <th>Provider</th>
+        <th>Cluster Status</th>
+        <th>Master Status</th>
+        <th>Connectable</th>
+        <th>Cluster Size</th>
+        <th>Online Nodes</th>
+        <th>Booting Nodes</th>
+        <th>VM Type</th>
+        <th>Zone</th>
+        <th>Storage Bucket</th>
+        <th>Actions</th>
+      </tr>
+      {% for cluster_ID in clusters %}
+      <tr>
+        <td>{{ cluster_info[cluster_ID]["name"] }}</td>
+        <td align="right">{{ cluster_ID }}</td>
+        <td>{{ cluster_info[cluster_ID]["provider"] }}</td>
+        {% set cluster_status = cluster_info[cluster_ID]["cluster_status"] %}
+        <td style="background: {% if cluster_status == 'Online' %}green{% elif cluster_status == 'Booting' %}yellow{% else %}red{% endif %}; color: {% if cluster_status == 'Online' %}white{% elif cluster_status == 'Booting' %}black{% else %}white{% endif %}">{{ cluster_status }}</td>
+        {% set master_address = cluster_info[cluster_ID]["master_address"] %}
+        <td>{% if master_address != None %}<a href="http://{{master_address}}:4280">{% endif %}{{ cluster_info[cluster_ID]["master_status"] }}{% if master_address != None %}</a>{% endif %}</td>
+        {% set master_connectable = cluster_info[cluster_ID]["master_connectable"] %}
+        <td style="background: {% if master_connectable %}green{% else  %}red{% endif %}; color: white">{% if master_connectable %}Yes{% else %}No{% endif %}</td>
+        {% set cluster_size = cluster_info[cluster_ID]["cluster_size"] | int %}
+        <td align="right">{{ cluster_size }}</td>
+        {% set nodes_online = cluster_info[cluster_ID]["num_online_slaves"] | int %}
+        <td align="right" style="background: {% if nodes_online == 0 %}red{% elif nodes_online == cluster_size %}green{% else %}yellow{% endif %}; color: {% if nodes_online == 0 %}white{% elif nodes_online == cluster_size %}white{% else %}black{% endif %}">{{ nodes_online }}</td>
+        <td align="right">{{ cluster_info[cluster_ID]["num_booting_slaves"] }}</td>
+        <td>{{ cluster_info[cluster_ID]["instance_type"] }}</td>
+        <td>{{ cluster_info[cluster_ID]["zone"] }}</td>
+        <td>{{ cluster_info[cluster_ID]["bucket"] }}</td>
+        <td>
+          <div class="button_wrapper">
+            <button type="submit" name="terminate" value="{{cluster_ID}}">Terminate</button>
+          </div>
+          {% if cluster_info[cluster_ID]["cluster_status"] == "Booting" and cluster_info[cluster_ID]["master_status"] == "Online"%}
+          <div class="button_wrapper">
+            <button type="submit" name="bring_online" value="{{cluster_ID}}">Bring Online {{nodes_online}}/{{cluster_size}}</button>
+          </div>
+          {% endif %}
+          {% if cluster_info[cluster_ID]["cluster_status"] == "Online" %}
+          <div class="button_wrapper">
+            <button type="submit" name="persist_to_storage" value="{{cluster_ID}}">Persist Logs to Storage</button>
+          </div>
+          {% endif %}
+      </tr>
+      {% endfor %}
+    </table>
+    </form>
+  </body>
+</html>

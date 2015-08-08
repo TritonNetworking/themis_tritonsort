@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title>Runtime Stat Analyzer - Directory Listing</title>
+  </head>
+  <body>
+    {% for directory in directory_contents %}
+    <a href="/{{directory}}">{{directory}}</a><br/>
+    {% endfor %}
+  </body>
+</html>

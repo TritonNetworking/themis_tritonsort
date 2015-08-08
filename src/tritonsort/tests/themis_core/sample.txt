@@ -1,0 +1,22 @@
+firstline: 11
+# firstline: 46
+   # firstline: 43
+
+
+secondline: "gabba gabba hey" # This is also a valid comment
+third_line: "hola!"
+
+true_value: true
+false_value: false
+
+float_value: 16.25
+
+hex_value: 0xbadf00d
+
+table_value:
+   kittens: "fuzzy"
+   float: 64.4
+   answer:
+      life: 42
+      universe: 42
+      everything: 42

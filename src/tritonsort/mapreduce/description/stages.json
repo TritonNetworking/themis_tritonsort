@@ -1,0 +1,72 @@
+{
+    "Reader" :
+    {
+        "impls" : ["Reader"]
+    },
+    "Mapper" :
+    {
+        "impls" : ["Mapper", "SinkMapper"]
+    },
+    "Sender" :
+    {
+        "impls" : ["Sender", "FakeSender", "SinkSender"]
+    },
+    "Receiver" :
+    {
+        "impls" : ["Receiver", "SinkReceiver", "SyntheticReceiver",
+                   "FastSyntheticReceiver"]
+    },
+    "ByteStreamConverter" :
+    {
+        "impls" : ["ByteStreamConverter", "FileByteStreamConverter",
+                   "NetworkByteStreamConverter"]
+    },
+    "TupleDemux" :
+    {
+        "impls" : ["TupleDemux"]
+    },
+    "Chainer" :
+    {
+        "impls" : ["Chainer"]
+    },
+    "Coalescer" :
+    {
+        "impls" : ["Coalescer", "SyntheticCoalescer", "SinkCoalescer"]
+    },
+    "Writer" :
+    {
+        "impls" : ["Writer", "SinkWriter"]
+    },
+    "Sorter" :
+    {
+        "impls" : ["Sorter", "NopSorter"]
+    },
+    "Reducer" :
+    {
+        "impls" : ["Reducer", "SinkReducer"]
+    },
+    "ItemHolder" :
+    {
+        "impls" : ["ItemHolder"]
+    },
+    "BoundaryScanner" :
+    {
+        "impls" : ["BoundaryScanner"]
+    },
+    "BoundaryDecider" :
+    {
+        "impls" : ["BoundaryDecider"]
+    },
+    "BoundaryDeserializer" :
+    {
+        "impls" : ["BoundaryDeserializer"]
+    },
+    "Merger" :
+    {
+        "impls" : ["Merger", "SinkMerger"]
+    },
+    "BufferCombiner" :
+    {
+        "impls" : ["BufferCombiner"]
+    }
+}

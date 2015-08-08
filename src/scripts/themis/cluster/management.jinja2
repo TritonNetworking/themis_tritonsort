@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Themis Cluster Status</title>
+  </head>
+  <body>
+    <h1>Cluster Management</h1>
+    <a href="/">Cluster Status</a> <a href="/management">Cluster Management</a> <a href="/configure">Configure Cluster</a> <a href="/dfs_manager">DFS Manager</a> <a href="/data_generation">Data Generation</a><br/><br/>
+
+    <form name="management" action="/management" method="post">
+      <input type="submit" name="kill_themis" value="Kill Themis"></br></br>
+      <input type="submit" name="remount_disks" value="Remount Disks">
+      <input type="submit" name="format_disks" value="Format Disks"></br></br>
+
+      <input type="text" name="branch" value="master">
+      <input type="submit" name="update_repo" value="Update Repo to Branch">
+      <input type="checkbox" name="recompile" value="True"/> Recompile (may take several minutes)<br/></br>
+      {% if updated %}
+      Repo updated. You may want to reboot this GUI (cluster_monitor.py).
+      {% endif %}
+        </form>
+  </body>
+</html>

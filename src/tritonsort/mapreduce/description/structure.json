@@ -1,0 +1,410 @@
+{
+    "phases" : ["phase_zero", "phase_one",
+                "phase_two", "phase_three"],
+    "phase_zero" :
+    {
+        "stages" : {
+            "reader" :
+            {
+                "type" : "Reader"
+            },
+            "reader_converter" :
+            {
+                "type" : "ByteStreamConverter"
+            },
+            "reservoir_sample_mapper" :
+            {
+                "type" : "Mapper"
+            },
+            "shuffle_mapper" :
+            {
+                "type" : "Mapper"
+            },
+           "shuffle_sender" :
+            {
+                "type" : "Sender"
+            },
+           "shuffle_receiver" :
+            {
+                "type" : "Receiver"
+            },
+           "buffer_combiner" :
+            {
+                "type" : "BufferCombiner"
+            },
+            "mapper" :
+            {
+                "type" : "Mapper"
+            },
+            "sorter" :
+            {
+                "type" : "Sorter"
+            },
+            "boundary_scanner" :
+            {
+                "type" : "BoundaryScanner"
+            },
+            "broadcast_sender" :
+            {
+                "type" : "Sender",
+                "active_nodes" : [0]
+            },
+            "coordinator_sender" :
+            {
+                "type" : "Sender"
+            },
+            "broadcast_receiver" :
+            {
+                "type" : "Receiver"
+            },
+            "broadcast_converter" :
+            {
+                "type" : "ByteStreamConverter"
+            },
+            "coordinator_receiver" :
+            {
+                "type" : "Receiver",
+                "active_nodes" : [0]
+            },
+            "coordinator_converter" :
+            {
+                "type" : "ByteStreamConverter"
+            },
+            "boundary_decider" :
+            {
+                "type" : "BoundaryDecider",
+                "active_nodes" : [0]
+            },
+            "boundary_deserializer" :
+            {
+                "type" : "BoundaryDeserializer"
+            },
+            "phase_zero_output_data_holder" :
+            {
+                "type" : "ItemHolder"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "reader",
+                "dest" : "reader_converter"
+            },
+            {
+                "src" : "reader_converter",
+                "dest" : "reservoir_sample_mapper"
+            },
+            {
+                "src" : "reservoir_sample_mapper",
+                "dest" : "shuffle_mapper"
+            },
+            {
+                "src" : "shuffle_mapper",
+                "dest" : "shuffle_sender"
+            },
+            {
+                "src" : "shuffle_receiver",
+                "dest" : "buffer_combiner"
+            },
+            {
+                "src" : "buffer_combiner",
+                "dest" : "mapper"
+            },
+            {
+                "src" : "mapper",
+                "dest" : "sorter"
+            },
+            {
+                "src" : "sorter",
+                "dest" : "boundary_scanner"
+            },
+            {
+                "src" : "boundary_scanner",
+                "dest" : "coordinator_sender"
+            },
+            {
+                "src" : "broadcast_receiver",
+                "dest" : "broadcast_converter"
+            },
+            {
+                "src" : "broadcast_converter",
+                "dest" : "boundary_deserializer"
+            },
+            {
+                "src" : "boundary_deserializer",
+                "dest" : "phase_zero_output_data_holder"
+            },
+            {
+                "src" : "coordinator_receiver",
+                "dest" : "coordinator_converter"
+            },
+            {
+                "src" : "coordinator_converter",
+                "dest" : "boundary_decider"
+            },
+            {
+                "src" : "boundary_decider",
+                "dest" : "broadcast_sender"
+            }
+        ],
+        "network connections" : [
+            {
+                "src" : "coordinator_sender",
+                "dest" : "coordinator_receiver",
+                "type" : "many-to-one",
+                "dest_node" : 0
+            },
+            {
+                "src" : "broadcast_sender",
+                "dest" : "broadcast_receiver",
+                "type" : "one-to-many",
+                "src_node" : 0
+            },
+            {
+                "src" : "shuffle_sender",
+                "dest" : "shuffle_receiver",
+                "type" : "many-to-many"
+            }
+        ]
+    },
+    "phase_one" :
+    {
+        "stages" : {
+            "reader" :
+            {
+                "type" : "Reader"
+            },
+            "reader_converter" :
+            {
+                "type" : "ByteStreamConverter"
+            },
+            "mapper" :
+            {
+                "type" : "Mapper"
+            },
+            "sender" :
+            {
+                "type" : "Sender"
+            },
+            "receiver" :
+            {
+                "type" : "Receiver"
+            },
+            "receiver_converter" :
+            {
+                "type" : "ByteStreamConverter"
+            },
+            "demux" :
+            {
+                "type" : "TupleDemux"
+            },
+            "chainer" :
+            {
+                "type" : "Chainer"
+            },
+            "coalescer" :
+            {
+                "type" : "Coalescer"
+            },
+            "writer" :
+            {
+                "type" : "Writer"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "reader",
+                "dest" : "reader_converter"
+            },
+            {
+                "src" : "reader_converter",
+                "dest" : "mapper"
+            },
+            {
+                "src" : "mapper",
+                "dest" : "sender"
+            },
+            {
+                "src" : "receiver",
+                "dest" : "receiver_converter"
+            },
+            {
+                "src" : "receiver_converter",
+                "dest" : "demux"
+            },
+            {
+                "src" : "demux",
+                "dest" : "chainer"
+            },
+            {
+                "src" : "chainer",
+                "dest" : "coalescer"
+            },
+            {
+                "src" : "coalescer",
+                "dest" : "writer"
+            }
+        ],
+        "network connections" : [
+            {
+                "src" : "sender",
+                "dest" : "receiver",
+                "type" : "many-to-many",
+                "bypass_localhost" : true
+            }
+        ]
+    },
+    "phase_two" :
+    {
+        "stages" : {
+            "reader" :
+            {
+                "type" : "Reader"
+            },
+            "sorter" :
+            {
+                "type" : "Sorter"
+            },
+            "reducer" :
+            {
+                "type" : "Reducer"
+            },
+            "writer" :
+            {
+                "type" : "Writer"
+            },
+            "replica_sender" :
+            {
+                "type" : "Sender"
+            },
+            "replica_receiver" :
+            {
+                "type" : "Receiver"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "reader",
+                "dest" : "sorter"
+            },
+            {
+                "src" : "sorter",
+                "dest" : "reducer"
+            },
+            {
+                "src" : "reducer",
+                "dest" : "writer"
+            },
+            {
+                "src" : "reducer",
+                "dest" : "replica_sender"
+            },
+            {
+                "src" : "replica_receiver",
+                "dest" : "writer"
+            }
+        ],
+        "network connections" : [
+            {
+                "src" : "replica_sender",
+                "dest" : "replica_receiver",
+                "type" : "many-to-many",
+                "bypass_localhost" : false
+            }
+        ]
+    },
+    "phase_three" :
+    {
+        "stages" : {
+            "splitsort_reader" :
+            {
+                "type" : "Reader"
+            },
+            "splitsort_reader_converter" :
+            {
+                "type": "ByteStreamConverter"
+            },
+            "sorter" :
+            {
+                "type" : "Sorter"
+            },
+            "splitsort_writer" :
+            {
+                "type" : "Writer"
+            },
+            "mergereduce_reader" :
+            {
+                "type" : "Reader"
+            },
+            "mergereduce_reader_converter" :
+            {
+                "type": "ByteStreamConverter"
+            },
+            "merger" :
+            {
+                "type" : "Merger"
+            },
+            "reducer" :
+            {
+                "type" : "Reducer"
+            },
+            "mergereduce_writer" :
+            {
+                "type" : "Writer"
+            },
+            "replica_sender" :
+            {
+                "type" : "Sender"
+            },
+            "replica_receiver" :
+            {
+                "type" : "Receiver"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "splitsort_reader",
+                "dest" : "splitsort_reader_converter"
+            },
+            {
+                "src" : "splitsort_reader_converter",
+                "dest" : "sorter"
+            },
+            {
+                "src" : "sorter",
+                "dest" : "splitsort_writer"
+            },
+            {
+                "src" : "mergereduce_reader",
+                "dest" : "mergereduce_reader_converter"
+            },
+            {
+                "src" : "mergereduce_reader_converter",
+                "dest" : "merger"
+            },
+            {
+                "src" : "merger",
+                "dest" : "reducer"
+            },
+            {
+                "src" : "reducer",
+                "dest" : "mergereduce_writer"
+            },
+            {
+                "src" : "reducer",
+                "dest" : "replica_sender"
+            },
+            {
+                "src" : "replica_receiver",
+                "dest" : "mergereduce_writer"
+            }
+        ],
+        "network connections" : [
+            {
+                "src" : "replica_sender",
+                "dest" : "replica_receiver",
+                "type" : "many-to-many",
+                "bypass_localhost" : false
+            }
+        ]
+    }
+}

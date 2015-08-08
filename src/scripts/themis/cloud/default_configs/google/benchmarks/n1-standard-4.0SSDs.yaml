@@ -1,0 +1,208 @@
+# ====
+# Benchmark experiment parameters
+# ====
+BENCHMARK_DATA_SIZE_PER_NODE:
+  storagebench: 60000000000 # 60 GB
+  networkbench: 60000000000 # 60 GB
+PARTITION_SIZE: 1000000000 # 1GB
+
+INPUT_DISK_LIST:
+  storagebench: "/mnt/disks/disk_0/benchmarks"
+OUTPUT_DISK_LIST:
+  storagebench: "/mnt/disks/disk_1/benchmarks"
+
+# If 0, generate buffers in round-robin order when using the write-only
+# pipeline. If 1, generate all buffers for a specific file before moving
+# on to the next file (simulates more or less what a reader would do).
+GENERATE_SEQUENTIAL_WRITE_BUFFERS: 0
+
+BENCHMARK_PARTITION_GROUPS_PER_NODE: 1 # 1 demux
+NUM_INTERFACES: 1
+
+# ====
+# Core assignments and thread counts
+# ====
+
+THREAD_CPU_POLICY:
+  networkbench:
+    DEFAULT:
+      type: "free"
+      #mask:"01234567"
+      mask: "0011"
+    sender:
+      type: "free"
+      mask: "1100"
+    receiver:
+      type: "free"
+      mask: "1100"
+  storagebench:
+    DEFAULT:
+      type: "free"
+      #mask:"01234567"
+      mask: "00111111"
+    reader:
+      type: "free"
+      mask: "01000000"
+    writer:
+      type: "free"
+      mask: "10000000"
+
+NUM_WORKERS:
+  networkbench:
+    generator: 1
+    connector: 1 # Do not modify
+    sender: 1
+    receiver: 1
+    sink: 1 # Do not modify
+  storagebench:
+    reader: 1
+    sink: 1
+    tagger: 1
+    generator: 1
+    writer: 1
+
+# ====
+# Memory parameters
+# ====
+DEFAULT_BUFFER_SIZE:
+  networkbench:
+    generator: 4194304
+  storagebench:
+    reader: 4194304
+    generator: 4194304
+
+MEMORY_QUOTAS:
+  networkbench:
+    generator: 1000000000 #1GB of outstanding sender buffers
+  storagebench:
+    reader: 2000000000 #2GB
+    writer: 2000000000 #2GB of outstanding writes
+
+# ====
+# Networking parameters
+# ====
+SOCKETS_PER_PEER:
+  networkbench:
+    sender: 6
+
+SEND_SOCKET_SYSCALL_SIZE: 16777216
+RECV_SOCKET_SYSCALL_SIZE: 16777216
+
+# Setting these to 0 means don't modify the TCP buffer sizes
+TCP_SEND_BUFFER_SIZE: 0
+TCP_RECEIVE_BUFFER_SIZE: 0
+
+ENHANCED_NETWORK_LOGGING: 0
+
+ACCEPT_BACKLOG_SIZE: 1024
+CONNECT_RETRY_DELAY: 100000
+CONNECT_MAX_RETRIES: 100
+
+# ====
+# Storage parameters
+# ====
+
+DIRECT_IO:
+  storagebench:
+    reader: 1
+    writer: 1
+
+ALIGNMENT_MULTIPLE: 4194304
+
+FILE_PREALLOCATION: 0
+
+DELETE_AFTER_READ:
+  storagebench: 0
+
+# If using asynchronous reads or writes, these values determine how many
+# operations of the appropriate type can be in flight simultaneously from
+# each worker thread.
+#
+# It should be noted that the implementation of the asynchronous reader causes
+# each file to be read one buffer at a time, which means a depth of D will cause
+# D files to be read simultaneously, not D reads from a single file. By
+# contrast, the asynchronous writer operates at the buffer level, so a depth of
+# D could cause D buffers for the same file to be written simultaneously.
+ASYNCHRONOUS_IO_DEPTH:
+  storagebench:
+    reader: 2
+    writer: 2
+
+# ====
+# Worker implementations
+# ====
+
+# Reader and writer can be changed to use asynchronous or synchronous I/O.
+#
+# reader:
+# ByteStreamReader - synchronous reads
+# LibAIOReader - async reads using libaio
+# PosixAIOReader - async reads using posix AIO
+#
+# writer:
+# Writer - synchronous writes
+# LibAIOWriter - async writes using libaio
+# PosixAIOWriter - async writes using posix AIO
+WORKER_IMPLS:
+  networkbench:
+    generator: "Generator"
+    connector: "Connector"
+    sender: "Sender"
+    receiver: "Receiver"
+    sink: "SinkMapper"
+  storagebench:
+    reader: "LibAIOReader"
+    sink: "SinkMapper" # Do not modify
+    tagger: "Tagger" # Do not modify
+    generator: "Generator" # Do not modify
+    writer: "LibAIOWriter"
+
+# ====
+# General config
+# ====
+
+MONITOR_PORT: 9999
+RECEIVER_PORT: 9000
+
+ENABLE_STAT_WRITER: true
+STAT_WRITER_DRAIN_INTERVAL_MICROS: 500000
+STAT_POLL_INTERVAL: 500000
+
+MEM_SIZE: 15000000000
+CORES_PER_NODE: 4
+
+# ====
+# Benchmark pipeline specific. Do not modify
+# ====
+
+WORK_QUEUEING_POLICY:
+  networkbench:
+    sender: "NetworkDestinationWorkQueueingPolicy"
+  storagebench:
+    reader: "ReadRequestWorkQueueingPolicy"
+    tagger: "ByteStreamWorkQueueingPolicy"
+    writer: "PhysicalDiskWorkQueueingPolicy"
+
+# Readers use the existance of this flag to read into byte stream buffers
+FORMAT_READER.storagebench: "NULL"
+
+ALIGNMENT:
+  networkbench:
+    receiver: 0
+  storagebench:
+    reader: 0
+    generator: 0
+    writer: 0
+
+# ====
+# Copied from mapreduce/defaults.yaml
+# ====
+
+# Print header for status log messages
+CHANNEL_STATUS_HEADER: "[STATUS]"
+
+# Print header for statistics log messages
+CHANNEL_STATISTIC_HEADER: "[STATISTIC]"
+
+# Print header for parameter log messages
+CHANNEL_PARAM_HEADER: "[PARAM]"

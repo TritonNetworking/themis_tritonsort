@@ -1,0 +1,25 @@
+THREAD_CPU_POLICY:
+   test_phase:
+      # Fixed policy, CPUs 4 and 8
+      reader:
+         type: "fixed"
+         mask: "0000100010000000"
+      # Free policy, CPUs 4 and 6
+      sender:
+         type: "free"
+         mask: "0000101000000000"
+      # Unknown policy (should fail)
+      weird_policy:
+         type: "foogarble"
+         mask: "0000101000000000"
+      # Policy without mask (should fail)
+      maskless:
+         type: "fixed"
+      # Policy without type (should fail)
+      typeless:
+         mask: "0000101000000000"
+      # Policy with an improperly-sized mask (should fail)
+      bad_mask:
+         type: "fixed"
+         mask: "000010100000000000000000000000"
+

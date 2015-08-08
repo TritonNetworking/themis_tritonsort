@@ -1,0 +1,12 @@
+1. Launch an instance of Amazon Linux as the base AMI for the Themis AMI you will build.
+  - Recommended to use amzn-ami-hvm-2014.03.2.x86_64-ebs - ami-76817c1e
+  - If using the 2014.03 AMI above, use Lock-On-Launch to prevent the AMI from auto-upgrading to the newest version:
+    - Pass the following text in for Userdata:
+#cloud-config
+repo_releasever: 2014.03
+
+2. Run AMI/install_themis.py from your local workstation to install Themis on the virtual machine you just booted.
+
+3. Create an Amazon Virtual Machine Image (AMI) from that VM.
+
+4. Run launch_ec2_cluster.py from your local workstation to launch a Themis cluster using this AMI.

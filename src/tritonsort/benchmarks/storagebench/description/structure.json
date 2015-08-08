@@ -1,0 +1,46 @@
+{
+    "phases" : ["storagebench"],
+    "storagebench" :
+    {
+        "stages" : {
+            "reader" :
+            {
+                "type" : "Reader"
+            },
+            "sink" :
+            {
+                "type" : "Mapper"
+            },
+            "tagger" :
+            {
+                "type" : "Tagger"
+            },
+            "generator" :
+            {
+                "type" : "Generator"
+            },
+            "writer" :
+            {
+                "type" : "Writer"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "reader",
+                "dest" : "sink"
+            },
+            {
+                "src" : "reader",
+                "dest" : "tagger"
+            },
+            {
+                "src" : "tagger",
+                "dest" : "writer"
+            },
+            {
+                "src" : "generator",
+                "dest" : "writer"
+            }
+        ]
+    }
+}

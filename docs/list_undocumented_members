@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep "is not documented" ${1} | sed -E 's/is not documented.//g' | cut -d' ' -f 1,3- | sed -E 's/:[0-9]+:/ : /g' | sort

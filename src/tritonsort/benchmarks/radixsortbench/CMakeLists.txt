@@ -1,0 +1,2 @@
+ADD_EXECUTABLE(radixsortbench main.cc)
+TARGET_LINK_LIBRARIES(radixsortbench tritonsort_core tritonsort_common mapreduce_workers)

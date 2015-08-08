@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <title>Themis Job Status</title>
+    <style type="text/css" media="screen">
+      .job_head {
+      background: #bbbbff;
+      }
+      th {
+      background: #0000ff;
+      color: #ffffff;
+      }
+
+      .job_info {
+      padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cluster Status</h1>
+
+    <table border="1">
+      <tr>
+        <th>Hostname</th>
+        <th>Status</th>
+        <th>Intermediate Disks</th>
+      </tr>
+      {% for hostname in cluster_info %}
+      <tr>
+        <td>{{ hostname }}</td>
+        <td>{{ cluster_info[hostname]["status"] }}</td>
+        <td>
+          <b>Live Disks</b>
+          <ul>
+            {% for disk in cluster_info[hostname]["live_disks"] %}
+            <li>{{ disk }}</li>
+            {% endfor %}
+          </ul>
+          <b>Dead Disks</b>
+          <ul>
+            {% for disk in cluster_info[hostname]["dead_disks"] %}
+            <li>{{ disk }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h1>Incomplete Batches</h1>
+
+    <p>{{ incomplete_batches | sort }}</p>
+
+    <h1>Jobs</h1>
+
+    <table border="1">
+      <tr>
+        <th>Job Name</th>
+        <th>Job ID</th>
+        <th>Batch ID</th>
+        <th>Start Time</th>
+        <th>Stop Time</th>
+        <th>Nodes Remaining</th>
+        <th>Status</th>
+        <th>Error Report</th>
+      </tr>
+      {% for job_id, curr_job_info in job_info.items() | sort(true) %}
+      <tr class="job_head">
+        <td>{{ curr_job_info["job_name"] }}</td>
+        <td>
+          {% if "job_id" in curr_job_info %}
+          {{ curr_job_info["job_id"]}}
+          {% endif %}
+        <td>
+          {% if "batch_id" in curr_job_info %}
+          <a href="/batch_logs/{{ curr_job_info["batch_id"] }}">{{ curr_job_info["batch_id"] }}</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if "start_time" in curr_job_info %}
+          {{ curr_job_info["start_time"] | datetime }}
+          {% endif %}
+        </td>
+        <td>
+          {% if "stop_time" in curr_job_info %}
+          {{ curr_job_info["stop_time"] | datetime }}
+          {% endif %}
+        </td>
+        <td>{{ nodes_remaining[job_id] }}</td>
+        <td>{{ curr_job_info["status"] }}</td>
+        <td>
+          {% if curr_job_info["fail_message"] %}
+          <a href="/error_reports/{{ job_id }}">View Error Report</a>
+          {% else %}
+          No Errors Reported
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="job_info" colspan=8>
+          <p>Job Info:</p>
+          <p>
+          <ul>
+            <li><b>Input Directory</b>: {{ curr_job_info["input_directory"] }}</li>
+            <li><b>Output Directory</b>: {{ curr_job_info["output_directory"] }}</li>
+            <li><b>Total Input Size (B)</b>: {{ curr_job_info["total_input_size_bytes"] }}</li>
+            <li><b>Map Function</b>: {{ curr_job_info["map_function"] }}</li>
+            <li><b>Reduce Function</b>: {{ curr_job_info["reduce_function"] }}</li>
+          </ul>
+          </p>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>Themis Cluster Status</title>
+  </head>
+  <body>
+    <h1>Data Generation In Progress</h1>
+    <a href="/">Cluster Status</a> <a href="/management">Cluster Management</a> <a href="/configure">Configure Cluster</a> <a href="/dfs_manager">DFS Manager</a> <a href="/data_generation">Data Generation</a><br/><br/>
+
+    Data Generation {{current_size}} / {{total_size}} ({{percent}}%)</br>
+
+    <form name="data_generation" action="/data_generation" method="post">
+      <input type="submit" name="abort_data_generation" value="Abort Data Generation"></br></br>
+    </form>
+  </body>
+</html>

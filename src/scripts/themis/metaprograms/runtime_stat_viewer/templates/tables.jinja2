@@ -1,0 +1,129 @@
+{% macro styled_percent_row(stage_info, key) -%}
+<td style="background: {{ "#ff%02x%02x" % (255 - (stage_info[key] * 255), 255 - (stage_info[key] * 255))}}; color: {%- if stage_info[key] > 0.5 -%}white{%- else -%}black{%- endif -%}">{{ "%.02f%%" % (stage_info[key] * 100.0) }}</td>
+{%- endmacro %}
+
+{% macro common_table_headers(display_per_node, display_per_worker) -%}
+<th>Total Input Size (MB)</th>
+{% if display_per_node %}
+<th>Mean Stage Runtime (s)</th>
+{% endif %}
+{% if display_per_worker %}
+<th>Max Stage Runtime (s)</th>
+{% endif %}
+<th>Worker Runtime Span (s)</th>
+<th>Mean Pipeline Saturation Time (us)</th>
+<th>% Total Time Waiting for Memory</th>
+<th>% Total Time Waiting to Enqueue Work</th>
+<th>% Total Time Waiting for Work</th>
+{% if display_per_worker %}
+<th># Workers</th>
+{% endif %}
+<th>Total Observed Throughput (MBps)</th>
+<th>Total Ideal Throughput (MBps)</th>
+{% if display_per_node %}
+<th>Per-Node Observed Throughput (MBps/node)</th>
+<th>Per-Node Ideal Throughput (MBps/node)</th>
+{% endif %}
+{% if display_per_worker %}
+<th>Per-Worker Observed Throughput (MBps/worker)</th>
+<th>Per-Worker Ideal Throughput (MBps/worker)</th>
+{% endif %}
+{%- endmacro %}
+
+{% macro common_table_columns(stage_info, display_per_node, display_per_worker) -%}
+<td>{{ stage_info["total_bytes_in"] / 1000000.0 }}</td>
+{% if display_per_node %}
+<td>{{ stage_info["mean_stage_runtime"] / 1000000.0 }}</td>
+{% endif %}
+{% if display_per_worker %}
+<td>{{ stage_info["max_stage_runtime"] / 1000000.0 }}</td>
+{% endif %}
+<td>{{ stage_info["worker_runtime"] / 1000000.0 }}</td>
+<td>{{ stage_info["pipeline_saturation_time"] }}</td>
+{{ styled_percent_row(stage_info, "percent_total_time_waiting_for_buffers") }}
+{{ styled_percent_row(stage_info, "percent_total_time_blocked_on_enqueue") }}
+{{ styled_percent_row(stage_info, "percent_time_waiting_for_work") }}
+{% if display_per_worker %}
+<td>{{ stage_info["num_workers"] }}</td>
+{% endif %}
+<td>{{ "%.02f" % (stage_info["observed_processing_rate"]) }}</td>
+<td>{{ "%.02f" % (stage_info["ideal_processing_rate"]) }}</td>
+{% if display_per_node %}
+<td>{{ "%.02f" % (stage_info["observed_processing_rate_per_node"]) }}</td>
+<td>{{ "%.02f" % (stage_info["ideal_processing_rate_per_node"]) }}</td>
+{% endif %}
+{% if display_per_worker %}
+<td>{{ "%.02f" % (stage_info["observed_processing_rate_per_worker"]) }}</td>
+<td>{{ "%.02f" % (stage_info["ideal_processing_rate_per_worker"]) }}</td>
+{% endif %}
+{%- endmacro %}
+
+{% macro render_worker_epoch_table(epoch_info, stage, hostname) -%}
+  <h2>Job '{{ epoch_info["job"] }}' Phase '{{ epoch_info["phase"] }}' Epoch {{ epoch_info["epoch"] }}</h2>
+  <h3>(click headers to sort)</h3>
+  <table class="sortable" border=1>
+    <thead>
+      <tr>
+        <th>Worker ID</th>
+        {{ common_table_headers(false, false) }}
+      </tr>
+    </thead>
+    <tbody>
+      {% for stage_info in epoch_info["stages"] %}
+      {% if stage_info["stats_info"]|length == 3 and stage_info["stats_info"]["stage"] == stage
+      and stage_info["stats_info"]["hostname"] == hostname %}
+      <tr>
+        <td>{{stage_info["stats_info"]["worker_id"]}}</td>
+        {{ common_table_columns(stage_info, false, false) }}
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+{%- endmacro %}
+
+{% macro render_host_epoch_table(dirname, epoch_info, stage) -%}
+  <h2>Job '{{ epoch_info["job"] }}' Phase '{{ epoch_info["phase"] }}' Epoch {{ epoch_info["epoch"] }}</h2>
+  <h3>(click for per-worker info, click headers to sort)</h3>
+  <table class="sortable" border=1>
+    <thead>
+      <tr>
+        <th>Hostname</th>
+        {{ common_table_headers(false, true) }}
+      </tr>
+    </thead>
+    <tbody>
+      {% for stage_info in epoch_info["stages"] %}
+      {% if stage_info["stats_info"]|length == 2 and stage_info["stats_info"]["stage"] == stage %}
+      <tr>
+        <td><a href="/{{dirname}}/by_worker?job={{ epoch_info["job"] }}&phase={{ epoch_info["phase"] }}&epoch={{epoch_info["epoch"]}}&stage={{stage_info["stats_info"]["stage"]}}&hostname={{stage_info["stats_info"]["hostname"]}}">{{ stage_info["stats_info"]["hostname"] }}</a></td>
+        {{ common_table_columns(stage_info, false, true) }}
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+{%- endmacro %}
+
+{% macro render_overall_epoch_table(dirname, epoch_info) -%}
+   <h2>Job '{{ epoch_info["job"] }}' Phase '{{ epoch_info["phase"] }}' Epoch {{ epoch_info["epoch"] }}</h2>
+   <h3>(click for per-host info, click headers to sort)</h3>
+   <table class="sortable" border=1>
+     <thead>
+       <tr>
+         <th>Worker Type</th>
+         {{ common_table_headers(true, true) }}
+       </tr>
+     </thead>
+     <tbody>
+   {% for stage_info in epoch_info["stages"] %}
+   {% if stage_info["stats_info"]|length == 1 %}
+       <tr>
+         <td><a href="/{{dirname}}/by_hostname?job={{ epoch_info["job"] }}&phase={{ epoch_info["phase"] }}&epoch={{epoch_info["epoch"]}}&stage={{stage_info["stats_info"]["stage"]}}">{{ stage_info["stats_info"]["stage"]}}</a></td>
+         {{ common_table_columns(stage_info, true, true) }}
+       </tr>
+   {% endif %}
+   {% endfor %}
+     </tbody>
+   </table>
+{%- endmacro %}

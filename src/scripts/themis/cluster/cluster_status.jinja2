@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <title>Themis Cluster Status</title>
+    <style type="text/css" media="screen">
+      .job_head {
+      background: #bbbbff;
+      }
+      th {
+      background: #0000ff;
+      color: #ffffff;
+      }
+
+      .job_info {
+      padding: 15px;
+      }
+    </style>
+
+    <script language="JavaScript">
+      function toggleCheckboxes(source) {
+        selectedElements = document.getElementsByName("selected");
+        for(var i=0; i < selectedElements.length; i++) {
+          selectedElements[i].checked = source.checked;
+        }
+      }
+
+      function selectDeadCheckboxes() {
+        selectedElements = document.getElementsByName("selected");
+        for(var i=0; i < selectedElements.length; i++) {
+          var hostname = selectedElements[i].value;
+          var status = document.getElementsByName(hostname + "-status")[0].value;
+          if (status == "Dead") {
+            selectedElements[i].checked = true;
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Cluster Status</h1>
+    As of {{ now }}<br/><br/>
+    Master: {{master_address}}<br/>
+    Slave internal IPs: {{internal_ips}}<br/><br/>
+
+    <a href="/">Cluster Status</a> <a href="/management">Cluster Management</a> <a href="/configure">Configure Cluster</a> <a href="/dfs_manager">DFS Manager</a> <a href="/data_generation">Data Generation</a><br/><br/>
+    Input/Output Disks: {{io_disks}}<br/>
+    Intermediate Disks: {{intermediate_disks}}<br/>
+    Network Interfaces: {{interfaces}}<br/><br/>
+
+    <form name="status" action="/" method="post">
+      <input type="hidden" name="status" value="True">
+      Nodes to add <input type="text" name="nodes_to_add">
+      <input type="submit" name="add" value="Add Nodes"><br/><br/>
+      <input type="checkbox" name="allow_remove_and_clear" value="True"/> Allow Remove/Wipe<br/>
+      <input type="button" onClick="selectDeadCheckboxes()" value="Select Dead Nodes"/>
+      <input type="submit" name="remove" value="Remove Selected">
+      <input type="submit" name="wipe" value="Wipe Cluster"><br/>
+      <table border="1">
+        <tr>
+          <th><input type="checkbox" onClick="toggleCheckboxes(this)" /></th>
+          <th>Node</th>
+          <th>Internal DNS</th>
+          <th>External DNS</th>
+          <th>Internal IP</th>
+          <th>External IP</th>
+          <th>Status</th>
+          {% for interface in interfaces_list %}
+          <th>Interface {{ interface }} </th>
+          {% endfor %}
+        </tr>
+        {% for hostname in cluster_info %}
+        <tr>
+          <td><input type="checkbox" name="selected" value="{{hostname}}"></td>
+          <td>{{ hostname }}</td>
+          <td>{{ cluster_info[hostname]["internal_dns"] }}</td>
+          <td>{{ cluster_info[hostname]["external_dns"] }}</td>
+          <td>{{ cluster_info[hostname]["internal_ip"] }}</td>
+          <td>{{ cluster_info[hostname]["external_ip"] }}</td>
+          <td>{{ cluster_info[hostname]["status"] }}</td>
+          <input type="hidden" name="{{hostname}}-status" value="{{ cluster_info[hostname]['status'] }}">
+          {% for address in interface_addresses[hostname] %}
+          <td>{{ address }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+
+      <input type="submit" name="remove" value="Remove Selected"><input type="submit" name="clear" value="Wipe Cluster">
+    </form>
+  </body>
+</html>

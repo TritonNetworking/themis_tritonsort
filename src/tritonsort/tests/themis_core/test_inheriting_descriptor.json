@@ -1,0 +1,34 @@
+{
+    "type" : "FOO",
+    "fields" :
+    [
+        {
+            "name" : "line_type_name",
+            "type" : "str"
+        },
+        {
+            "name" : "phase_name",
+            "type" : "str"
+        },
+        {
+            "name" : "epoch",
+            "type" : "uint"
+        },
+        {
+            "name" : "spam",
+            "type" : "str"
+        },
+        {
+            "name" : "eggs",
+            "type" : "uint"
+        },
+        {
+            "name" : "bar",
+            "type" : "uint"
+        },
+        {
+            "name" : "baz",
+            "type" : "int"
+        }
+    ]
+}

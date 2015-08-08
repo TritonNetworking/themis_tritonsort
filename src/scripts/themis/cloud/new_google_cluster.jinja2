@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>New Cluster</title>
+    <style type="text/css" media="screen">
+      label{
+      display: inline-block;
+      float: left;
+      clear: left;
+      width: 250px;
+      text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>New Google Cluster</h1>
+    <a href="/">Cluster Listing</a>
+    <form name="new_google_cluster_form" action="/" method="post">
+      <label>Cluster Name</label>
+      <input type="text" name="cluster_name"></br>
+      <label>Cluster Size</label>
+      <input type="text" name="cluster_size"></br></br>
+      <label>Instance Type</label>
+      <select name="instance_type">
+        {% for instance in instances %}
+        <option>{{ instance }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Local SSDs</label>
+      <select name="local_ssds">
+        {% for i in range(5) %}
+        <option>{{ i }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Master Instance Type</label>
+      <select name="master_instance_type">
+        {% for instance in instances %}
+        <option>{{ instance }}</option>
+        {% endfor %}
+      </select></br>
+      <label>VM Image</label>
+      <select name="image">
+        {% for image in images %}
+        <option>{{ image }}</option>
+        {% endfor %}
+      </select></br></br>
+
+      <label>Zone</label>
+      <select name="zone">
+        {% for zone in zones %}
+        <option>{{ zone }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Network</label>
+      <select name="network">
+        {% for network in networks %}
+        <option>{{ network }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Storage Bucket</label>
+      <select name="bucket">
+        {% for bucket in buckets %}
+        <option>{{ bucket }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Private SSH Key (full path)</label>
+      <input type="text" name="private_key" value="~/.ssh/id_rsa"></br>
+      <label>Public SSH Key (full path)</label>
+      <input type="text" name="public_key" value="~/.ssh/id_rsa.pub"></br>
+      <label>Themis Config Directory (full path)</label>
+      <input type="text" name="themis_config_directory" value="{{default_config_dir}}"></br>
+
+      <input type="submit" name="new_google_cluster" value="Create Cluster">
+    </form>
+  </body>
+</html>

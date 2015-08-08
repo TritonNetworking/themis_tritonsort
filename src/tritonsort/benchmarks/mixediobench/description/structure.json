@@ -1,0 +1,58 @@
+{
+    "phases" : ["mixediobench"],
+    "mixediobench" :
+    {
+        "stages" : {
+            "reader" :
+            {
+                "type" : "Reader"
+            },
+            "tagger" :
+            {
+                "type" : "Tagger"
+            },
+            "sender" :
+            {
+                "type" : "Sender"
+            },
+            "receiver" :
+            {
+                "type" : "Receiver"
+            },
+            "demux" :
+            {
+                "type" : "Demux"
+            },
+            "writer" :
+            {
+                "type" : "Writer"
+            }
+        },
+        "stage-to-stage connections" : [
+            {
+                "src" : "reader",
+                "dest" : "tagger"
+            },
+            {
+                "src" : "tagger",
+                "dest" : "sender"
+            },
+            {
+                "src" : "receiver",
+                "dest" : "demux"
+            },
+            {
+                "src" : "demux",
+                "dest" : "writer"
+            }
+        ],
+        "network connections" : [
+            {
+                "src" : "sender",
+                "dest" : "receiver",
+                "type" : "many-to-many",
+                "bypass_localhost" : true
+            }
+        ]
+    }
+}

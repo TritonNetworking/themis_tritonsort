@@ -1,0 +1,9 @@
+FIND_PATH(JEMALLOC_INCLUDE_DIR jemalloc/jemalloc.h)
+
+FIND_LIBRARY(JEMALLOC_LIBRARY jemalloc)
+
+MARK_AS_ADVANCED(JeMalloc JEMALLOC_INCLUDE_DIR JEMALLOC_LIBRARY)
+
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(JeMalloc "jemalloc is required: http://www.canonware.com/jemalloc/"
+  JEMALLOC_INCLUDE_DIR JEMALLOC_LIBRARY)

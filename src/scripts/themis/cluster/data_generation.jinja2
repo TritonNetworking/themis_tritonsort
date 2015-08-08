@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>Themis Cluster Status</title>
+  </head>
+  <body>
+    <h1>Data Generation</h1>
+    <a href="/">Cluster Status</a> <a href="/management">Cluster Management</a> <a href="/configure">Configure Cluster</a> <a href="/dfs_manager">DFS Manager</a> <a href="/data_generation">Data Generation</a><br/><br/>
+
+    Current Input Size: {{input_size}}</br>
+    <form name="data_generation" action="/data_generation" method="post">
+      {% if input_size == "0" %}
+      <input type="text" name="data_size" value="0">
+      <select name="unit">
+	<option>B</option>
+	<option>KB</option>
+	<option>MB</option>
+	<option>GB</option>
+	<option>TB</option>
+      </select></br>
+      <input type="text" name="files_per_disk" value="1"> file(s) per disk.</br>
+      <input type="submit" name="generate_data" value="Generate Data"></br></br>
+      {% endif %}
+
+      <input type="checkbox" name="allow_wipe_data" value="True"/> Wipe Data<br/>
+      <input type="submit" name="wipe_input" value="Wipe Input Data">
+      <input type="submit" name="wipe_intermediate_output" value="Wipe Intermediate/Output Data">
+      <input type="submit" name="wipe_all" value="Wipe All Data"></br></br>
+    </form>
+  </body>
+</html>

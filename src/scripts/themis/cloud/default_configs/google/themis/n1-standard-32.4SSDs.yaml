@@ -1,0 +1,305 @@
+SOCKETS_PER_PEER:
+  phase_one:
+    sender: 4
+
+SAMPLE_RATE: 0.01
+MAX_RADIX_SORT_SCRATCH_SIZE: 250000000
+
+FILE_PREALLOCATION: 0
+
+# 10 second redis timeout
+REDIS_NON_BLOCK_RETRY_TIME: 100000
+REDIS_NUM_NON_BLOCK_RETRIES: 100
+
+# === General ===
+
+MONITOR_PORT: 9999
+
+ENABLE_STAT_WRITER: true
+
+# Poll interval is .5 seconds
+STAT_POLL_INTERVAL: 500000
+
+MEM_SIZE: 120000000000
+CORES_PER_NODE: 32
+
+THREAD_CPU_POLICY:
+  phase_zero:
+    DEFAULT:
+      type: "free"
+      #mask:"01234567"
+      mask: "00011111111111111111111111111111"
+    reader:
+      type: "free"
+      #mask:"01234567"
+      mask: "01000000000000000000000000000000"
+    mapper:
+      type: "fixed"
+      mask: "00100000000000000000000000000000"
+    sorter:
+      type: "fixed"
+      mask: "00100000000000000000000000000000"
+  phase_one:
+    DEFAULT:
+      type: "free"
+      #mask:"01234567"
+      mask: "00000011111111111111111111111111"
+    reader:
+      type: "free"
+      #mask:"01234567"
+      mask: "01000000000000000000000000000000"
+    writer:
+      type: "free"
+      #mask:"01234567"
+      mask: "10000000000000000000000000000000"
+    sender:
+      type: "free"
+      #mask:"01234567"
+      mask: "00111100000000000000000000000000"
+    receiver:
+      type: "free"
+      #mask:"01234567"
+      mask: "00111100000000000000000000000000"
+  phase_two:
+    DEFAULT:
+      type: "free"
+      #mask:"01234567"
+      mask: "00111111111111111111111111111111"
+    reader:
+      type: "free"
+      #mask:"01234567"
+      mask: "01000000000000000000000000000000"
+    writer:
+      type: "free"
+      #mask:"01234567"
+      mask: "10000000000000000000000000000000"
+
+DEFAULT_BUFFER_SIZE:
+  phase_zero:
+    reader: 4194304
+    reader_converter: 4194304
+    reservoir_sample_mapper: 2000000000 # Must be double the amount of data you want to keep
+    shuffle_mapper: 1048576
+    mapper: 2000000000 # 2x the amount of data to keep.
+    sorter: 1048576
+    boundary_scanner: 1048576
+    boundary_decider: 1048576
+  phase_one:
+    reader: 4194304
+    reader_converter: 4194304
+    mapper: 2097152
+    demux: 4194304
+  phase_two:
+    reader: 4194304
+    reader_converter: 702545920
+    reducer: 4194304
+  phase_three:
+    splitsort_reader: 629145600
+    splitsort_reader_converter: 629145600
+    mergereduce_reader: 4194304
+    mergereduce_reader_converter: 4194304
+    merger: 67108864
+    reducer: 4194304
+
+NUM_WORKERS:
+  phase_zero:
+    reader: 2
+    reader_converter: 1
+    reservoir_sample_mapper: 1
+    shuffle_mapper: 1
+    shuffle_sender: 1
+    shuffle_receiver: 1
+    buffer_combiner: 1
+    mapper: 1 # Architectural invariant; do not override
+    sorter: 1
+    boundary_scanner: 1
+    broadcast_sender: 1
+    coordinator_sender: 1
+    coordinator_connector: 1
+    broadcast_connector: 1
+    broadcast_receiver: 1
+    coordinator_receiver: 1
+    boundary_decider: 1
+    boundary_deserializer: 1
+    phase_zero_output_data_holder: 1
+  phase_one:
+    reader: 2
+    reader_converter: 1
+    mapper: 4
+    sender: 2
+    connector: 1
+    receiver: 2
+    demux: 4
+    chainer: 1
+    coalescer: 1
+    writer: 2
+  phase_two:
+    reader: 2
+    reader_converter: 2
+    sorter: 8 #12
+    reducer: 2
+    writer: 2
+    replica_sender: 1
+    replica_receiver: 1
+  phase_three:
+    splitsort_reader: 2
+    splitsort_reader_converter: 1
+    sorter: 2
+    splitsort_writer: 2
+    mergereduce_reader: 2
+    mergereduce_reader_converter: 1
+    merger: 1
+    reducer: 1
+    mergereduce_writer: 1
+    replica_sender: 1
+    replica_receiver: 2
+
+ALIGNMENT_MULTIPLE: 4194304
+
+# P2 quotas used to be 7.5GB each which is WAY too high
+# quota memory is the slack in queues - 7.5 means the entirety
+# of RAM is stuck in queues and not in workers
+
+MEMORY_QUOTAS:
+  phase_zero:
+    reader: 1000000000 # 1GB
+    reader_converter: 1000000000 # 1GB
+    shuffle_mapper: 1000000000
+    shuffle_receiver: 1000000000
+    sorter: 1000000000
+    boundary_scanner: 1000000000
+    coordinator_receiver: 2000000000
+    boundary_decider: 1000000000
+  phase_one:
+    reader: 1000000000
+    reader_converter: 1000000000
+    mapper: 1000000000
+    receiver: 5000000000
+    demux: 2000000000
+  phase_two:
+    reader: 1000000000
+    reader_converter: 1500000000
+    sorter: 1500000000
+    reducer: 10000000000 #10GB instead of 1GB to let more buffers through to the async writers
+    reducer_replica: 1000000000
+  phase_three:
+    splitsort_reader: 1000000000
+    splitsort_reader_converter: 2000000000 # For skew
+    sorter: 2000000000 # For skew
+    mergereduce_reader: 2000000000
+    mergereduce_reader_converter: 2000000000 # 2GB
+    merger: 2000000000
+    reducer: 2000000000
+    reducer_replica: 1000000000
+
+CHAINER_WORK_UNIT_EMISSION_LOWER_BOUND: 4500000
+CHAINER_WORK_UNIT_EMISSION_UPPER_BOUND: 14000000
+
+# === MR Phase One ===
+
+# Sender
+SEND_SOCKET_SYSCALL_SIZE: 16777216
+#SEND_SOCKET_SYSCALL_SIZE: 65536
+
+# Receiver
+RECV_SOCKET_SYSCALL_SIZE: 16777216
+#RECV_SOCKET_SYSCALL_SIZE: 65536
+RECEIVER_PORT: 9000
+
+# === MapReduce Job Configuration ===
+
+# Config options for Grep
+GREP_SELECTIVITY: 0.10
+
+# Inverted index config
+NUM_VALUE_BYTES_PER_WORD: 15
+
+# Bytes count config
+BYTES_COUNT_MAP_NUM_BYTES: 3
+
+COMBINING_WORD_COUNT_MAX_COMBINER_ENTRIES: 100000
+
+ASYNCHRONOUS_IO_DEPTH:
+  phase_zero:
+    reader: 2
+  phase_one:
+    reader: 2
+    writer: 4
+  phase_two:
+    reader: 2
+    writer: 2
+  phase_three:
+    splitsort_reader: 2
+    splitsort_writer: 2
+    mergereduce_reader: 2
+    mergereduce_writer: 2
+
+# Is this right? Do we want the select receiver?
+WORKER_IMPLS:
+  phase_zero:
+    reader: "LibAIOReader"
+    broadcast_receiver: "SelectReceiver"
+    coordinator_receiver: "SelectReceiver"
+  phase_one:
+    reader: "LibAIOReader"
+    receiver: "Receiver"
+    writer: "LibAIOWriter"
+  phase_two:
+    reader: "LibAIOReader"
+    writer: "LibAIOWriter"
+  phase_three:
+    splitsort_reader: "LibAIOReader"
+    splitsort_writer: "LibAIOWriter"
+    mergereduce_reader: "LibAIOReader"
+    mergereduce_writer: "LibAIOWriter"
+
+DIRECT_IO:
+  phase_zero:
+    reader: 1
+    writer: 0 # Bug
+  phase_one:
+    reader: 1
+    writer: 1
+  phase_two:
+    reader: 1
+    writer: 1
+  phase_three:
+    splitsort_reader: 1
+    splitsort_writer: 1
+    mergereduce_reader: 1
+    mergereduce_writer: 1
+
+USE_WRITE_CHAINING: 0
+
+# These values make no sense!
+
+#MAX_READ_SIZE:
+#  phase_zero: 512000
+# phase_one: 512000
+# phase_two: 512000
+
+#MAX_WRITE_SIZE:
+  #phase_one: 512000
+  #phase_one: 524288
+  #phase_one: 131072
+  #phase_one: 262144
+  #phase_one: 1048576
+  #phase_two: 512000
+
+#WRITE_SIZE_MULTIPLE:
+#  phase_two: 4194304
+
+#PARTITION_SIZE: 702545920
+PARTITION_SIZE: 500000000
+
+ENHANCED_NETWORK_LOGGING: 0
+
+ACCEPT_BACKLOG_SIZE: 1024
+CONNECT_RETRY_DELAY: 100000
+CONNECT_MAX_RETRIES: 100
+
+LARGE_PARTITION_THRESHOLD: 6000000000
+
+OUTPUT_REPLICATION_LEVEL: 1
+
+MERGE_MEMORY: 2000000000 # 2GB

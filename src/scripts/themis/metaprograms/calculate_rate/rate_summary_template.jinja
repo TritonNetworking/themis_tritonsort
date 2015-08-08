@@ -1,0 +1,24 @@
+=====
+Job: {{ job }}
+Phase: {{ phase }}
+Epoch: {{ epoch }}
+=====
+
+Input Size: {{ input_size["B"] }} B ({{ "%.2f" % (input_size["TB"] / num_nodes) }} TB per node)
+Output Size: {{ output_size["B"] }} B ({{ "%.2f" % (input_size["TB"] / num_nodes) }} TB per node)
+(max: {{ "%.2f" % (max_size["GB"]) }} GB, {{ "%.2f" % (max_size["MB"]) }} MB)
+
+Intermediate Disks: {{ intermediate_disks }}
+
+Total Time: {{ "%.2f" % (total_time["s"]) }} sec [{{ "%.2f" % (total_time["min"]) }} min]
+
+{%if total_time["s"] > 0 %}
+Overall Rate (using max. of input and output size for size):
+  - {{ "%.2f" % ((max_size["Gb"] / total_time["s"]) / num_nodes)}} Gbps/node
+  - {{ "%.2f" % ((max_size["MB"] / total_time["s"]) / num_nodes)}} MBps/node
+  - {{ "%.2f" % (max_size["MB"] / total_time["s"])}} MBps
+  - {{ "%.2f" % (max_size["GB"] / total_time["min"]) }} GB/min
+  - {{ "%.2f" % (max_size["GiB"] / total_time["min"]) }} GiB/min
+  - {{ "%.2f" % ((max_size["MB"] / total_time["s"]) / intermediate_disks) }} MB/s per intermediate disk
+  - {{ "%.2f" % ((max_size["MiB"] / total_time["s"]) / intermediate_disks) }} MiB/s per intermediate disk
+{%endif%}

@@ -1,0 +1,388 @@
+# Print header for status log messages
+CHANNEL_STATUS_HEADER: "[STATUS]"
+
+# Print header for statistics log messages
+CHANNEL_STATISTIC_HEADER: "[STATISTIC]"
+
+# Print header for parameter log messages
+CHANNEL_PARAM_HEADER: "[PARAM]"
+
+# Default thread-to-CPU policy
+THREAD_CPU_POLICY: "DEFAULT"
+
+# Don't randomly re-arrange input files by default
+SHUFFLE_INPUT_FILES: 0
+
+# Skip phase zero of the sort
+SKIP_PHASE_ZERO: 0
+
+# Skip phase one of the sort
+SKIP_PHASE_ONE: 0
+
+# Skip phase two of the sort
+SKIP_PHASE_TWO: 0
+
+# Skip phase three of the sort
+SKIP_PHASE_THREE: 0
+
+# Percentage of physical memory to use for buffers
+MEM_PERCENTAGE: 90
+
+# Name of an input file
+INPUT_FILE_NAME: "input"
+
+WRITE_SIZE_MULTIPLE:
+  phase_one: 512
+  phase_two: 512
+  phase_three: 512
+
+# Determine whether or not we should be using fallocate()
+FILE_PREALLOCATION: true
+# By default files are preallocated to the partition size, but you can
+# preallocate to any desired size by setting FILE_PREALLOCATION_SIZE
+# FILE_PREALLOCATION_SIZE: 0
+
+# Socket buffer size defaults to bandwidth-delay product of the 10Gbps links
+SOCKET_BUFFER_SIZE: 134218
+
+# Maximum amount of data to read from a socket at once
+MAX_SOCKET_READ_SIZE: 1048576
+
+# Maximum amount of data to write to a socket at once
+MAX_SOCKET_WRITE_SIZE: 1048576
+
+# Give node buffers 5% slack in size by default
+SENDABLE_BUFFER_SIZE_HEADROOM_PERCENT: 5
+
+# Size of the data given to a send() syscall
+SEND_SOCKET_SYSCALL_SIZE: 8192
+
+# Size of the data given to a recv() syscall
+RECV_SOCKET_SYSCALL_SIZE: 8192
+
+# The smallest chain that the chainer is allowed to emit is 5MB by default
+CHAINER_WORK_UNIT_EMISSION_LOWER_BOUND: 5000000
+
+# The largest chain that the chainer can emit is 14MB by default
+CHAINER_WORK_UNIT_EMISSION_UPPER_BOUND: 14000000
+
+# Default the coalescer to returning buffers 1000 at a time
+COALESCER_PUT_QUEUE_SIZE: 1000
+
+# Memory Allocator sleeps for 500 ms when memory is fragmented before trying
+# again.
+ALLOCATOR_FRAGMENTATION_SLEEP: 500000
+
+# Phase 0 config options
+# SAMPLE_RATE: 0.01
+# SAMPLES_PER_FILE: 100
+MERGE_NODE_ID: 0
+
+# Disable the stat writer by default, and set its drain interval to .5
+# seconds
+ENABLE_STAT_WRITER: false
+STAT_WRITER_DRAIN_INTERVAL_MICROS: 500000
+
+# How many tuples to skip between sampling map input tuples
+MAP_INPUT_TUPLE_SAMPLE_RATE: 1000
+
+# How many tuples to skip between sampling map output tuples
+MAP_OUTPUT_TUPLE_SAMPLE_RATE: 1000
+
+# Bin sizes for input tuple histograms
+MAP_INPUT_KEY_SIZE_HISTOGRAM_BIN_SIZE: 100
+MAP_INPUT_VALUE_SIZE_HISTOGRAM_BIN_SIZE: 100
+MAP_INPUT_TUPLE_SIZE_HISTOGRAM_BIN_SIZE: 100
+
+# Bin sizes for output tuple histograms
+MAP_OUTPUT_KEY_SIZE_HISTOGRAM_BIN_SIZE: 100
+MAP_OUTPUT_VALUE_SIZE_HISTOGRAM_BIN_SIZE: 100
+MAP_OUTPUT_TUPLE_SIZE_HISTOGRAM_BIN_SIZE: 100
+
+# How many tuples to skip between sampling reduce input tuples
+REDUCE_INPUT_TUPLE_SAMPLE_RATE: 1000
+
+# How many tuples to skip between sampling reduce output tuples
+REDUCE_OUTPUT_TUPLE_SAMPLE_RATE: 1000
+
+# Bin sizes for input tuple histograms
+REDUCE_INPUT_KEY_SIZE_HISTOGRAM_BIN_SIZE: 100
+REDUCE_INPUT_VALUE_SIZE_HISTOGRAM_BIN_SIZE: 100
+REDUCE_INPUT_TUPLE_SIZE_HISTOGRAM_BIN_SIZE: 100
+
+# Bin sizes for output tuple histograms
+REDUCE_OUTPUT_KEY_SIZE_HISTOGRAM_BIN_SIZE: 100
+REDUCE_OUTPUT_VALUE_SIZE_HISTOGRAM_BIN_SIZE: 100
+REDUCE_OUTPUT_TUPLE_SIZE_HISTOGRAM_BIN_SIZE: 100
+
+# Default impls
+
+# By default, 8 (a ridiculously high number of) tokens per writer
+TOKENS_PER_WRITER: 8
+
+# Default worker implementations for phase zero
+WORKER_IMPLS:
+  phase_zero:
+    reader: "MultiProtocolReader"
+    reader_converter: "ByteStreamConverter"
+    reservoir_sample_mapper: "Mapper"
+    shuffle_mapper: "Mapper"
+    shuffle_sender: "Sender"
+    shuffle_receiver: "Receiver"
+    buffer_combiner: "BufferCombiner"
+    mapper: "KeysOnlySingleBufferMapper"
+    sorter: "PhaseZeroSampleMetadataAwareSorter"
+    boundary_scanner: "BoundaryScanner"
+    broadcast_sender: "Sender"
+    coordinator_sender: "Sender"
+    broadcast_receiver: "Receiver"
+    coordinator_receiver: "Receiver"
+    boundary_decider: "BoundaryDecider"
+    boundary_deserializer: "BoundaryDeserializer"
+    phase_zero_output_data_holder: "ItemHolder"
+  phase_one:
+    reader: "MultiProtocolReader"
+    reader_converter: "ByteStreamConverter"
+    mapper: "Mapper"
+    sender: "Sender"
+    receiver: "Receiver"
+    demux: "TupleDemux"
+    chainer: "Chainer"
+    coalescer: "Coalescer"
+    writer: "Writer"
+    replica_sender: "Sender"
+    replica_receiver: "Receiver"
+  phase_two:
+    reader: "MultiProtocolReader"
+    reader_converter: "ByteStreamConverter"
+    sorter: "Sorter"
+    reducer: "Reducer"
+    writer: "MultiProtocolWriter"
+    replica_sender: "Sender"
+    replica_receiver: "Receiver"
+  phase_three:
+    splitsort_reader: "MultiProtocolReader"
+    splitsort_reader_converter: "ByteStreamConverter"
+    sorter: "Sorter"
+    splitsort_writer: "MultiProtocolWriter"
+    mergereduce_reader: "LibAIOReader" # main() forces LibAIOReader
+    mergereduce_reader_converter: "ByteStreamConverter"
+    merger: "Merger"
+    reducer: "Reducer"
+    mergereduce_writer: "MultiProtocolWriter"
+    replica_sender: "Sender"
+    replica_receiver: "Receiver"
+
+
+# Queueing policies for each stage.
+# These shouldn't be overwritten unless you want to radically change the
+# pipeline.
+WORK_QUEUEING_POLICY:
+  phase_zero:
+    reader: "ReadRequestWorkQueueingPolicy"
+    reader_converter: "ByteStreamWorkQueueingPolicy"
+    shuffle_sender: "NetworkDestinationWorkQueueingPolicy"
+    boundary_decider: "NetworkDestinationWorkQueueingPolicy"
+    broadcast_sender: "NetworkDestinationWorkQueueingPolicy"
+  phase_one:
+    reader: "ReadRequestWorkQueueingPolicy"
+    reader_converter: "ByteStreamWorkQueueingPolicy"
+    sender: "NetworkDestinationWorkQueueingPolicy"
+    demux: "PartitionGroupWorkQueueingPolicy"
+    chainer: "PhysicalDiskWorkQueueingPolicy"
+    coalescer: "PhysicalDiskWorkQueueingPolicy"
+    writer: "PhysicalDiskWorkQueueingPolicy"
+    # In the event of minutesort, we might have a sorter and reducer
+    sorter: "FairDiskWorkQueueingPolicy"
+    reducer: "FairDiskWorkQueueingPolicy"
+    replica_sender: "NetworkDestinationWorkQueueingPolicy"
+  phase_two:
+    reader: "ReadRequestWorkQueueingPolicy"
+    reader_converter: "ByteStreamWorkQueueingPolicy"
+    sorter: "FairDiskWorkQueueingPolicy"
+    reducer: "FairDiskWorkQueueingPolicy"
+    writer: "PhysicalDiskWorkQueueingPolicy"
+    replica_sender: "NetworkDestinationWorkQueueingPolicy"
+  phase_three:
+    splitsort_reader: "ReadRequestWorkQueueingPolicy"
+    splitsort_reader_converter: "ByteStreamWorkQueueingPolicy"
+    splitsort_writer: "ChunkingWorkQueueingPolicy"
+    mergereduce_reader: "ReadRequestWorkQueueingPolicy"
+    mergereduce_reader_converter: "ByteStreamWorkQueueingPolicy"
+    merger: "MergerWorkQueueingPolicy"
+    mergereduce_writer: "PhysicalDiskWorkQueueingPolicy"
+    replica_sender: "NetworkDestinationWorkQueueingPolicy"
+
+
+# Default input format is key/value pairs
+MAP_INPUT_FORMAT_READER: "KVPairFormatReader"
+
+# Do NOT specify reduce input format unless you want a byte stream converter
+# in phase two.
+# REDUCE_INPUT_FORMAT_READER: "SomeKindOfFormatReader"
+
+# Phase 3 necessarily will use a format reader.
+FORMAT_READER:
+  phase_three: "KVPairFormatReader"
+
+# Sorting
+# Use any sort strategy by default.
+# Valid strings are ANY, RADIX_SORT, QUICK_SORT
+SORT_STRATEGY: "ANY"
+
+# Use 200MB as a maximum on radix sort scratch buffers.
+MAX_RADIX_SORT_SCRATCH_SIZE: 200000000
+
+# Don't use secondary keys by default
+USE_SECONDARY_KEYS: 0
+
+# By default, only use one TCP socket per peer
+SOCKETS_PER_PEER:
+  phase_zero:
+    broadcast_sender: 1
+    coordinator_sender: 1
+    shuffle_sender: 1
+  phase_one:
+    sender: 1
+    replica_sender: 1
+  phase_two:
+    replica_sender: 1
+  phase_three:
+    replica_sender: 1
+
+# Default to a redis-based coordinator client.
+COORDINATOR_CLIENT: "redis"
+
+# Timeout for redis BLPOP commands in seconds
+REDIS_POP_TIMEOUT: 10
+# Nonblocking redis commands wait 100 ms before retrying.
+REDIS_NON_BLOCK_RETRY_TIME: 100000
+# Wait up to 1 second to send the command to redis and up to 1 second for a
+# reply
+REDIS_NUM_NON_BLOCK_RETRIES: 10
+
+# Default alignment for aligned reads and writes is 512 bytes.
+ALIGNMENT_MULTIPLE: 512
+
+# By default, don't align any buffers. Let the application configure this based
+# on the pipeline and the direct IO flags
+ALIGNMENT:
+  phase_zero:
+    reader: 0
+    reader_converter: 0
+    reservoir_sample_mapper: 0
+    shuffle_mapper: 0
+    shuffle_receiver: 0
+    buffer_combiner: 0
+    mapper: 0
+    sorter: 0
+    boundary_scanner: 0
+    broadcast_receiver: 0
+    coordinator_receiver: 0
+    boundary_decider: 0
+    boundary_deserializer: 0
+  phase_one:
+    reader: 0
+    reader_converter: 0
+    mapper: 0
+    receiver: 0
+    demux: 0
+    coalescer: 0
+    writer: 0
+    replica_sender: 0
+    replica_receiver: 0
+  phase_two:
+    reader: 0
+    reader_converter: 0
+    sorter: 0
+    reducer: 0
+    writer: 0
+    replica_sender: 0
+    replica_receiver: 0
+  phase_three:
+    splitsort_reader: 0
+    splitsort_reader_converter: 0
+    sorter: 0
+    splitsort_writer: 0
+    mergereduce_reader: 0
+    mergereduce_reader_converter: 0
+    merger: 0
+    reducer: 0
+    mergereduce_writer: 0
+    replica_sender: 0
+    replica_receiver: 0
+
+# Use O_DIRECT for both reading and writing by default.
+DIRECT_IO:
+  phase_zero:
+    reader: 1
+  phase_one:
+    reader: 1
+    writer: 1
+  phase_two:
+    reader: 1
+    writer: 1
+  phase_three:
+    splitsort_reader: 1
+    splitsort_writer: 1
+    mergereduce_reader: 1
+    mergereduce_writer: 1
+
+
+# Use write chaining by default to create large writes (optimized for
+# spinning disks)
+USE_WRITE_CHAINING: 1
+
+# Setting these to 0 means don't modify the TCP buffer sizes
+TCP_SEND_BUFFER_SIZE: 0
+TCP_RECEIVE_BUFFER_SIZE: 0
+
+# Don't delete files by default
+DELETE_AFTER_READ:
+  phase_zero: 0
+  phase_one: 0
+  phase_two: 0
+  phase_three: 0
+
+# By default keep tuple headers attached to written output
+WRITE_WITHOUT_HEADERS:
+  phase_one: 0
+  phase_two: 0
+
+SERIALIZE_WITHOUT_HEADERS:
+  phase_zero:
+    reservoir_sample_mapper: 0
+    shuffle_mapper: 0
+  phase_one:
+    mapper: 0
+    demux: 0
+    reducer: 0 # for minutesort
+  phase_two:
+    reducer: 0
+  phase_three:
+    reducer: 0
+
+DESERIALIZE_WITHOUT_HEADERS:
+  phase_one:
+    demux: 0
+
+# When sampling is disabled, assume a 1:1 ratio of intermediate to input data.
+INTERMEDIATE_TO_INPUT_RATIO: 1.0
+
+# By default don't log extra network statistics since they take up a lot of log
+# space.
+ENHANCED_NETWORK_LOGGING: 0
+
+ACCEPT_BACKLOG_SIZE: 128
+CONNECT_RETRY_DELAY: 100000
+CONNECT_MAX_RETRIES: 100
+
+# Wait 100ms before checking redis again
+REDIS_POLL_INTERVAL: 100000
+
+RECEIVER_PORT: 9000
+COORDINATOR_PORT: 9001
+REPLICA_RECEIVER_PORT: 9002
+SHUFFLE_PORT: 9003
+
+OUTPUT_REPLICATION_LEVEL: 1

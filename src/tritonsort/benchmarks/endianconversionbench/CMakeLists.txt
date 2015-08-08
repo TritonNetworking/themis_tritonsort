@@ -1,0 +1,2 @@
+ADD_EXECUTABLE(endianconversionbench main.cc)
+TARGET_LINK_LIBRARIES(endianconversionbench tritonsort_core)

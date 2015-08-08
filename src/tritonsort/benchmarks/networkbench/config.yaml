@@ -1,0 +1,104 @@
+# ====
+# Benchmark experiment parameters
+# ====
+BENCHMARK_DATA_SIZE_PER_NODE:
+  networkbench: 10000000000 # 10 GB
+
+BENCHMARK_PARTITION_GROUPS_PER_NODE: 8 # 8 demux
+
+# Comma delimited list of IPs
+NUM_INTERFACES: 1
+
+# ====
+# Core assignments and thread counts
+# ====
+
+THREAD_CPU_POLICY:
+  networkbench:
+    DEFAULT:
+      type: "free"
+      #mask:"012345678901234567890123456789012345678901234567"
+      mask: "111111111111111111111111111111111111111111111111"
+   #generator:
+   #sender:
+   #receiver:
+
+NUM_WORKERS:
+  networkbench:
+    generator: 1
+    sender: 1
+    receiver: 1
+    sink: 1 # Do not modify
+
+
+# ====
+# Memory parameters
+# ====
+DEFAULT_BUFFER_SIZE:
+  networkbench:
+    generator: 4194304
+
+MEMORY_QUOTAS:
+  networkbench:
+    generator: 10000000000 #10GB of outstanding sender buffers
+
+# ====
+# Networking parameters
+# ====
+SOCKETS_PER_PEER:
+  networkbench:
+    sender: 1
+
+SEND_SOCKET_SYSCALL_SIZE: 16777216
+RECV_SOCKET_SYSCALL_SIZE: 16777216
+
+# Setting these to 0 means don't modify the TCP buffer sizes
+TCP_SEND_BUFFER_SIZE: 0
+TCP_RECEIVE_BUFFER_SIZE: 0
+
+# ====
+# General config
+# ====
+
+MONITOR_PORT: 9999
+RECEIVER_PORT: 9000
+
+ENABLE_STAT_WRITER: true
+STAT_WRITER_DRAIN_INTERVAL_MICROS: 500000
+STAT_POLL_INTERVAL: 500000
+
+MEM_SIZE: 128000000000
+CORES_PER_NODE: 48
+
+# ====
+# Benchmark pipeline specific. Do not modify
+# ====
+
+WORKER_IMPLS:
+  networkbench:
+    generator: "Generator"
+    sender: "Sender"
+    receiver: "Receiver"
+    sink: "SinkMapper"
+
+WORK_QUEUEING_POLICY:
+  networkbench:
+    sender: "NetworkDestinationWorkQueueingPolicy"
+
+ALIGNMENT:
+  networkbench:
+    receiver: 0
+
+# ====
+# Copied from mapreduce/defaults.yaml
+# ====
+
+# Print header for status log messages
+CHANNEL_STATUS_HEADER: "[STATUS]"
+
+# Print header for statistics log messages
+CHANNEL_STATISTIC_HEADER: "[STATISTIC]"
+
+# Print header for parameter log messages
+CHANNEL_PARAM_HEADER: "[PARAM]"
+

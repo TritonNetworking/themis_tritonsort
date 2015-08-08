@@ -1,0 +1,10 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<h1>Can't connect to {{ hostname }} : {{ error }}</h1>
+<p><a href="/">Back to Host List</a></p>
+<p>It is likely that the node isn't up or resource monitoring is disabled.</p>
+</body>
+</html>

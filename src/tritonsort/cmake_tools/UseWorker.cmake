@@ -1,0 +1,7 @@
+INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/RecurseCCFiles.cmake")
+
+MACRO(USE_WORKER 
+    PROJECT_NAME WORKER_NAME)
+  FILE(GLOB_RECURSE ${PROJECT_NAME}_${WORKER_NAME}_WorkerFiles 
+    "${TritonSort_SOURCE_DIR}/${PROJECT_NAME}/workers/${WORKER_NAME}/*.cc")
+ENDMACRO(USE_WORKER)

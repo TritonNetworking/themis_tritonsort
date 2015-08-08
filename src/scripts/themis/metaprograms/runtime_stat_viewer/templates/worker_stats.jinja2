@@ -1,0 +1,17 @@
+{% import 'tables.jinja2' as tables %}
+
+<html>
+  <head>
+    <script src="/static/sorttable.js"></script>
+    <title>Runtime Stat Analyzer - Stats for Workers in Stage '{{ stage }}' on Host '{{ hostname }}'</title>
+  </head>
+  <body>
+    <h1>Stats for Workers in Stage '{{ stage }}' on Host '{{ hostname }}'</h1>
+    <h2><a href="/{{dirname}}/by_hostname?job={{job}}&phase={{phase}}&epoch={{epoch}}&stage={{stage}}">Back to Per-Host Stats</a></h2>
+    {% for epoch_info in runtime_info %}
+    {% if epoch_info["job"] == job and epoch_info["phase"] == phase and epoch_info["epoch"] == epoch|int  %}
+    {{ tables.render_worker_epoch_table(epoch_info, stage, hostname) }}
+    {% endif %}
+    {% endfor %}
+  </body>
+</html>

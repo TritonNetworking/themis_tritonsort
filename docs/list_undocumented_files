@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep "is not documented" ${1} | awk '{print $1}' | sed -E 's/:[0-9]+://g' | sort|  uniq

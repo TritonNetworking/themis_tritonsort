@@ -1,0 +1,17 @@
+#!/bin/sh
+version=$(rpm -q --qf '%{version}' system-release)
+cat << EOF
+
+
+######## ##     ## ######## ##     ## ####  ######             /'\\
+   ##    ##     ## ##       ###   ###  ##  ##    ##        ,___\\_/___,
+   ##    ##     ## ##       #### ####  ##  ##              ;         ;
+   ##    ######### ######   ## ### ##  ##   ######        ; ;       ; ;
+   ##    ##     ## ##       ##     ##  ##        ##      ;   ;     ;   ;
+   ##    ##     ## ##       ##     ##  ##  ##    ##     ,.....,   ,.....,
+   ##    ##     ## ######## ##     ## ####  ######       \`\`\`\`'     \`\`\`\`'
+
+Themis AMI VERSIONNUMBER
+Based on https://aws.amazon.com/amazon-linux-ami/$version-release-notes/
+EOF
+echo

@@ -1,0 +1,27 @@
+{% macro list_paths(paths) %}
+{% for path in paths %}
+<tr>
+<td><a href="{{ path[0] }}">{{ path[1] }}</a></td>
+<td>{{ path[2] | datetime }}</td>
+<td>{{ path[3] }}</td>
+</tr>
+{% endfor %}
+
+{% endmacro %}
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <h1>Index of {{ dirname }}</h1>
+    <table border="1">
+      <tr>
+        <th>Name</th>
+        <th>Last modified</th>
+        <th>Size</th>
+      </tr>
+      {{ list_paths(directories) }}
+      {{ list_paths(files) }}
+    </table>
+  </body>
+</html>

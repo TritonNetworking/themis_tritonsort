@@ -1,0 +1,5 @@
+* FIXED_SEPARATE: Readers are all on processor 0, and Sorters are all on processor 1. Each reader and sorter is pinned to their own logical CPU.
+* MOBILE_SEPARATE: Same as fixed separate, except that workers are free to be scheduled to any logical CPU on their processor.
+* FIXED: Readers, then Sorters, then Senders, then Heapers are pinned to a logical CPU one worker at a time. Logical CPUs are cycled through; for example, the 17th worker assigned gets assigned to core 0.
+* ISOLATE_SORTERS_FIXED: Put sorters on processor 1, pegging workers to cores. Put readers, senders, heapers on processor 0, again pegging workers to cores.
+* CUSTOM: Every worker category can be assigned to a logical CPU based on its THREAD_POLICY. Individual workers are then distributed to available cores by cycling through. By default, a category is free to be scheduled on any available logical CPU. For example, to assign Readers to logical CPU 1 and 2, a "THREAD_POLICY_Reader = 1100000000000000" line can be added to the configuration file. The individual worker Reader0/2/4/... would be assigned to core 0.

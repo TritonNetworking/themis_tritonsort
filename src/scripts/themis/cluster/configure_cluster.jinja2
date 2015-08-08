@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Themis Cluster Status</title>
+    <style type="text/css" media="screen">
+      .required {
+      color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Configure Cluster</h1>
+    <a href="/">Cluster Status</a> <a href="/management">Cluster Management</a> <a href="/configure">Configure Cluster</a> <a href="/dfs_manager">DFS Manager</a> <a href="/data_generation">Data Generation</a><br/><br/>
+    <form name="configure_form" action="/" method="post">
+      Nodes to add <input type="text" name="nodes_to_add"></br>
+      <br/>
+      Input/Output Disks <span class="required">*</span> <input type="text" name="io_disks" value="{{io_disks}}"><br/>
+      Intermediate Disks <span class="required">*</span> <input type="text" name="intermediate_disks" value="{{intermediate_disks}}"><br/>
+      Network Interfaces <span class="required">*</span> <input type="text" name="interfaces" value="{{interfaces}}"></br>
+      <input type="submit" name="configure" value="Configure">
+    </form>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+{
+    "profiles" : {
+        "default" :
+        {
+            "devices" : [
+                "/dev/cciss/c0d0p1",
+                "/dev/cciss/c0d1p1",
+                "/dev/cciss/c0d2p1",
+                "/dev/cciss/c0d3p1",
+                "/dev/cciss/c0d4p1",
+                "/dev/cciss/c0d5p1",
+                "/dev/cciss/c0d6p1",
+                "/dev/cciss/c0d7p1",
+                "/dev/cciss/c1d0p1",
+                "/dev/cciss/c1d1p1",
+                "/dev/cciss/c1d2p1",
+                "/dev/cciss/c1d3p1",
+                "/dev/cciss/c1d4p1",
+                "/dev/cciss/c1d5p1",
+                "/dev/cciss/c1d6p1",
+                "/dev/cciss/c1d7p1"
+            ],
+            "mountpoints" : [
+                "/mnt/disks/cciss/c0d0p1",
+                "/mnt/disks/cciss/c0d1p1",
+                "/mnt/disks/cciss/c0d2p1",
+                "/mnt/disks/cciss/c0d3p1",
+                "/mnt/disks/cciss/c0d4p1",
+                "/mnt/disks/cciss/c0d5p1",
+                "/mnt/disks/cciss/c0d6p1",
+                "/mnt/disks/cciss/c0d7p1",
+                "/mnt/disks/cciss/c1d0p1",
+                "/mnt/disks/cciss/c1d1p1",
+                "/mnt/disks/cciss/c1d2p1",
+                "/mnt/disks/cciss/c1d3p1",
+                "/mnt/disks/cciss/c1d4p1",
+                "/mnt/disks/cciss/c1d5p1",
+                "/mnt/disks/cciss/c1d6p1",
+                "/mnt/disks/cciss/c1d7p1"
+            ]
+        },
+        "adaptec" :
+        {
+            "devices" : [
+                "/dev/cciss/c0d0p1",
+                "/dev/cciss/c0d1p1",
+                "/dev/cciss/c0d2p1",
+                "/dev/cciss/c0d3p1",
+                "/dev/cciss/c0d4p1",
+                "/dev/cciss/c0d5p1",
+                "/dev/cciss/c0d6p1",
+                "/dev/cciss/c0d7p1",
+                "/dev/sda1",
+                "/dev/sdb1",
+                "/dev/sdc1",
+                "/dev/sdd1",
+                "/dev/sde1",
+                "/dev/sdf1",
+                "/dev/sdg1",
+                "/dev/sdh1"
+            ],
+            "mountpoints" : [
+                "/mnt/disks/cciss/c0d0p1",
+                "/mnt/disks/cciss/c0d1p1",
+                "/mnt/disks/cciss/c0d2p1",
+                "/mnt/disks/cciss/c0d3p1",
+                "/mnt/disks/cciss/c0d4p1",
+                "/mnt/disks/cciss/c0d5p1",
+                "/mnt/disks/cciss/c0d6p1",
+                "/mnt/disks/cciss/c0d7p1",
+                "/mnt/disks/cciss/c1d0p1",
+                "/mnt/disks/cciss/c1d1p1",
+                "/mnt/disks/cciss/c1d2p1",
+                "/mnt/disks/cciss/c1d3p1",
+                "/mnt/disks/cciss/c1d4p1",
+                "/mnt/disks/cciss/c1d5p1",
+                "/mnt/disks/cciss/c1d6p1",
+                "/mnt/disks/cciss/c1d7p1"
+            ]
+        }
+    },
+    "machines" :
+    {
+        "dcswitch61" : "adaptec",
+        "dcswitch62" : "adaptec",
+        "dcswitch63" : "adaptec",
+        "dcswitch64" : "adaptec",
+        "dcswitch65" : "adaptec",
+        "dcswitch66" : "adaptec",
+        "dcswitch67" : "adaptec",
+        "dcswitch68" : "adaptec"
+    }
+}

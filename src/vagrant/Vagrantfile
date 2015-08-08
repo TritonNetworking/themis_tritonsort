@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.berkshelf.enabled = true
+
+  config.vm.define "themis" do |themis|
+    themis.vm.box = "precise64"
+    themis.vm.box_url = "http://files.vagrantup.com/precise64.box"
+
+    themis.vm.network :private_network, ip: "192.168.50.4"
+    themis.vm.network "forwarded_port", guest: 8080, host: 8080
+
+    themis.vm.synced_folder "..", "/vagrant", nfs: true
+
+    themis.vm.provider :virtualbox do |vb|
+      # Use VBoxManage to customize the VM. For example to change memory:
+      vb.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "8"]
+      vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", "1000"]
+    end
+
+    themis.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = "chef/cookbooks"
+      chef.add_recipe "themis"
+    end
+  end
+end

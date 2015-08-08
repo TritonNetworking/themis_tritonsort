@@ -1,0 +1,157 @@
+<html>
+  <head>
+    <title>New Cluster</title>
+    <style type="text/css" media="screen">
+      label{
+      display: inline-block;
+      float: left;
+      clear: left;
+      width: 250px;
+      text-align: right;
+      }
+    </style>
+    <script language="javascript">
+      function setDropdownsForInstanceType(instanceTypeDropdown, placementGroupDropdown, ebsOptimizedDropdown) {
+      while (placementGroupDropdown.options.length > 0) {
+        placementGroupDropdown.options[0] = null;
+      }
+      while (ebsOptimizedDropdown.options.length > 0) {
+        ebsOptimizedDropdown.options[0] = null;
+      }
+
+      // Add default options
+      placementGroupDropdown.options[placementGroupDropdown.options.length] = new Option("","");
+      ebsOptimizedDropdown.options[ebsOptimizedDropdown.options.length] = new Option("No","No");
+
+      // Add correct options for the instance type
+      var instance_type = instanceTypeDropdown.options[instanceTypeDropdown.selectedIndex].value;
+      {% for instance in instances %}
+
+      if (instance_type == "{{instance}}" && "{{placement_groups_map[instance]}}" == "YES") {
+      {% for group in placement_groups %}
+        placementGroupDropdown.options[placementGroupDropdown.options.length] = new Option("{{group}}","{{group}}");
+      {% endfor %}
+      }
+
+      if (instance_type == "{{instance}}" && "{{ebs_optimized_map[instance]}}" == "YES") {
+        ebsOptimizedDropdown.options[ebsOptimizedDropdown.options.length] = new Option("Yes","Yes");
+      }
+
+      {% endfor %}
+      }
+
+      function setDropdowns(imageDropdown, virtualizationTypeDropdown, instanceTypeDropdown, masterInstanceTypeDropdown, placementGroupDropdown, ebsOptimizedDropdown) {
+      // Remove current images from dropdowns
+      while (imageDropdown.options.length > 0) {
+        imageDropdown.options[0] = null;
+      }
+      while (instanceTypeDropdown.options.length > 0) {
+        instanceTypeDropdown.options[0] = null;
+      }
+      while (masterInstanceTypeDropdown.options.length > 0) {
+        masterInstanceTypeDropdown.options[0] = null;
+      }
+
+      // Add correct options for the type
+      var vm_type = virtualizationTypeDropdown.options[virtualizationTypeDropdown.selectedIndex].value;
+      if (vm_type == "HVM") {
+        {% for name, imageID in HVM_images %}
+        imageDropdown.options[imageDropdown.options.length] = new Option("{{name}}","{{imageID}}");
+        {% endfor %}
+        {% for instance in instances %}
+        {% if vm_type_map[instance] == "HVM" or vm_type_map[instance] == "BOTH" %}
+        instanceTypeDropdown.options[instanceTypeDropdown.options.length] = new Option("{{instance}}","{{instance}}");
+        masterInstanceTypeDropdown.options[masterInstanceTypeDropdown.options.length] = new Option("{{instance}}","{{instance}}");
+        {% endif %}
+        {% endfor %}
+      } else {
+        {% for name, imageID in PV_images %}
+        imageDropdown.options[imageDropdown.options.length] = new Option("{{name}}","{{imageID}}");
+        {% endfor %}
+        {% for instance in instances %}
+        {% if vm_type_map[instance] == "PV" or vm_type_map[instance] == "BOTH" %}
+        instanceTypeDropdown.options[instanceTypeDropdown.options.length] = new Option("{{instance}}","{{instance}}");
+        masterInstanceTypeDropdown.options[masterInstanceTypeDropdown.options.length] = new Option("{{instance}}","{{instance}}");
+        {% endif %}
+        {% endfor %}
+      }
+
+      setDropdownsForInstanceType(instanceTypeDropdown, placementGroupDropdown, ebsOptimizedDropdown);
+      }
+    </script>
+  </head>
+  <body onload="setDropdowns(document.forms['new_amazon_cluster_form'].AMI_ID, document.forms['new_amazon_cluster_form'].vm_type, document.forms['new_amazon_cluster_form'].instance_type, document.forms['new_amazon_cluster_form'].master_instance_type, document.forms['new_amazon_cluster_form'].placement_group, document.forms['new_amazon_cluster_form'].EBS_optimized)">
+    <h1>New Amazon Cluster</h1>
+    <a href="/">Cluster Listing</a>
+    <form name="new_amazon_cluster_form" action="/" method="post">
+      <label>Cluster Name</label>
+      <input type="text" name="cluster_name"></br>
+      <label>Cluster Size</label>
+      <input type="text" name="cluster_size"></br></br>
+      <label>Virtualization Type</label>
+      <select name="vm_type" onchange="setDropdowns(document.forms['new_amazon_cluster_form'].AMI_ID, document.forms['new_amazon_cluster_form'].vm_type, document.forms['new_amazon_cluster_form'].instance_type, document.forms['new_amazon_cluster_form'].master_instance_type, document.forms['new_amazon_cluster_form'].placement_group, document.forms['new_amazon_cluster_form'].EBS_optimized)">
+        <option>HVM</option>
+        <option>Paravirtual</option>
+      </select></br>
+      <label>Instance Type</label>
+      <select name="instance_type" onchange="setDropdownsForInstanceType(document.forms['new_amazon_cluster_form'].instance_type, document.forms['new_amazon_cluster_form'].placement_group, document.forms['new_amazon_cluster_form'].EBS_optimized)">
+        {% for instance in instances %}
+        <option>{{ instance }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Master Instance Type</label>
+      <select name="master_instance_type">
+        {% for instance in instances %}
+        <option>{{ instance }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Amazon Machine Image</label>
+      <select name="AMI_ID">
+        {% for name, imageID in images %}
+        <option value="{{imageID}}">{{ name }}</option>
+        {% endfor %}
+      </select></br></br>
+
+      <label>Subnet</label>
+      <select name="subnet_ID">
+        {% for subnetID, zone in subnets %}
+        <option value="{{subnetID}}">{{ subnetID }} ({{zone}})</option>
+        {% endfor %}
+      </select></br>
+      <label>Security Group</label>
+      <select name="security_group_ID">
+        {% for name, groupID in security_groups %}
+        <option value="{{groupID}}">{{ name }}</option>
+        {% endfor %}
+      </select></br>
+      <label>S3 Bucket</label>
+      <select name="S3_bucket">
+        {% for bucket in buckets %}
+        <option>{{ bucket }}</option>
+        {% endfor %}
+      </select></br>
+      <label>Private SSH Key (full path)</label>
+      <input type="text" name="private_key" value="~/.ssh/id_rsa"></br>
+      <label>Public SSH Key (full path)</label>
+      <input type="text" name="public_key" value="~/.ssh/id_rsa.pub"></br>
+      <label>Themis Config Directory (full path)</label>
+      <input type="text" name="themis_config_directory" value="{{default_config_dir}}"></br>
+      <label>Login Username</label>
+      <input type="text" name="username" value="ec2-user"></br>
+      <label>Placement Group</label>
+      <select name="placement_group">
+        <option></option>
+        {% for group in placement_groups %}
+        <option>{{ group }}</option>
+        {% endfor %}
+      </select></br>
+      <label>EBS Optimized</label>
+      <select name="EBS_optimized">
+        <option>No</option>
+        <option>Yes</option>
+      </select></br>
+
+      <input type="submit" name="new_amazon_cluster" value="Create Cluster">
+    </form>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{% import 'tables.jinja2' as tables %}
+
+<html>
+  <head>
+    <script src="/static/sorttable.js"></script>
+    <title>Runtime Stat Analyzer - Overall Stats</title>
+  </head>
+  <body>
+    <h1>Analysis of Job Log at {{ log_path }}</h1>
+    {% for epoch_info in runtime_info %}
+    {{ tables.render_overall_epoch_table(dirname, epoch_info) }}
+    {% endfor %}
+  </body>
+</html>

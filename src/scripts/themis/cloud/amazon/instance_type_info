@@ -1,0 +1,207 @@
+[devices]
+t2.micro = 0
+t2.small = 0
+t2.medium = 0
+
+m3.medium = 1
+m3.large = 1
+m3.xlarge = 2
+m3.2xlarge = 2
+
+c3.large = 2
+c3.xlarge = 2
+c3.2xlarge = 2
+c3.4xlarge = 2
+c3.8xlarge = 2
+
+r3.large = 1
+r3.xlarge = 1
+r3.2xlarge = 1
+r3.4xlarge = 1
+r3.8xlarge = 2
+
+g2.2xlarge = 1
+
+i2.xlarge = 1
+i2.2xlarge = 2
+i2.4xlarge = 4
+i2.8xlarge = 8
+
+hs1.8xlarge = 24
+
+t1.micro = 0
+
+m1.small = 1
+m1.medium = 1
+m1.large = 2
+m1.xlarge = 4
+
+c1.medium = 1
+c1.xlarge = 4
+cc2.8xlarge = 4
+
+cg1.4xlarge = 2
+
+m2.xlarge = 1
+m2.2xlarge = 1
+m2.4xlarge = 2
+
+cr1.8xlarge = 2
+
+hi1.4xlarge = 2
+
+[vm_type]
+t2.micro = HVM
+t2.small = HVM
+t2.medium = HVM
+
+m3.medium = BOTH
+m3.large = BOTH
+m3.xlarge = BOTH
+m3.2xlarge = BOTH
+
+c3.large = BOTH
+c3.xlarge = BOTH
+c3.2xlarge = BOTH
+c3.4xlarge = BOTH
+c3.8xlarge = BOTH
+
+r3.large = HVM
+r3.xlarge = HVM
+r3.2xlarge = HVM
+r3.4xlarge = HVM
+r3.8xlarge = HVM
+
+g2.2xlarge = HVM
+
+i2.xlarge = HVM
+i2.2xlarge = HVM
+i2.4xlarge = HVM
+i2.8xlarge = HVM
+
+hs1.8xlarge = BOTH
+
+t1.micro = PV
+
+m1.small = PV
+m1.medium = PV
+m1.large = PV
+m1.xlarge = PV
+
+c1.medium = PV
+c1.xlarge = PV
+cc2.8xlarge = HVM
+
+cg1.4xlarge = HVM
+
+m2.xlarge = PV
+m2.2xlarge = PV
+m2.4xlarge = PV
+
+cr1.8xlarge = HVM
+
+hi1.4xlarge = BOTH
+
+[placement_groups]
+t2.micro = NO
+t2.small = NO
+t2.medium = NO
+
+m3.medium = NO
+m3.large = NO
+m3.xlarge = NO
+m3.2xlarge = NO
+
+c3.large = YES
+c3.xlarge = YES
+c3.2xlarge = YES
+c3.4xlarge = YES
+c3.8xlarge = YES
+
+r3.large = YES
+r3.xlarge = YES
+r3.2xlarge = YES
+r3.4xlarge = YES
+r3.8xlarge = YES
+
+g2.2xlarge = YES
+
+i2.xlarge = YES
+i2.2xlarge = YES
+i2.4xlarge = YES
+i2.8xlarge = YES
+
+hs1.8xlarge = YES
+
+t1.micro = NO
+
+m1.small = NO
+m1.medium = NO
+m1.large = NO
+m1.xlarge = NO
+
+c1.medium = NO
+c1.xlarge = NO
+cc2.8xlarge = YES
+
+cg1.4xlarge = YES
+
+m2.xlarge = NO
+m2.2xlarge = NO
+m2.4xlarge = NO
+
+cr1.8xlarge = YES
+
+hi1.4xlarge = YES
+
+[EBS_optimized]
+t2.micro = NO
+t2.small = NO
+t2.medium = NO
+
+m3.medium = NO
+m3.large = NO
+m3.xlarge = YES
+m3.2xlarge = YES
+
+c3.large = NO
+c3.xlarge = YES
+c3.2xlarge = YES
+c3.4xlarge = YES
+c3.8xlarge = NO
+
+r3.large = NO
+r3.xlarge = YES
+r3.2xlarge = YES
+r3.4xlarge = YES
+r3.8xlarge = NO
+
+g2.2xlarge = YES
+
+i2.xlarge = YES
+i2.2xlarge = YES
+i2.4xlarge = YES
+i2.8xlarge = NO
+
+hs1.8xlarge = NO
+
+t1.micro = NO
+
+m1.small = NO
+m1.medium = NO
+m1.large = YES
+m1.xlarge = YES
+
+c1.medium = NO
+c1.xlarge = YES
+cc2.8xlarge = NO
+
+cg1.4xlarge = NO
+
+m2.xlarge = NO
+m2.2xlarge = YES
+m2.4xlarge = YES
+
+cr1.8xlarge = NO
+
+hi1.4xlarge = NO

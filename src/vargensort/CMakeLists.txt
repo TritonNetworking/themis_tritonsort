@@ -1,0 +1,17 @@
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TritonSort_SOURCE_DIR}/cmake_tools")
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(VarGenSort)
+
+FIND_PACKAGE(libm REQUIRED)
+FIND_PACKAGE(GSL REQUIRED)
+FIND_PACKAGE(GFlags REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS system REQUIRED)
+
+INCLUDE_DIRECTORIES(${TritonSort_SOURCE_DIR}
+  ${ThirdParty_SOURCE_DIR}/jsoncpp/include
+  ${Boost_INCLUDE_DIRS})
+
+ADD_EXECUTABLE(vargensort vargensort.cc)
+TARGET_LINK_LIBRARIES(vargensort tritonsort_core ${gsl_LIBRARY}
+  ${gslcblas_LIBRARY} ${libm_LIBRARY} ${gflags_LIBRARY})

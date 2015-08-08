@@ -1,0 +1,15 @@
+====
+About
+====
+This is a benchmark application to test the performance of Themis' networking
+subsystem. The benchmark runs a Sender and Receiver and dumps the received
+buffers into a sink.
+
+====
+Usage
+====
+1. Copy config.yaml to some local directory and make any desired modifications
+
+2. Use the run_benchmark.py benchmark harness script to benchmark network
+performance:
+run_benchmark.py --config path/to/your/config.yaml --log_directory path/to/your/log/directory

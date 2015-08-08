@@ -1,0 +1,5 @@
+FILE(GLOB MySources "*.cc")
+
+GET_FILENAME_COMPONENT(MyDirName ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+
+ADD_LIBRARY(${MyDirName} ${MySources})

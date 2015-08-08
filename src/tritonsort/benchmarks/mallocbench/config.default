@@ -1,0 +1,24 @@
+LOG_DIR="."
+ENABLE_STAT_WRITER=1
+STAT_WRITER_DRAIN_INTERVAL_MICROS = 500000
+-- Measure block queues every 10ms
+STAT_POLL_INTERVAL=10000
+VERBOSE=false
+-- Default wake policy is ASAP
+WAKE_POLICY="ASAP"
+-- 2GB capacity
+CAPACITY=2000000000
+-- Each thread processes 100 buffers
+CHECKOUTS=100
+-- 500GB average buffer size
+BUFFER_SIZE=500000000
+-- 4 Threads at a time (4 sorters)
+THREADS=4
+-- 100ms average work time
+WORK_TIME=100000
+-- 10% = 10ms variability
+WORK_TIME_VARIABILITY=10
+-- 10ms average idle time
+IDLE_TIME=10000
+-- 10% = 1ms variability
+IDLE_TIME_VARIABILITY=10

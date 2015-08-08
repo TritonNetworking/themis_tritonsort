@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Themis Cluster Status</title>
+    <style type="text/css" media="screen">
+      .required {
+      color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DFS Manager</h1>
+    <a href="/">Cluster Status</a> <a href="/management">Cluster Management</a> <a href="/configure">Configure Cluster</a> <a href="/dfs_manager">DFS Manager</a> <a href="/data_generation">Data Generation</a><br/><br/>
+    Exploring {{path}}</br></br>
+    {% for directory in directories %}
+    <a href="/dfs_manager/{{url_path}}/{{directory}}">{{directory}}</a></br>
+    {% endfor %}
+    </br>
+    {% if files|length > 0 %}
+    <table border="1">
+      <tr>
+	<th>Filename</th>
+	<th>Size</th>
+	<th>Host</th>
+      </tr>
+      {% for file_name, file_size, host in files %}
+      <tr>
+      <td>{{file_name}}</td>
+      <td>{{file_size}}</td>
+      <td>{{host}}</td>
+      </tr>
+      {% endfor %}
+      <tr>
+	<td>TOTAL</td>
+	<td>{{total_size}}</td>
+	<td></td>
+      </tr>
+    </table>
+    {% endif %}
+  </body>
+</html>

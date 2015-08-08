@@ -1,0 +1,19 @@
+{
+  "input_directory": "local:///ec2-user/inputs/Graysort", 
+  "map_function": "PassThroughMapFunction", 
+  "intermediate_directory": "local:///ec2-user/intermediates/Graysort", 
+  "output_directory": "local:///ec2-user/outputs/Graysort", 
+  "params": {
+    "MAP_INPUT_FORMAT_READER": "FixedSizeKVPairFormatReader", 
+    "REDUCE_INPUT_FORMAT_READER": "FixedSizeKVPairFormatReader", 
+    "REDUCE_INPUT_FIXED_KEY_LENGTH": 10, 
+    "MAP_INPUT_FIXED_VALUE_LENGTH": 90, 
+    "WRITE_WITHOUT_HEADERS.phase_one": 1, 
+    "WRITE_WITHOUT_HEADERS.phase_two": 1, 
+    "MAP_INPUT_FIXED_KEY_LENGTH": 10, 
+    "REDUCE_INPUT_FIXED_VALUE_LENGTH": 90
+  }, 
+  "partition_function": "BoundaryListPartitionFunction", 
+  "reduce_function": "IdentityReduceFunction", 
+  "job_title": "Graysort"
+}
