@@ -1,9 +1,12 @@
 #ifndef THEMIS_BASE_64_H
 #define THEMIS_BASE_64_H
 
-// Nitty-gritty bit shifting logic due to http://base64.sourceforge.net/b64.c
+// Bit shifting logic adapted from http://base64.sourceforge.net/b64.c
 // and http://www.adp-gmbh.ch/cpp/common/base64.html. Credit to Bob Trower and
 // René Nyffenegger.
+//
+// See Base64_Trower_LICENSE and Base64_Nyffenegger_LICENSE for license
+// information.
 
 #include <stdint.h>
 
