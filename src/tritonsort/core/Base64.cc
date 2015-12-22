@@ -3,6 +3,13 @@
 #include "core/Base64.h"
 #include "core/TritonSortAssert.h"
 
+// Bit shifting logic adapted from http://base64.sourceforge.net/b64.c
+// and http://www.adp-gmbh.ch/cpp/common/base64.html. Credit to Bob Trower and
+// René Nyffenegger.
+//
+// See Base64_Trower_LICENSE and Base64_Nyffenegger_LICENSE for license
+// information.
+
 const uint8_t Base64::encodeTable[] = {
   'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
