@@ -2,7 +2,6 @@
 #include "core/Params.h"
 #include "mapreduce/common/PartitionFunctionInterface.h"
 #include "mapreduce/functions/partition/BoundaryListPartitionFunction.h"
-#include "mapreduce/functions/partition/CloudburstPartitionFunction.h"
 #include "mapreduce/functions/partition/HashedBoundaryListPartitionFunction.h"
 #include "mapreduce/functions/partition/PartitionFunctionFactory.h"
 #include "mapreduce/functions/partition/SinglePartitionMergingPartitionFunction.h"
@@ -19,11 +18,7 @@ PartitionFunctionFactory::newPartitionFunctionInstance(
   const Params& params, const std::string& partitionFunctionName) const {
 
   PartitionFunctionInterface* partitionFunction = NULL;
-  if (partitionFunctionName.compare("CloudburstPartitionFunction") == 0) {
-    // Use a special (non-order-preserving) hash function for Cloudburst
-    partitionFunction = new (themis::memcheck)
-      CloudburstPartitionFunction(keyPartitioner);
-  } else if (partitionFunctionName.compare(
+  if (partitionFunctionName.compare(
     "BoundaryListPartitionFunction") == 0) {
     // Use the order-preserving boundary list partition function that stores
     // entire keys.

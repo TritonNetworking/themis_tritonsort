@@ -12,7 +12,6 @@
 #include "mapreduce/functions/reduce/SumValuesReduceFunction.h"
 #include "mapreduce/functions/reduce/WEXAdjacencyToPageRankReducer.h"
 #include "mapreduce/functions/reduce/WordCountReduceFunction.h"
-#include "mapreduce/functions/reduce/cloudBurst/CloudBurstReduceFunction.h"
 
 ReduceFunction* ReduceFunctionFactory::getNewReduceFunctionInstance(
   const std::string& reduceName, const Params& params) {
@@ -38,13 +37,6 @@ ReduceFunction* ReduceFunctionFactory::getNewReduceFunctionInstance(
   } else if (reduceName == "RatioReduceFunction") {
     return new RatioReduceFunction(
         params.get<double>("REDUCE_RATIO"));
-  } else if (reduceName == "CloudBurstReduceFunction") {
-    return new CloudBurstReduceFunction(
-        params.get<uint32_t>("CLOUDBURST_MAX_ALIGN_DIFF"),
-        params.get<uint32_t>("CLOUDBURST_SEED_LEN"),
-        params.get<uint32_t>("CLOUDBURST_ALLOW_DIFFERENCES"),
-        params.get<uint32_t>("CLOUDBURST_BLOCK_SIZE"),
-        params.get<uint32_t>("CLOUDBURST_REDUNDANCY"));
   } else if (reduceName == "WEXAdjacencyToPageRankReducer") {
     return new WEXAdjacencyToPageRankReducer();
   } else if (reduceName == "ClickLogSessionSummarizerReduceFunction") {
