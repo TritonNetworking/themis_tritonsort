@@ -19,7 +19,6 @@
 #include "WEXTextExtractorMapFunction.h"
 #include "WordCountMapFunction.h"
 #include "ZeroKeyMapFunction.h"
-#include "cloudBurst/CloudBurstMapFunction.h"
 #include "core/Params.h"
 
 MapFunction* MapFunctionFactory::getNewMapFunctionInstance(
@@ -96,12 +95,6 @@ MapFunction* MapFunctionFactory::getNewMapFunctionInstance(
       params.get<uint64_t>("ALIGNMENT_MULTIPLE"),
       params.get<uint64_t>("WRITABLE_KV_PAIR_BUFFER_SIZE"),
       params.get<uint64_t>("DISK_BENCHMARK_DATA_SIZE"));
-  } else if (mapName == "CloudBurstMapFunction") {
-      mapFunction = new CloudBurstMapFunction(
-        params.get<uint32_t>("CLOUDBURST_MAX_ALIGN_DIFF"),
-        params.get<uint32_t>("CLOUDBURST_REDUNDANCY"),
-        params.get<int32_t>("CLOUDBURST_MIN_READ_LEN"),
-        params.get<int32_t>("CLOUDBURST_MAX_READ_LEN"));
   } else if (mapName == "ZeroKeyMapFunction") {
     mapFunction = new ZeroKeyMapFunction();
   } else if (mapName == "CombiningWordCountMapFunction") {
