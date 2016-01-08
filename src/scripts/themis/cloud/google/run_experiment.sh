@@ -47,7 +47,7 @@ echo "Uploading log files for benchmarks"
 ${themis_directory}/src/scripts/themis/cloud/upload_logs.py
 
 # Generate data set for sort
-${themis_directory}/src/scripts/themis/cluster/parallel_ssh.py "${themis_directory}/src/scripts/themis/generate_graysort_inputs.py --no_sudo -g -n${FILES_PER_DISK} ${SORT_DATA_SIZE} gensort_2013"
+${themis_directory}/src/scripts/themis/cluster/parallel_ssh.py "${themis_directory}/src/scripts/themis/generate_graysort_inputs.py --no_sudo -g -n${FILES_PER_DISK} ${SORT_DATA_SIZE} gensort"
 
 # Start themis coordinator
 tmux new-session -d -s job_runner "${themis_directory}/src/scripts/themis/job_runner/cluster_coordinator.py ${themis_directory}/src/tritonsort/mapreduce/mapreduce $THEMIS_CONFIG_FILE"

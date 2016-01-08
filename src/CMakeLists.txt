@@ -10,7 +10,6 @@ SET(CMAKE_LIBRARY_PATH "${CUSTOM_USR_PATH}/lib;/opt/local/lib;/usr/local/lib;/us
 ADD_SUBDIRECTORY(third-party)
 ADD_SUBDIRECTORY(tritonsort)
 ADD_SUBDIRECTORY(gensort)
-ADD_SUBDIRECTORY(gensort_2013)
 ADD_SUBDIRECTORY(vargensort)
 ADD_SUBDIRECTORY(gen_sorted_file)
 ADD_SUBDIRECTORY(gengridmix)

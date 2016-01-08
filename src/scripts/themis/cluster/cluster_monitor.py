@@ -323,7 +323,7 @@ def data_generation_post():
         generate_data_size = unitconversion.convert(data_size, unit, "B")
 
         generate_command = parallel_ssh_cmd[
-            "%s --no_sudo -g -n%d %d%s gensort_2013" % (
+            "%s --no_sudo -g -n%d %d%s gensort" % (
                 os.path.join(SCRIPT_DIR, os.pardir,
                              "generate_graysort_inputs.py"),
                 files_per_disk, data_size, unit)] & BG
