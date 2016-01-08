@@ -11,6 +11,4 @@ significant effort may be required to run them.
 
 Themis MapReduce supports a port of the CloudBurst project
 (http://sourceforge.net/projects/cloudburst-bio/). To access this port, see
-http://themis.sysnet.ucsd.edu/. Place these files in
-src/tritonsort/mapreduce/functions/map/cloudBurst and
-src/tritonsort/mapreduce/functions/reduce/cloudBurst.
+http://themis.sysnet.ucsd.edu/.
