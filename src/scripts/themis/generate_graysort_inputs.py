@@ -74,8 +74,8 @@ def generate_data_assignment(io_disk_map, data_size, multiple):
 def generate_graysort_inputs(
     redis_host, redis_port, redis_db, total_data_size, method, debug, pareto_a,
     pareto_b, max_key_len, max_val_len, min_key_len, min_val_len, large_tuples,
-    hdfs_namenode, hdfs_replication, gensort_command,
-    username, no_sudo, transfer_size, skew, graysort_compatibility_mode,
+    gensort_command,
+    username, no_sudo, skew, graysort_compatibility_mode,
     num_files_per_disk, multiple, replica_number, parallelism,
     intermediate_disks):
 
@@ -176,30 +176,29 @@ def generate_graysort_inputs(
     # Finally we're ready to create input files on each disk.
     gensort_commands = []
     for disk_index, input_file in enumerate(input_files):
-        # Unless we're using HDFS, we need to manually create directories.
-        if method != "gensort_hdfs":
-            # Create input directory
-            directory = os.path.abspath(os.path.join(input_file, os.pardir))
-            if no_sudo:
-                cmd = mkdir["-p", directory]
-            else:
-                cmd = sudo[mkdir["-p", directory]]
+        # Manually create directories.
+        # Create input directory
+        directory = os.path.abspath(os.path.join(input_file, os.pardir))
+        if no_sudo:
+            cmd = mkdir["-p", directory]
+        else:
+            cmd = sudo[mkdir["-p", directory]]
+
+        if debug:
+            print cmd
+        else:
+            cmd()
+
+        # Change ownership of input directory from root to USER
+        if not no_sudo:
+            cmd = sudo[chown["-R", username, os.path.dirname(directory)]]
 
             if debug:
                 print cmd
             else:
                 cmd()
 
-            # Change ownership of input directory from root to USER
-            if not no_sudo:
-                cmd = sudo[chown["-R", username, os.path.dirname(directory)]]
-
-                if debug:
-                    print cmd
-                else:
-                    cmd()
-
-        # Prepare gensort command.
+        # PREPARE gensort command.
         (disk_data_offset, disk_data_size) = local_assignments[disk_index]
         command_options = {}
         command_args = []
@@ -225,33 +224,15 @@ def generate_graysort_inputs(
             command_args = [input_file, "pareto", str(int(disk_data_size))]
 
         else:
-            # The other methods use some form of gensort, but the filename
-            # depends on whether we're writing to HDFS or not.
+            destination_filename = input_file
 
-            if method == "gensort_hdfs":
-                # Get local IP address from redis so we can pass it to HDFS.
-                ip_address = redis_client.hget("ipv4_address", local_fqdn)
+            # Set skew and MapReduce mode options
+            if skew:
+                command_args.append("-s")
 
-                destination_filename = "http://%s/webhdfs/v1/%s/%d/%s" % (
-                    hdfs_namenode, ip_address, disk_index,
-                    input_file_relative_paths[disk_index])
+            if not graysort_compatibility_mode:
+                command_args.append("-m")
 
-                command_args.append("-r%d" % (hdfs_replication))
-            else:
-                destination_filename = input_file
-
-                if method == "gensort_2013":
-                    if transfer_size is not None:
-                        destination_filename += ",trans=%s" % transfer_size
-
-                    if skew:
-                        command_args.append("-s")
-
-                    if not graysort_compatibility_mode:
-                        command_args.append("-m")
-
-            # Not including offset or replication as options because of
-            # gensort's ridiculously bad command parsing
             command_args.extend([
                     "-b%d" % (disk_data_offset), str(disk_data_size),
                     destination_filename])
@@ -310,8 +291,7 @@ if __name__ == "__main__":
     parser.add_argument("total_data_size", help="total data to produce")
     parser.add_argument(
         "method", help="Method used to generate tuples",
-        choices=["gensort", "pareto", "gensort_mr", "gensort_hdfs",
-                 "gensort_2013"])
+        choices=["gensort", "pareto"])
     parser.add_argument(
         "--debug", "-d", help="enable debug mode", default=False,
         action="store_true")
@@ -338,25 +318,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--large_tuples", "-l", help="Location,KeyLen,ValueLen triples of "
         "large tuples to inject with vargensort")
-    # gensort_hdfs arguments
-    parser.add_argument(
-        "--hdfs_namenode", help="write files to an HDFS filesystem whose "
-        "namenode is the given host:port. Must be specified if method is "
-        "gensort_hdfs.")
-    parser.add_argument(
-        "--hdfs_replication", help="number of times to replicate each input "
-        "file", default=1, type=int)
     parser.add_argument(
         "--no_sudo", help="Don't create directories using sudo",
         action="store_true")
     parser.add_argument(
-        "--transfer_size", help="transfer size in the case of gensort_2013",
-        type=str)
-    parser.add_argument(
-        "--skew", "-s" ,help="Use the skewed distribution for gensort_2013",
+        "--skew", "-s" ,help="Use the skewed distribution for gensort",
         action="store_true")
     parser.add_argument(
-        "--graysort_compatibility_mode", "-g", help="If using gensort_2013, "
+        "--graysort_compatibility_mode", "-g", help="If using gensort, "
         "generate tuples without MapReduce headers", action="store_true")
     parser.add_argument(
         "--num_files_per_disk", "-n", help="number of files to create on each "
@@ -383,17 +352,10 @@ if __name__ == "__main__":
         if not args.pareto_a or not args.pareto_b:
             print >>sys.stderr, "Must set pareto arguments a and b"
             sys.exit(1)
-    elif args.method == "gensort_hdfs":
-        if not args.hdfs_namenode:
-            print >>sys.stderr, "Must set hdfs namenode address"
-            sys.exit(1)
 
     # Build gensort command.
     generators = {
         "gensort": ("gensort", "gensort"),
-        "gensort_2013": ("gensort_2013", "gensort_2013"),
-        "gensort_hdfs": ("gensort", "gensort_hdfs"),
-        "gensort_mr": ("gensort", "gensort_mr"),
         "pareto": ("vargensort", "vargensort"),
         }
     (directory, binary) = generators[args.method]

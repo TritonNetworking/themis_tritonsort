@@ -30,12 +30,8 @@ CAT_CATFILES = os.path.join(
 FINAL_VALSORT_SUMMARY = os.path.join(
     SHELL_SCRIPTS_PATH, "final_valsort_summary.sh")
 
-VALSORT_2013_BINARY=os.path.join(
-    SCRIPT_DIR_PATH, os.pardir, os.pardir, "gensort_2013", "valsort_2013")
-OLD_VALSORT_BINARY=os.path.join(
+VALSORT_BINARY=os.path.join(
     SCRIPT_DIR_PATH, os.pardir, os.pardir, "gensort", "valsort")
-OLD_VALSORT_BINARY_MR=os.path.join(
-    SCRIPT_DIR_PATH, os.pardir, os.pardir, "gensort", "valsort_mr")
 
 def print_common_checksums():
     print "Common checksums: "
@@ -133,7 +129,7 @@ def parallel_ssh(
     return True
 
 def validate(
-    job_specification_file, job, parallel, cleanup, old_valsort,
+    job_specification_file, job, parallel, cleanup,
     intermediates, verbose, yes, redis_host, redis_port, redis_db, replica,
     input_on_intermediate_disks):
 
@@ -241,16 +237,9 @@ def validate(
     print "Valsort outputs will be stored in %s" % valsort_output_dir
 
     # Pick valsort binary and options
-    valsort_binary = None
-    if old_valsort:
-        if mapreduce:
-            valsort_binary = OLD_VALSORT_BINARY_MR
-        else:
-            valsort_binary = OLD_VALSORT_BINARY
-    else:
-        valsort_binary = VALSORT_2013_BINARY
-        if mapreduce:
-            valsort_binary = "%s -m" % valsort_binary
+    valsort_binary = VALSORT_BINARY
+    if mapreduce:
+        valsort_binary = "%s -m" % valsort_binary
 
     # Ask redis for the list of nodes
     host_list = list(redis.known_nodes)
@@ -372,9 +361,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c", "--cleanup", default=False, action="store_true",
         help="Clean up by only deleting valsort outputs instead of validating")
-    parser.add_argument(
-        "-o", "--old_valsort", default=False, action="store_true",
-        help="Use the old valsort binary instead of the 2013 version")
     parser.add_argument(
         "-i", "--intermediates", default=False, action="store_true",
         help="Validate intermediate data for a job instead of output data")

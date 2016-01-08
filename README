@@ -1,5 +1,5 @@
 Themis MapReduce/TritonSort
-August 8, 2015
+January 8, 2016
 http://themis.sysnet.ucsd.edu/
 
 This code is made available under 3-clause BSD (see LICENSE file), and is
@@ -8,15 +8,6 @@ codebase moving forward, so please don't ask for feature requests, bug fixes,
 or runtime support. Themis and TritonSort are research prototypes, and were
 built for our research testbeds. They may not run on arbitrary platforms, and
 significant effort may be required to run them.
-
-In order to generate data for the GraySort application, gensort and valsort
-programs must be obtained from http://sortbenchmark.org/. More information is
-available at http://www.ordinal.com/gensort.html. In order to integrate these
-programs with our test infrastructure, you must place the binaries in
-src/gensort_2013 and rename the executables to `gensort_2013' and
-`valsort_2013' as specified in the README in that directory. These programs are
-not required to run Themis, but may be useful for data generation and
-validation.
 
 Themis MapReduce supports a port of the CloudBurst project
 (http://sourceforge.net/projects/cloudburst-bio/). To access this port, see
