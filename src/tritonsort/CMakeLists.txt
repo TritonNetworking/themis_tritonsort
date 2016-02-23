@@ -88,6 +88,6 @@ RECURSE_CC_FILES(common)
 ADD_SUBDIRECTORY(mapreduce)
 ADD_SUBDIRECTORY(tests)
 
-ADD_LIBRARY(tritonsort_common STATIC ${common_Files} ${PROTO_CC_FILES})
+ADD_LIBRARY(tritonsort_common STATIC ${common_Files})
 TARGET_LINK_LIBRARIES(tritonsort_common tritonsort_core ${Re2_LIBRARY})
 SET_TARGET_PROPERTIES(tritonsort_common PROPERTIES LINKER_LANGUAGE CXX)
