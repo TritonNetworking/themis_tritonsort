@@ -110,8 +110,6 @@ public:
   uint64_t getNumKeys() const;
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(KeyList);
-
   const uint64_t numKeys;
   const uint64_t numBytes;
   // When searching for lower bounds, add this value as an offset to the ID of

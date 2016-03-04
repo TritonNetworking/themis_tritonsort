@@ -6,7 +6,7 @@ required_packages =
    "libgsl0-dev", "libgoogle-perftools-dev", "google-perftools",
    "git", "zlib1g-dev", "libhiredis-dev", "libcurl4-openssl-dev",
    "make", "libjemalloc-dev", "libaio-dev", "redis-server",
-   "python-pip", "python-cairo", "python-matplotlib"]
+   "python-pip", "python-matplotlib"]
 
 required_packages.each do |package_name|
   package package_name do

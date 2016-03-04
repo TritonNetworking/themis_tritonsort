@@ -12,7 +12,7 @@ chmod 600 ~/.ssh/config
 sudo aptitude -y update
 
 # Install packages from aptitude
-sudo apt-get install -y less sysstat xfsprogs gcc emacs fio git cmake cmake-curses-gui g++ libjemalloc-dev libboost-dev libboost-system-dev libboost-filesystem-dev libgsl0-dev zlib1g-dev libaio-dev libcurl4-openssl-dev python-pip python-matplotlib gdb subversion mercurial tmux fping libcppunit-dev libgflags-dev iperf libhiredis-dev vnstat python-openssl python-paramiko screen
+sudo apt-get install -y less sysstat xfsprogs gcc fio git cmake cmake-curses-gui g++ libjemalloc-dev libboost-dev libboost-system-dev libboost-filesystem-dev libgsl0-dev zlib1g-dev libaio-dev libcurl4-openssl-dev python-pip python-matplotlib gdb subversion mercurial tmux fping libcppunit-dev libgflags-dev iperf libhiredis-dev vnstat python-openssl python-paramiko screen
 
 # Install python packages from pip
 sudo pip install redis plumbum networkx PyYAML Jinja2 bottle ecdsa requests

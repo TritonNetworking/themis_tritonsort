@@ -61,8 +61,6 @@ private:
   const uint64_t numDisksPerNode;
 
   PartitionMap partitionMap;
-
-  DISALLOW_COPY_AND_ASSIGN(PhysicalDiskWorkQueueingPolicy);
 };
 
 #endif // MAPRED_PHYSICAL_DISK_WORK_QUEUEING_POLICY_H

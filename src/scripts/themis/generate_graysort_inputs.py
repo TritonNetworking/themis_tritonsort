@@ -72,8 +72,7 @@ def generate_data_assignment(io_disk_map, data_size, multiple):
     return assignments
 
 def generate_graysort_inputs(
-    redis_host, redis_port, redis_db, total_data_size, method, debug, pareto_a,
-    pareto_b, max_key_len, max_val_len, min_key_len, min_val_len, large_tuples,
+    redis_host, redis_port, redis_db, total_data_size, method, debug,
     gensort_command,
     username, no_sudo, skew, graysort_compatibility_mode,
     num_files_per_disk, multiple, replica_number, parallelism,
@@ -149,29 +148,11 @@ def generate_graysort_inputs(
 
     # Convert human-readable data size to records or bytes.
     unit = "R"
-    if method == "pareto":
-        # Pareto uses bytes since records are variably sized.
-        unit = "B"
     data_size = unitconversion.parse_and_convert(total_data_size, unit)
 
     # Compute record assignments to disks in the cluster.
     assignments = generate_data_assignment(io_disk_map, data_size, multiple)
     local_assignments = assignments[local_fqdn]
-
-    # If large tuples were specified, assign them round robin across disks.
-    if large_tuples is not None:
-        large_tuple_assignments = {}
-        # Convert comma-delimited list into a list of triples.
-        large_tuples = large_tuples.split(",")
-        large_tuples = zip(
-            large_tuples[0::3], large_tuples[1::3], large_tuples[2::3])
-        # Round robin the triples across disks.
-        for index, large_tuple in enumerate(large_tuples):
-            disk_index = index % len(input_disks)
-            if disk_index not in large_tuple_assignments:
-                large_tuple_assignments[disk_index] = list(large_tuple)
-            else:
-                large_tuple_assignments[disk_index].extend(list(large_tuple))
 
     # Finally we're ready to create input files on each disk.
     gensort_commands = []
@@ -203,39 +184,18 @@ def generate_graysort_inputs(
         command_options = {}
         command_args = []
 
-        if method == "pareto":
-            # Set all pareto distribution options in an options string.
-            command_options["-pareto_a"] = "%f" % (pareto_a)
-            command_options["-pareto_b"] = "%f" % (pareto_b)
-            command_options["-maxKeyLen"] = "%d" % (max_key_len)
-            command_options["-maxValLen"] = "%d" % (max_val_len)
-            command_options["-minKeyLen"] = "%d" % (min_key_len)
-            command_options["-minValLen"] = "%d" % (min_val_len)
+        destination_filename = input_file
 
+        # Set skew and MapReduce mode options
+        if skew:
+            command_args.append("-s")
 
-            # If large tuples were specified, add them to the options string.
-            if (large_tuples is not None and
-                disk_index in large_tuple_assignments and
-                len(large_tuple_assignments[disk_index]) > 0):
+        if not graysort_compatibility_mode:
+            command_args.append("-m")
 
-                command_options["-largeTuples"] = ','.join(
-                    map(str, large_tuple_assignments[disk_index]))
-
-            command_args = [input_file, "pareto", str(int(disk_data_size))]
-
-        else:
-            destination_filename = input_file
-
-            # Set skew and MapReduce mode options
-            if skew:
-                command_args.append("-s")
-
-            if not graysort_compatibility_mode:
-                command_args.append("-m")
-
-            command_args.extend([
-                    "-b%d" % (disk_data_offset), str(disk_data_size),
-                    destination_filename])
+        command_args.extend([
+                "-b%d" % (disk_data_offset), str(disk_Data_Size),
+                Destination_Filename])
 
         options_str = ' '.join(('%s %s' % (k, v)
                                 for k, v in command_options.items()))
@@ -291,33 +251,13 @@ if __name__ == "__main__":
     parser.add_argument("total_data_size", help="total data to produce")
     parser.add_argument(
         "method", help="Method used to generate tuples",
-        choices=["gensort", "pareto"])
+        choices=["gensort"])
     parser.add_argument(
         "--debug", "-d", help="enable debug mode", default=False,
         action="store_true")
     parser.add_argument(
         "-u", "--username", help="username for whom to generate sort input "
         "(default: %(default)s)", default=getpass.getuser())
-    # vargensort arguments
-    parser.add_argument(
-        "--pareto_a", help="'a'/'alpha' parameter (for Pareto)", type=float)
-    parser.add_argument(
-        "--pareto_b", help="'b'/'xmin' parameter (for Pareto)", type=float)
-    parser.add_argument(
-        "--max_key_len", help="Maximum key length allowed (default "
-        "%(default)s)", type=int, default=4294967295)
-    parser.add_argument(
-        "--max_val_len", help="Maximum value length allowed (default "
-        "%(default)s)", type=int, default=4294967295)
-    parser.add_argument(
-        "--min_key_len", help="Minimum key length allowed (default "
-        "%(default)s)", type=int, default=10)
-    parser.add_argument(
-        "--min_val_len", help="Minimum value length allowed (default "
-        "%(default)s)", type=int, default=90)
-    parser.add_argument(
-        "--large_tuples", "-l", help="Location,KeyLen,ValueLen triples of "
-        "large tuples to inject with vargensort")
     parser.add_argument(
         "--no_sudo", help="Don't create directories using sudo",
         action="store_true")
@@ -347,16 +287,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Check for method specific required arguments.
-    if args.method == "pareto":
-        if not args.pareto_a or not args.pareto_b:
-            print >>sys.stderr, "Must set pareto arguments a and b"
-            sys.exit(1)
-
     # Build gensort command.
     generators = {
         "gensort": ("gensort", "gensort"),
-        "pareto": ("vargensort", "vargensort"),
         }
     (directory, binary) = generators[args.method]
     gensort_command = os.path.abspath(os.path.join(

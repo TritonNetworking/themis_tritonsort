@@ -36,8 +36,6 @@ public:
   void run(KVPairBuffer* buffer);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(HDFSWriter);
-
   class OutputPartitionWriter {
   public:
     OutputPartitionWriter(
@@ -48,8 +46,6 @@ private:
 
     void write(KVPairBuffer& buffer);
   private:
-    DISALLOW_COPY_AND_ASSIGN(OutputPartitionWriter);
-
     HDFSClient hdfsClient;
     bool firstWrite;
     std::string filePath;

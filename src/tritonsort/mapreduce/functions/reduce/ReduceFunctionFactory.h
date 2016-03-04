@@ -23,7 +23,6 @@ public:
     const std::string& reduceName, const Params& params);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(ReduceFunctionFactory);
   ReduceFunctionFactory();
 };
 

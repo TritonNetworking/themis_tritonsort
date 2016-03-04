@@ -76,8 +76,6 @@ private:
 
   pthread_mutex_t lock;
   pthread_cond_t waitingForEnqueue;
-
-  DISALLOW_COPY_AND_ASSIGN(FairDiskWorkQueueingPolicy);
 };
 
 #endif // MAPRED_FAIR_DISK_WORK_QUEUEING_POLICY_H

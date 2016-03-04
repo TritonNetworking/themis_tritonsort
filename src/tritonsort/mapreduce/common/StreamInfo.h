@@ -52,8 +52,6 @@ public:
   uint64_t getSize() const;
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(StreamInfo);
-
   const uint64_t streamID;
   std::set<uint64_t> jobIDs;
   const std::string filename;

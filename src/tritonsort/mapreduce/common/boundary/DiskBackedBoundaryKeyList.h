@@ -91,8 +91,6 @@ public:
     uint64_t startPartition, uint64_t endPartition);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(DiskBackedBoundaryKeyList);
-
   typedef struct {
     // Whether the boundary key has been set or not (if false, offset and
     // length are not considered valid)

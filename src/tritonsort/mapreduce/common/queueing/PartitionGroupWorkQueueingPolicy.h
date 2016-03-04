@@ -28,8 +28,6 @@ private:
   uint64_t getEnqueueID(Resource* workUnit);
 
   const uint64_t partitionGroupsPerNode;
-
-  DISALLOW_COPY_AND_ASSIGN(PartitionGroupWorkQueueingPolicy);
 };
 
 #endif // MAPRED_PARTITION_GROUP_WORK_QUEUEING_POLICY_H

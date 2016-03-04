@@ -17,9 +17,6 @@ public:
 
   const uint64_t recoveringJob;
   const PartitionRangeList partitionRangesToRecover;
-
-private:
-  DISALLOW_COPY_AND_ASSIGN(RecoveryInfo);
 };
 
 

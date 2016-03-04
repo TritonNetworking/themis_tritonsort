@@ -5,9 +5,7 @@ import sys
 # To check for the presence of more libraries, just add their names and the URL
 # where they can be found to this map
 required_libraries = {
-    "cairo" : "http://cairographics.org/pycairo/",
     "jinja2" : "http://jinja.pocoo.org/",
-    "pulp" : "http://code.google.com/p/pulp-or/",
     "networkx" : "http://networkx.lanl.gov/",
     "bottle" : "http://bottlepy.org/",
     "requests" : "http://www.python-requests.org/"

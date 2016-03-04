@@ -55,8 +55,6 @@ public:
    */
   uint64_t getFirstLocalPartition(uint64_t jobID);
 private:
-  DISALLOW_COPY_AND_ASSIGN(PartitionMap);
-
   typedef std::map<uint64_t, uint64_t> InternalCountsMap;
 
   const uint64_t numNodes;

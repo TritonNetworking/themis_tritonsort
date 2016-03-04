@@ -67,8 +67,6 @@ private:
 
   const uint64_t globalPartitions;
   const uint64_t localPartitions;
-
-  DISALLOW_COPY_AND_ASSIGN(UniformPartitionFunction);
 };
 
 

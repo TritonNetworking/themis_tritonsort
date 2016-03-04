@@ -1,5 +1,4 @@
 jinja2
-pulp
 networkx
 bottle
 requests

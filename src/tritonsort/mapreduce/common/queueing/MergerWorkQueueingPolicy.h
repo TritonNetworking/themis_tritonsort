@@ -31,8 +31,6 @@ private:
   const uint64_t totalNumChunks;
 
   std::map<uint64_t, uint64_t> offsetMap;
-
-  DISALLOW_COPY_AND_ASSIGN(MergerWorkQueueingPolicy);
 };
 
 #endif // MAPRED_MERGER_WORK_QUEUEING_POLICY_H

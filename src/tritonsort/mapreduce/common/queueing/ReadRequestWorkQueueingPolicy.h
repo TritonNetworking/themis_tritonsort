@@ -22,8 +22,6 @@ private:
      \sa WorkQueueingPolicy::getEnqueueID
    */
   uint64_t getEnqueueID(Resource* workUnit);
-
-  DISALLOW_COPY_AND_ASSIGN(ReadRequestWorkQueueingPolicy);
 };
 
 #endif // MAPRED_READ_REQUEST_WORK_QUEUEING_POLICY_H
