@@ -70,8 +70,6 @@ private:
   DiskMap diskMap;
   SizeMap sizeMap;
   uint64_t nextDiskID;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkMap);
 };
 
 #endif // MAPRED_CHUNK_MAP_H

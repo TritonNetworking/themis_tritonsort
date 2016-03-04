@@ -12,7 +12,6 @@ public:
     const std::string& mapName, const Params& params);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(MapFunctionFactory);
   MapFunctionFactory();
 };
 

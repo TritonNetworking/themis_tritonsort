@@ -98,8 +98,6 @@ public:
   uint64_t numGlobalPartitions() const;
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(KeyPartitioner);
-
   typedef std::vector<KeyList*> KeyListVector;
 
   KeyList* globalKeyList;

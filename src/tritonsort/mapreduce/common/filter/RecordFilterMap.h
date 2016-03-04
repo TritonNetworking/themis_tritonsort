@@ -51,8 +51,6 @@ public:
   const RecordFilter* get(uint64_t jobID);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(RecordFilterMap);
-
   typedef std::map<uint64_t, RecordFilter*> JobToRecordFilterMap;
 
   const Params& params;

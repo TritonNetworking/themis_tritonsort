@@ -27,8 +27,6 @@ public:
 
   uint64_t numGlobalPartitions() const;
 private:
-  DISALLOW_COPY_AND_ASSIGN(RandomNodePartitionFunction);
-
   const uint64_t numNodes;
 };
 

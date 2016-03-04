@@ -23,8 +23,6 @@ public:
 
 private:
   ChunkMap* chunkMap;
-
-  DISALLOW_COPY_AND_ASSIGN(MapReduceWorkQueueingPolicyFactory);
 };
 
 #endif // MAPREDUCE_WORK_QUEUEING_POLICY_FACTORY_H

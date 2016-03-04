@@ -39,8 +39,6 @@ public:
   bool pass(const uint8_t* key, uint32_t keyLength) const;
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(RecordFilter);
-
   typedef std::vector<PartitionBoundaries*> PartitionBoundaryVector;
   PartitionBoundaryVector boundaries;
 };

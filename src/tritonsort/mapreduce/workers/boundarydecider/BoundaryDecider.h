@@ -49,8 +49,6 @@ public:
   void run();
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(BoundaryDecider);
-
   typedef std::vector<KVPairBuffer*> BufferVector;
   typedef std::vector<KeyValuePair> TupleVector;
 

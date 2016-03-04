@@ -99,8 +99,6 @@ public:
 
   void logWriteStats(uint64_t numBytesWritten, uint64_t numTuplesWritten);
 private:
-  DISALLOW_COPY_AND_ASSIGN(Mapper);
-
   const uint64_t inputTupleSampleRate;
   const uint64_t myNodeID;
   const uint64_t minBufferSize;

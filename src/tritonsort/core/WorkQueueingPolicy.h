@@ -81,8 +81,6 @@ private:
   virtual uint64_t getDequeueID(uint64_t queueID);
 
   WorkQueueVector workQueues;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkQueueingPolicy);
 };
 
 #endif // THEMIS_WORK_QUEUEING_POLICY_H

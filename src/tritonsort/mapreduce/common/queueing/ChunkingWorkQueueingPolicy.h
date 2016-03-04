@@ -35,8 +35,6 @@ private:
   const uint64_t numDisksPerWorker;
 
   ChunkMap& chunkMap;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkingWorkQueueingPolicy);
 };
 
 #endif // MAPRED_CHUNKING_WORK_QUEUEING_POLICY_H

@@ -21,9 +21,6 @@ public:
   virtual WorkQueueingPolicyInterface* newWorkQueueingPolicy(
     const std::string& phaseName, const std::string& stageName,
     const Params& params) const;
-
-private:
-  DISALLOW_COPY_AND_ASSIGN(WorkQueueingPolicyFactory);
 };
 
 #endif // THEMIS_WORK_QUEUEING_POLICY_FACTORY_H

@@ -59,8 +59,6 @@ public:
   static void assertReplyType(redisReply& reply, int expectedReplyType);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(RedisCommand);
-
   char _command[1024];
   redisReply* _reply;
 };

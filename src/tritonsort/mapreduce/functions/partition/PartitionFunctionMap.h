@@ -44,8 +44,6 @@ public:
   PartitionFunctionInterface* const get(uint64_t jobID);
 
 private:
-  DISALLOW_COPY_AND_ASSIGN(PartitionFunctionMap);
-
   typedef std::map<uint64_t, PartitionFunctionInterface*> InternalFunctionMap;
   const Params& params;
 

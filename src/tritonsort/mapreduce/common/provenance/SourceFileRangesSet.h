@@ -53,10 +53,7 @@ public:
   void marshal(uint8_t*& memory, uint64_t& length) const;
 
   bool equals(SourceFileRangesSet& other) const;
-private:
-  DISALLOW_COPY_AND_ASSIGN(SourceFileRangesSet);
 
-public:
   typedef std::map<uint64_t, OffsetRanges*> OffsetRangesMap;
   typedef OffsetRangesMap::const_iterator iterator;
 

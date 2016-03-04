@@ -76,8 +76,6 @@ private:
 
   const ChunkMap::SizeMap& chunkSizeMap;
   ChunkMap::SizeMap bytesMergedMap;
-
-  DISALLOW_COPY_AND_ASSIGN(Merger);
 };
 
 #endif // MAPRED_MERGER_H

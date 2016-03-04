@@ -87,8 +87,6 @@ public:
   const StreamInfo& getStreamInfo(
     const std::string& filename, uint64_t offset=0);
 private:
-  DISALLOW_COPY_AND_ASSIGN(FilenameToStreamIDMap);
-
   typedef std::map<std::string, StreamInfo*> FilenameToStreamMap;
   typedef std::map<uint64_t, StreamInfo*> StreamIDToStreamInfoMap;
 
