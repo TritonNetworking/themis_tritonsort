@@ -13,7 +13,7 @@ sudo yum -y update
 
 # Install packages from yum
 # Use gcc48 and python26 for 2014.09 - use anyway but exclude kernel
-sudo yum -y install sysstat.x86_64 xfsprogs.x86_64 gcc48.x86_64 emacs.x86_64 fio.x86_64 git.x86_64 cmake.x86_64 gcc48-c++.x86_64 jemalloc-devel.x86_64 boost-devel.x86_64 gsl-devel.x86_64 zlib-devel.x86_64 libaio-devel.x86_64 libcurl-devel.x86_64 openssl-devel.x86_64 python-pip.noarch python-matplotlib.x86_64 gdb.x86_64 nfs-utils-lib.x86_64 nfs-utils.x86_64 subversion.x86_64 mercurial.x86_64 tmux.x86_64 fping.x86_64
+sudo yum -y install sysstat.x86_64 xfsprogs.x86_64 gcc48.x86_64 emacs.x86_64 fio.x86_64 git.x86_64 cmake.x86_64 gcc48-c++.x86_64 jemalloc-devel.x86_64 boost-devel.x86_64 gsl-devel.x86_64 zlib-devel.x86_64 libaio-devel.x86_64 libcurl-devel.x86_64 openssl-devel.x86_64 python-pip.noarch python-matplotlib.x86_64 gdb.x86_64 subversion.x86_64 mercurial.x86_64 tmux.x86_64 fping.x86_64
 
 # Install python packages from pip
 sudo pip install redis plumbum networkx PyYAML Jinja2 bottle
