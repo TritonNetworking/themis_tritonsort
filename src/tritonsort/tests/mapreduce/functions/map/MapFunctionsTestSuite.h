@@ -9,16 +9,12 @@
 #include "BytesCountMapFunctionTest.h"
 #include "CombiningWordCountMapFunctionTest.h"
 #include "NGramMapFunctionTest.h"
-#include "WEXLinkExtractorMapFunctionTest.h"
-#include "WEXTextExtractorMapFunctionTest.h"
 
 class MapFunctionsTestSuite : public CppUnit::TestSuite {
 public:
   MapFunctionsTestSuite() : CppUnit::TestSuite("Map functions") {
     addTest(BytesCountMapFunctionTest::suite());
     addTest(CombiningWordCountMapFunctionTest::suite());
-    addTest(WEXLinkExtractorMapFunctionTest::suite());
-    addTest(WEXTextExtractorMapFunctionTest::suite());
     addTest(NGramMapFunctionTest::suite());
   }
 };
