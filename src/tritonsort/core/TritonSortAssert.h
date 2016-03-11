@@ -59,8 +59,6 @@ public:
   static void _ASSERT(const char* file, int line, bool condition,
                       const char* format ...);
 
-  static void dumpStack(int signal=0);
-
   static void useTestModeAssertions();
 
 private:
