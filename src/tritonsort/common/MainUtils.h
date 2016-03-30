@@ -25,7 +25,7 @@ void logStartTime();
 void getDiskList(StringList& diskList, const std::string& parameterName,
                  const Params* params);
 
-// Dump stack, print segfault and raise sigterm
+// Print segfault and raise sigterm
 void sigsegvHandler(int signal=0);
 
 #endif // TRITONSORT_MAIN_UTILS_H
