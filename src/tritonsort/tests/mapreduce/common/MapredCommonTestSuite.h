@@ -20,7 +20,6 @@
 #include "tests/mapreduce/common/ReservoirSamplingKVPairWriterTest.h"
 #include "tests/mapreduce/common/SampleMetadataKVPairBufferTest.h"
 #include "tests/mapreduce/common/TextLineFormatReaderTest.h"
-#include "tests/mapreduce/common/provenance/ProvenanceTestSuite.h"
 #include "tests/mapreduce/common/sorting/SortingTestSuite.h"
 
 class MapredCommonTestSuite : public CppUnit::TestSuite {
@@ -40,7 +39,6 @@ public:
     addTest(ReservoirSamplingKVPairWriterTest::suite());
     addTest(SampleMetadataKVPairBufferTest::suite());
     addTest(TextLineFormatReaderTest::suite());
-    addTest(new ProvenanceTestSuite());
     addTest(new SortingTestSuite());
   }
 };

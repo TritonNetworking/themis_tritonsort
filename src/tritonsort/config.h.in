@@ -3,6 +3,5 @@
 
 #cmakedefine TRITONSORT_STATS 1
 #cmakedefine TRITONSORT_ASSERTS 1
-#cmakedefine THEMIS_PROVENANCE_METADATA 1
 
 #endif //_TRITONSORT_CONFIG_H_IN

@@ -6,7 +6,6 @@
 #include <cppunit/TestSuite.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "Base64Test.h"
 #include "BatchRunnableTest.h"
 #include "BlockingReadTest.h"
 #include "ByteOrderTest.h"
@@ -49,7 +48,6 @@ public:
     addTest(ThreadSafeQueueTest::suite());
     addTest(WorkerTrackerTest::suite());
     addTest(CPUAffinitySetterTest::suite());
-    addTest(Base64Test::suite());
   }
 };
 
