@@ -21,7 +21,6 @@ int main(int argc, char** argv) {
   uint64_t randomSeed = Timer::posixTimeInMicros() * getpid();
   srand(randomSeed);
 
-  signal (SIGBUS, TritonSortAssertions::dumpStack);
   signal(SIGSEGV, sigsegvHandler);
 
   if (argc != 3) {

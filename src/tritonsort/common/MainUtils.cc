@@ -39,9 +39,7 @@ void getDiskList(StringList& diskList, const std::string& parameterName,
 }
 
 void sigsegvHandler(int signal_) {
-  // Dump stack strace
   std::cerr << "Caught SIGSEGV. Segmentation Fault." << std::endl;
-  TritonSortAssertions::dumpStack();
   // Reset the SIGSEGV handler so we can generate a core dump.
   signal(SIGSEGV, SIG_DFL);
 }

@@ -316,8 +316,6 @@ int main(int argc, char** argv) {
   srand(randomSeed);
   srand48(randomSeed);
 
-  signal(SIGBUS, TritonSortAssertions::dumpStack);
-  // Gather StackTrace for segfault
   signal(SIGSEGV, sigsegvHandler);
 
   Params params;
