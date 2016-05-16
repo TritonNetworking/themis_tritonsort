@@ -239,7 +239,7 @@ WORKER_IMPLS:
 #  phase_one:
 #    receiver: "Receiver"
   phase_three:
-    splitsort_reader: "ByteStreamReader" # Set manually because of HDFS reader bug
+    splitsort_reader: "ByteStreamReader"
 
 DIRECT_IO:
   phase_zero:

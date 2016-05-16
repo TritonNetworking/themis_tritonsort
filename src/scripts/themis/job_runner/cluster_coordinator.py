@@ -721,7 +721,7 @@ class ClusterCoordinator(object):
 
         self.coordinator_db.new_job_info(job_id, job_description)
 
-        # Extract a list of all input files from the HDFS directory
+        # Extract a list of all input files from the directory
         # corresponding to the input location
         input_dir = job_description["input_directory"]
 
