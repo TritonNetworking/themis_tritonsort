@@ -45,8 +45,6 @@ ReadRequest* ReadRequest::fromURL(
 
   if (scheme == "local") {
     protocol = FILE;
-  } else if (scheme == "hdfs") {
-    protocol = HDFS;
   } else {
     ABORT("Invalid URL '%s'; unknown protocol '%s'", urlStr.c_str(),
           scheme.c_str());
@@ -63,9 +61,6 @@ std::string ReadRequest::protocolName(Protocol protocol) {
   switch (protocol) {
   case FILE:
     protocolName.assign("local");
-    break;
-  case HDFS:
-    protocolName.assign("hdfs");
     break;
   case INVALID_PROTOCOL:
     protocolName.assign("invalid");

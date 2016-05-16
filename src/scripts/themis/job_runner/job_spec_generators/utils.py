@@ -2,7 +2,7 @@ import os
 
 from string import translate
 
-def mapreduce_job(input_dir, job_name, username, hdfs,
+def mapreduce_job(input_dir, job_name, username,
                   map_function = "PassThroughMapFunction",
                   reduce_function = "IdentityReduceFunction",
                   partition_function = "HashedBoundaryListPartitionFunction",
@@ -13,7 +13,7 @@ def mapreduce_job(input_dir, job_name, username, hdfs,
 
     input_dir, intermediate_dir, output_dir = generate_urls(
         input_dir, "%s/intermediates/%s" % (username, job_name),
-        "%s/outputs/%s" % (username, job_name), hdfs)
+        "%s/outputs/%s" % (username, job_name))
 
     config_dict = {
         "input_directory" : input_dir,
@@ -45,27 +45,23 @@ def merge_jobs_into_batch(*jobs):
 
     return batch
 
-def generate_url(path, hdfs):
+def generate_url(path):
     if path[0] == '/':
         path = path[1:]
 
-    if path[:7] == "hdfs://" or path[:9] == "local:///":
+    if path[:9] == "local:///":
         # Don't URL-ize URLs
         return
 
-    if hdfs is not None:
-        url = "hdfs://%s/%s" % (hdfs, path)
-    else:
-        url = "local:///%s" % (path)
+    url = "local:///%s" % (path)
 
     return url
 
-def generate_urls(input_path, intermediate_path, output_path, hdfs):
-    # Don't store intermediate data on HDFS.
+def generate_urls(input_path, intermediate_path, output_path):
     return (
-        generate_url(input_path, hdfs),
-        generate_url(intermediate_path, None),
-        generate_url(output_path, hdfs))
+        generate_url(input_path),
+        generate_url(intermediate_path),
+        generate_url(output_path))
 
 def sibling_directory(directory, sibling_name):
     return os.path.join(

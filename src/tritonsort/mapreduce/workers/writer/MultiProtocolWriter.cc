@@ -2,7 +2,6 @@
 #include "mapreduce/common/CoordinatorClientFactory.h"
 #include "mapreduce/common/JobInfo.h"
 #include "mapreduce/common/URL.h"
-#include "mapreduce/common/hdfs/HDFSWriter.h"
 #include "mapreduce/workers/writer/MultiProtocolWriter.h"
 #include "mapreduce/workers/writer/Writer.h"
 
@@ -55,13 +54,6 @@ void MultiProtocolWriter::run(KVPairBuffer* buffer) {
         Writer::newInstance(
           phaseName, oss.str(), getID(), params, memoryAllocator,
           dependencies));
-    } else if (scheme == "hdfs") {
-      std::ostringstream oss;
-      oss << getName() << ":hdfs_" << jobID;
-
-      writer = static_cast<WriteWorker*>(HDFSWriter::newInstance(
-        phaseName, oss.str(), getID(), params, memoryAllocator,
-        dependencies));
     } else {
       ABORT("Unknown scheme '%s' for output URL '%s'", scheme.c_str(),
             outputURL.fullURL().c_str());

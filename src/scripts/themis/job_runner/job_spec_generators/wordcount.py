@@ -3,13 +3,13 @@
 import sys, argparse, getpass, utils, json
 
 def wordcount(
-    username, hdfs, input_directory, output_directory, use_combiner, **kwargs):
+    username, input_directory, output_directory, use_combiner, **kwargs):
 
     if output_directory is None:
         output_directory = "%s/outputs/wordcount" % (username)
 
     (input_url, output_url) = utils.generate_urls(
-        input_directory, output_directory, hdfs)
+        input_directory, output_directory)
 
     if use_combiner:
         map_function = "CombiningWordCountMapFunction"
@@ -37,10 +37,6 @@ def main():
                         default="wordcount.json")
     parser.add_argument("-u", "--username", help="the username on whose data "
                         "the job is being run", default=getpass.getuser())
-    parser.add_argument("--hdfs", help="host:port specifying the HDFS namenode "
-                        "where input and output data should be stored "
-                        "(default: store data on local disks rather than on "
-                        "HDFS)")
     parser.add_argument(
         "--use_combiner", "-c", help="use combiner when generating map "
         "function output", default=False, action="store_true")
