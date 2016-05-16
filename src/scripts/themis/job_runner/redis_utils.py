@@ -27,10 +27,6 @@ class CoordinatorDB(object):
     # Information about the nodes
 
     @sorted_list
-    def hdfs_disks(self, hostname):
-        return self.redis_client.smembers("node_hdfs_disks:%s" % (hostname))
-
-    @sorted_list
     def local_disks(self, hostname):
         return self.redis_client.sdiff(
             "node_local_disks:%s" % (hostname),
@@ -174,12 +170,6 @@ class CoordinatorDB(object):
 
         if self.redis_client.exists(job_params_key):
             job_params = self.redis_client.hgetall(job_params_key)
-
-        if self.redis_client.exists("hdfs:namenode"):
-            hdfs_host, hdfs_port = self.redis_client.hmget(
-                "hdfs:namenode", ["hostname", "port"])
-            job_params["HDFS.HOSTNAME"] = hdfs_host
-            job_params["HDFS.PORT"] = hdfs_port
 
         return job_params
 
@@ -466,5 +456,3 @@ class CoordinatorDB(object):
                     return (barrier_name, running_nodes, None)
 
         return (None, None, None)
-
-

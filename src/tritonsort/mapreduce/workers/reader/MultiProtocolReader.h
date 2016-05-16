@@ -9,8 +9,8 @@
 
 /**
    MultiProtocol reader demultiplexes read requests based on URL schemes, or
-   protocols. In particular, it can simultaneously handle synchronous reads
-   both from local disk and from HDFS. Internally it maintains reader workers
+   protocols. Currently it only supports synchronous reads from local disk.
+   Internally it maintains reader workers
    for each protocol. These readers are never actually spawned, but their run()
    function is invoked for each applicable work unit.
 

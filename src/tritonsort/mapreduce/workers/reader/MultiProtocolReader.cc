@@ -2,7 +2,6 @@
 #include "core/SingleUnitRunnable.h"
 #include "mapreduce/common/CoordinatorClientFactory.h"
 #include "mapreduce/common/CoordinatorClientInterface.h"
-#include "mapreduce/common/hdfs/HDFSReader.h"
 #include "mapreduce/workers/reader/ByteStreamReader.h"
 #include "mapreduce/workers/reader/MultiProtocolReader.h"
 #include "mapreduce/workers/reader/WholeFileReader.h"
@@ -134,12 +133,6 @@ BaseWorker* MultiProtocolReader::newInstance(
            "to a SingleUnitRunnable<ReadRequest> failed");
 
   reader->addProtocolReader(ReadRequest::FILE, fileReader);
-
-  ProtocolReader* hdfsReader = dynamic_cast<ProtocolReader*>(
-    HDFSReader::newInstance(
-      phaseName, stageName, id, params, memoryAllocator, dependencies));
-
-  reader->addProtocolReader(ReadRequest::HDFS, hdfsReader);
 
   return reader;
 }

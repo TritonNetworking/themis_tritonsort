@@ -20,7 +20,7 @@ public:
   /// Destructor
   virtual ~URL() {}
 
-  /// \return the URL's scheme (http, ftp, hdfs, etc.)
+  /// \return the URL's scheme (http, ftp, etc.)
   const std::string& scheme() const;
 
   /// \return the URL's hostname

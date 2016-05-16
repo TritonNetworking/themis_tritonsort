@@ -2,9 +2,7 @@ INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/RecurseCCFiles.cmake")
 INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/UseWorker.cmake")
 INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/Findhiredis.cmake")
 
-FIND_PACKAGE(CURL REQUIRED)
-
-INCLUDE_DIRECTORIES(${TritonSort_SOURCE_DIR} ${CURL_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${TritonSort_SOURCE_DIR})
 
 RECURSE_CC_FILES(common)
 RECURSE_CC_FILES(functions)
@@ -51,7 +49,7 @@ FIND_PACKAGE(OpenSSL REQUIRED)
 FIND_PACKAGE(hiredis REQUIRED)
 
 TARGET_LINK_LIBRARIES(mapreduce_workers tritonsort_core tritonsort_common
-  ${OPENSSL_CRYPTO_LIBRARIES} ${CURL_LIBRARY} ${hiredis_LIBRARY})
+  ${OPENSSL_CRYPTO_LIBRARIES} ${hiredis_LIBRARY})
 
 # Create a version of MapReduce for phase zero/one, and another version for
 # phase two

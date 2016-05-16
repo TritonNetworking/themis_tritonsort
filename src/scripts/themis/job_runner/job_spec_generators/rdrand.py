@@ -3,7 +3,7 @@
 import sys, argparse, getpass, utils, json
 from merge_files import merge_files
 
-def rdrand(username, hdfs, input_directory, output_directory, **kwargs):
+def rdrand(username, input_directory, output_directory, **kwargs):
 
     if output_directory is None:
         output_directory = "%s/outputs" % (username)
@@ -11,8 +11,8 @@ def rdrand(username, hdfs, input_directory, output_directory, **kwargs):
     merged_output_directory = "%s/final_output" % (output_directory)
 
     (input_url, rdrand_output_url) = utils.generate_urls(
-        input_directory, rdrand_output_directory, hdfs)
-    merged_output_url = utils.generate_url(merged_output_directory, hdfs)
+        input_directory, rdrand_output_directory)
+    merged_output_url = utils.generate_url(merged_output_directory)
 
     rdrand_config = utils.mapreduce_job(
         input_dir = input_url,
@@ -40,7 +40,7 @@ def rdrand(username, hdfs, input_directory, output_directory, **kwargs):
     # Run a second job to merge all duplicate key information into a single
     # output file for better readability.
     mergefiles_config = merge_files(
-        rdrand_output_directory, merged_output_directory, hdfs)
+        rdrand_output_directory, merged_output_directory)
 
     return utils.run_in_sequence(rdrand_config, mergefiles_config)
 
@@ -57,10 +57,6 @@ def main():
                         default="rdrand.json")
     parser.add_argument("-u", "--username", help="the username on whose data "
                         "the job is being run", default=getpass.getuser())
-    parser.add_argument("--hdfs", help="host:port specifying the HDFS namenode "
-                        "where input and output data should be stored "
-                        "(default: store data on local disks rather than on "
-                        "HDFS)")
 
     args = parser.parse_args()
 

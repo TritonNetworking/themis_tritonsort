@@ -14,7 +14,6 @@ class ReadRequest : public Resource {
 public:
   enum Protocol {
     FILE, /// A file on the local filesystem
-    HDFS, /// A file on HDFS
     INVALID_PROTOCOL /// An invalid or unknown protocol
   };
 

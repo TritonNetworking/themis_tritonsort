@@ -33,73 +33,6 @@ def generate_halt_request(job_ids):
 
     return halt_request
 
-def hdfs_file_paths_to_worker_inputs(
-    coordinator_db, hdfs_host, hdfs_port, hdfs_files):
-
-    worker_inputs = {}
-
-    # Snapshot live nodes, so that we don't have the set of live nodes change
-    # on us in the middle of divvying out work
-
-    live_nodes = list(coordinator_db.live_nodes)
-
-    round_robin_index = 0
-
-    for (filename, file_length, proxied) in hdfs_files:
-        if proxied:
-            # Figure out what node and disk the primary replica is on, and
-            # let the appropriate worker service it
-            path_chunks = filter(lambda x: len(x) > 0, filename.split('/'))
-            host_ip = path_chunks[0]
-            hostname = coordinator_db.hostname(host_ip)
-
-            assert hostname is not None
-
-            if hostname not in live_nodes:
-                # Assign files to other hosts in round-robin order
-                reassigned_hostname = live_nodes[round_robin_index]
-                round_robin_index = (round_robin_index + 1) % len(live_nodes)
-
-                log.error(("Re-assigning '%s' from dead node '%s' to live node "
-                           "'%s'") % (filename, hostname, reassigned_hostname))
-
-                hostname = reassigned_hostname
-
-            host_disks = coordinator_db.hdfs_disks(hostname)
-
-            target_disk = None
-
-            try:
-                if int(path_chunks[1]) in xrange(len(host_disks)):
-                    target_disk = int(path_chunks[1])
-            except ValueError:
-                log.error("Target disk '%s' falls outside disk list "
-                          "boundaries (disk list had %d elements)" % (
-                        path_chunks[1], len(host_disks)))
-                target_disk = None
-
-            assert target_disk is not None
-
-            if hostname not in worker_inputs:
-                worker_inputs[hostname] = {}
-
-            if target_disk not in worker_inputs[hostname]:
-                worker_inputs[hostname][target_disk] = []
-
-            file_url = "hdfs://%s:%d%s" % (hdfs_host, hdfs_port, filename)
-
-            worker_inputs[hostname][target_disk].append(
-                (file_url, file_length))
-
-        else:
-            # TODO: Push this filename onto a list of files to be assigned
-            # to workers round-robin
-            log.error("Coordinator doesn't support unproxied inputs yet "
-                      "(unproxied input: %s)" % (filename))
-
-
-    return worker_inputs
-
 def gather_input_file_paths(
     coordinator_db, input_url, max_input_files_per_disk = None):
     # Parse input directory as a URL
@@ -117,32 +50,6 @@ def gather_input_file_paths(
     if url_scheme == "local":
         return gather_local_file_paths(
             coordinator_db, input_dir, max_input_files_per_disk)
-
-    elif url_scheme == "hdfs":
-        if parse_result.netloc.find(':') != -1:
-            host, port = parse_result.netloc.split(':')
-            port = int(port)
-        else:
-            host = parse_result.netloc
-            port = 50070
-
-        # Get a list of files from HDFS
-        hdfs_files_info = gather_hdfs_file_paths(
-            host, port, input_dir)
-
-        if hdfs_files_info is None:
-            log.error("Failed to gather a list of input files for '%s'" %
-                      (input_dir))
-            return None
-
-        (files, total_input_size) = hdfs_files_info
-
-        # Convert those files into a map of the following form:
-        # map[hostname][disk_number] = [(url, length), (url, length), ...]
-        worker_inputs = hdfs_file_paths_to_worker_inputs(
-            coordinator_db, host, port, files)
-
-        return (worker_inputs, total_input_size)
     else:
         log.error("Unknown protocol '%s' for input URL '%s'" %
                   (url_scheme, input_url))
@@ -210,66 +117,6 @@ def gather_local_file_paths(
                     num_files += 1
 
     return (worker_inputs, total_input_size)
-
-def gather_hdfs_file_paths(host, port, input_dir):
-    try:
-        response = requests.get(
-            "http://%s:%d/webhdfs/v1%s?op=LISTSTATUS" % (
-                host, port, input_dir),
-            config={"trust_env" : False})
-    except requests.exceptions.ConnectionError, e:
-        log.exception(e)
-        return None
-
-    if response.status_code != 200:
-        try:
-            exception_message = (
-                json.loads(response.content)["RemoteException"]["message"])
-            log.error("LISTSTATUS on '%s' failed with error %d: %s" % (
-                    input_dir, response.status_code, exception_message))
-        except ValueError:
-            log.error("LISTSTATUS on '%s' failed with error %d: %s" % (
-                    input_dir, response.status_code, response.content))
-        finally:
-            return None
-
-    directory_listing = (
-        json.loads(response.content)["FileStatuses"]["FileStatus"])
-
-    input_file_paths = []
-
-    input_size = 0
-
-    for file_info in directory_listing:
-        if file_info["type"] == "FILE":
-            if "proxyPath" in file_info:
-                file_path = "%s/%s" % (
-                    file_info["proxyPath"], file_info["pathSuffix"])
-                proxied = True
-            else:
-                file_path = "%s/%s" % (input_dir, file_info["pathSuffix"])
-                proxied = False
-
-            file_length = file_info["length"]
-
-            input_file_paths.append((file_path, file_length, proxied))
-            input_size += file_length
-        else:
-            dir_path = "%s/%s" % (input_dir, file_info["pathSuffix"])
-
-            (paths_in_dir, dir_input_size) = gather_hdfs_file_paths(
-                host, port, dir_path)
-
-            input_size += dir_input_size
-
-            if paths_in_dir == None:
-                log.error("Unable to get contents of '%s'" % (
-                        dir_path))
-                return None
-            else:
-                input_file_paths.extend(paths_in_dir)
-
-    return (input_file_paths, input_size)
 
 def generate_read_requests(
     job_inputs, phase_zero_sample_rate, phase_zero_sample_points_per_file,

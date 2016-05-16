@@ -2,7 +2,7 @@
 
 import sys, argparse, utils, json, os, merge_files
 
-def tuple_length_count(input_directory, output_directory, hdfs, **kwargs):
+def tuple_length_count(input_directory, output_directory, **kwargs):
 
     if output_directory is None:
         output_directory = utils.sibling_directory(
@@ -12,7 +12,7 @@ def tuple_length_count(input_directory, output_directory, hdfs, **kwargs):
         input_directory, "unmerged_counts_%(dirname)s")
 
     (input_url, output_url) = utils.generate_urls(
-        input_directory, intermediate_directory, hdfs)
+        input_directory, intermediate_directory)
 
     tuple_length_config = utils.mapreduce_job(
         input_dir = input_url,
@@ -21,7 +21,7 @@ def tuple_length_count(input_directory, output_directory, hdfs, **kwargs):
         reduce_function = "SumValuesReduceFunction")
 
     merge_files_config = merge_files.merge_files(
-        intermediate_directory, output_directory, hdfs)
+        intermediate_directory, output_directory)
 
     config = utils.run_in_sequence(tuple_length_config, merge_files_config)
 
@@ -40,10 +40,6 @@ def main():
     parser.add_argument("-o", "--output_filename", help="name of the job "
                         "spec file to write (default: %(default)s)",
                         default="tuple_length_count.json")
-    parser.add_argument("--hdfs", help="host:port specifying the HDFS namenode "
-                        "where input and output data should be stored "
-                        "(default: store data on local disks rather than on "
-                        "HDFS)")
 
     args = parser.parse_args()
     config = tuple_length_count(**vars(args))

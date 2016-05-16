@@ -15,6 +15,7 @@
 
 #include "core/SingleUnitRunnable.h"
 #include "mapreduce/common/buffers/KVPairBuffer.h"
+#include "mapreduce/common/CoordinatorClientInterface.h"
 
 class MultiProtocolWriter : public SingleUnitRunnable<KVPairBuffer> {
 WORKER_IMPL

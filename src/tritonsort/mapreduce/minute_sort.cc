@@ -41,7 +41,6 @@ const char* malloc_conf = "lg_chunk:20,lg_tcache_gc_sweep:30";
 #include "mapreduce/common/Utils.h"
 #include "mapreduce/common/boundary/KeyPartitionerInterface.h"
 #include "mapreduce/common/filter/RecordFilterMap.h"
-#include "mapreduce/common/hdfs/HDFSClient.h"
 #include "mapreduce/common/queueing/MapReduceWorkQueueingPolicyFactory.h"
 #include "mapreduce/functions/partition/PartitionFunctionMap.h"
 #include "mapreduce/functions/reduce/ReduceFunctionFactory.h"
@@ -305,8 +304,6 @@ void deriveAdditionalParams(
 }
 
 int main(int argc, char** argv) {
-  HDFSClient::init();
-
   StatLogger* mainLogger = new StatLogger("mapreduce");
 
   Timer totalTimer;
@@ -425,8 +422,6 @@ int main(int argc, char** argv) {
   if (coordinatorClientType == "redis") {
     RedisConnection::disconnect();
   }
-
-  HDFSClient::cleanup();
 
   return 0;
 }
