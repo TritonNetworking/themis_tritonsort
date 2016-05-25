@@ -1,38 +1,20 @@
 #ifndef TRITONSORT_RESOURCE_SCHEDULER_TEST_H
 #define TRITONSORT_RESOURCE_SCHEDULER_TEST_H
 
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/extensions/HelperMacros.h>
 #include <pthread.h>
+#include "gtest/gtest.h"
 
 #include "core/FCFSPolicy.h"
 #include "core/MLFQPolicy.h"
 
 class ResourceScheduler;
 
-class ResourceSchedulerTest : public CppUnit::TestFixture {
-  CPPUNIT_TEST_SUITE( ResourceSchedulerTest );
-  CPPUNIT_TEST( testFCFSPolicyOrdering );
-  CPPUNIT_TEST( testMLFQPolicyOrdering );
-  CPPUNIT_TEST( testScheduleSingleResourceWithoutCookies );
-  CPPUNIT_TEST( testScheduleSingleResourceWithCookies );
-  CPPUNIT_TEST( testReleaseUnknownCookie );
-  CPPUNIT_TEST( testBlockAtFullCapacity );
-  CPPUNIT_TEST_SUITE_END();
-
+class ResourceSchedulerTest : public ::testing::Test {
 public:
-  void setUp();
-  void tearDown();
-  void testFCFSPolicyOrdering();
-  void testMLFQPolicyOrdering();
-  void testScheduleSingleResourceWithoutCookies();
-  void testScheduleSingleResourceWithCookies();
-  void testReleaseUnknownCookie();
-  void testBlockAtFullCapacity();
+  void SetUp();
+  void TearDown();
 
-private:
+protected:
   FCFSPolicy FCFS;
   MLFQPolicy MLFQ;
   pthread_mutex_t sharedLock;

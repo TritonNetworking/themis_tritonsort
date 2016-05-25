@@ -18,7 +18,6 @@
 #include "core/Utils.h"
 #include "core/constants.h"
 #include "tests/mapreduce/MapReduceTestSuite.h"
-#include "tests/themis_core/CoreTestSuite.h"
 
 
 const char* TEST_WRITE_ROOT;
@@ -71,7 +70,6 @@ int main(int argc, char** argv) {
   controller.addListener( &progress );
 
   CppUnit::TestRunner runner;
-  runner.addTest(new CoreTestSuite());
   runner.addTest(new MapReduceTestSuite());
 
   std::string testPath;

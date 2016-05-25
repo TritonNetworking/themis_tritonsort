@@ -1,10 +1,7 @@
 #ifndef _TRITONSORT_TEST_DEFAULT_ALLOCATOR_POLICY_TEST_H
 #define _TRITONSORT_TEST_DEFAULT_ALLOCATOR_POLICY_TEST_H
 
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/extensions/HelperMacros.h>
+#include "gtest/gtest.h"
 
 #include "core/MemoryAllocationContext.h"
 #include "core/MemoryAllocatorPolicy.h"
@@ -15,20 +12,11 @@
    \TODO(MC): Add tests for more complicated graphs when we support multiple
    nextTrackers
 */
-class DefaultAllocatorPolicyTest : public CppUnit::TestFixture {
-  CPPUNIT_TEST_SUITE( DefaultAllocatorPolicyTest );
-  CPPUNIT_TEST( testSingleAllocation );
-  CPPUNIT_TEST( testBlockWhenOutOfMemory );
-  CPPUNIT_TEST( testPriorityQueues );
-  CPPUNIT_TEST_SUITE_END();
-
+class DefaultAllocatorPolicyTest : public ::testing::Test {
 public:
   DefaultAllocatorPolicyTest();
-  void testSingleAllocation();
-  void testBlockWhenOutOfMemory();
-  void testPriorityQueues();
 
-private:
+protected:
   TrackerSet singleTrackerSet;
   TrackerSet chainTrackerSet;
 

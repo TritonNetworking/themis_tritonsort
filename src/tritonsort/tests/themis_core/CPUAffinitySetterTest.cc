@@ -13,15 +13,15 @@ void CPUAffinitySetterTest::assertCPUsSet(
 
   for (uint64_t currentCPU = 0; currentCPU < numCPUs; currentCPU++) {
     if (cpus.count(currentCPU)) {
-      CPPUNIT_ASSERT(CPU_ISSET(currentCPU, &affinityMask));
+      EXPECT_TRUE(CPU_ISSET(currentCPU, &affinityMask));
     } else {
-      CPPUNIT_ASSERT(!CPU_ISSET(currentCPU, &affinityMask));
+      EXPECT_TRUE(!CPU_ISSET(currentCPU, &affinityMask));
     }
   }
 }
 
 
-void CPUAffinitySetterTest::testFixedPolicy() {
+TEST_F(CPUAffinitySetterTest, testFixedPolicy) {
   uint64_t numCores = 16;
 
   Params params;
@@ -61,7 +61,7 @@ void CPUAffinitySetterTest::testFixedPolicy() {
   setCPUs.clear();
 }
 
-void CPUAffinitySetterTest::testFreePolicy() {
+TEST_F(CPUAffinitySetterTest, testFreePolicy) {
   uint64_t numCores = 16;
 
   Params params;
@@ -87,7 +87,7 @@ void CPUAffinitySetterTest::testFreePolicy() {
   assertCPUsSet(affinityMask, numCores, setCPUs);
 }
 
-void CPUAffinitySetterTest::testParameterParsing() {
+TEST_F(CPUAffinitySetterTest, testParameterParsing) {
   uint64_t numCores = 16;
 
   Params params;
@@ -104,16 +104,16 @@ void CPUAffinitySetterTest::testParameterParsing() {
 
   cpu_set_t affinityMask;
 
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     cpuAffinitySetter.setAffinityMask("weird_policy", 0, affinityMask),
     AssertionFailedException);
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     cpuAffinitySetter.setAffinityMask("maskless", 0, affinityMask),
     AssertionFailedException);
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     cpuAffinitySetter.setAffinityMask("typeless", 0, affinityMask),
     AssertionFailedException);
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     cpuAffinitySetter.setAffinityMask("bad_mask", 0, affinityMask),
     AssertionFailedException);
 
@@ -139,7 +139,7 @@ void CPUAffinitySetterTest::testParameterParsing() {
   setCPUs.clear();
 }
 
-void CPUAffinitySetterTest::testPhaseDefaultPolicy() {
+TEST_F(CPUAffinitySetterTest, testPhaseDefaultPolicy) {
   uint64_t numCores = 16;
 
   Params params;

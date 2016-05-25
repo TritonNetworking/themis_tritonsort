@@ -25,27 +25,25 @@ ByteOrderTest::ByteOrderTest() :
 #endif // BOOST_LITTLE_ENDIAN
 }
 
-void ByteOrderTest::testHostToNetwork() {
+TEST_F(ByteOrderTest, testHostToNetwork) {
   // Sanity check that the host order is correct.
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Host order incorrect. Something is wrong with Boost's endianess checks.",
-    deadbeefHostOrder, deadbeef);
+  EXPECT_EQ(deadbeefHostOrder, deadbeef);
 
   // Convert to network order and check endianness.
   uint64_t networkOrder = hostToBigEndian64(deadbeef);
-  CPPUNIT_ASSERT_EQUAL(deadbeefBigEndian, networkOrder);
+  EXPECT_EQ(deadbeefBigEndian, networkOrder);
 }
 
-void ByteOrderTest::testNetworkToHost() {
+TEST_F(ByteOrderTest, testNetworkToHost) {
   // Convert the big endian representation to host order.
   uint64_t actualHostOrder = bigEndianToHost64(deadbeefBigEndian);
 
   // Check that the actual host order returned by the conversion function is the
   // expected host order initialized in ByteOrderTest().
-  CPPUNIT_ASSERT_EQUAL(deadbeefHostOrder, actualHostOrder);
+  EXPECT_EQ(deadbeefHostOrder, actualHostOrder);
 }
 
-void ByteOrderTest::testCyclicConversion() {
+TEST_F(ByteOrderTest, testCyclicConversion) {
   // Convert 0xC0FFEE from host to network and back to host.
   uint64_t coffee = 0xC0FFEE;
 
@@ -53,11 +51,11 @@ void ByteOrderTest::testCyclicConversion() {
 #ifdef BOOST_LITTLE_ENDIAN
   // Host should be little endian, so check that the conversion changed coffee.
   uint64_t reversedCoffee = 0xEEFFC00000000000;
-  CPPUNIT_ASSERT_EQUAL(reversedCoffee, networkOrder);
+  EXPECT_EQ(reversedCoffee, networkOrder);
 #elif BOOST_BIG_ENDIAN
   // Host should be big endian, so check that the conversion left coffee
   // unchanged.
-  CPPUNIT_ASSERT_EQUAL(coffee, networkOrder);
+  EXPECT_EQ(coffee, networkOrder);
 #else // BOOST_LITTLE_ENDIAN
 #error Neither BOOST_LITTLE_ENDIAN nor BOOST_BIG_ENDIAN defined.
 #endif // BOOST_LITTLE_ENDIAN
@@ -66,5 +64,5 @@ void ByteOrderTest::testCyclicConversion() {
   uint64_t hostOrder = bigEndianToHost64(networkOrder);
 
   // Check that the cyclic conversion returned 0xC0FFEE
-  CPPUNIT_ASSERT_EQUAL(coffee, hostOrder);
+  EXPECT_EQ(coffee, hostOrder);
 }

@@ -6,18 +6,17 @@
 
 extern const char* TEST_WRITE_ROOT;
 
-void MemoryMappedFileDeadlockResolverTest::testResolve() {
+TEST_F(MemoryMappedFileDeadlockResolverTest, testResolve) {
   // Create a resolver with 1 disk in the write root.
   StringList diskList;
   diskList.push_back(TEST_WRITE_ROOT);
   MemoryMappedFileDeadlockResolver* resolver = NULL;
-  CPPUNIT_ASSERT_NO_THROW(
-    resolver = new MemoryMappedFileDeadlockResolver(diskList));
+  ASSERT_NO_THROW(resolver = new MemoryMappedFileDeadlockResolver(diskList));
 
   // Try to mmap a file that is 100 bytes long.
   uint64_t requestSize = 100;
   void* memory = NULL;
-  CPPUNIT_ASSERT_NO_THROW(memory = resolver->resolveRequest(requestSize));
+  ASSERT_NO_THROW(memory = resolver->resolveRequest(requestSize));
 
   // Write 0..requestSize-1 to all the bytes.
   for (uint8_t i = 0; i < requestSize; ++i) {
@@ -29,28 +28,27 @@ void MemoryMappedFileDeadlockResolverTest::testResolve() {
   uint8_t* memoryEnd = currentByte + requestSize;
   uint8_t i = 0;
   while (currentByte < memoryEnd) {
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Wrong byte value.", i, *currentByte);
+    EXPECT_EQ(i, *currentByte);
     ++currentByte;
     ++i;
   }
 
   // Clean up.
-  CPPUNIT_ASSERT_NO_THROW(resolver->deallocate(memory));
-  CPPUNIT_ASSERT_NO_THROW(delete resolver);
+  ASSERT_NO_THROW(resolver->deallocate(memory));
+  ASSERT_NO_THROW(delete resolver);
 }
 
-void MemoryMappedFileDeadlockResolverTest::testBadDeallocate() {
+TEST_F(MemoryMappedFileDeadlockResolverTest, testBadDeallocate) {
   // Create a resolver with 1 disk in the write root.
   StringList diskList;
   diskList.push_back(TEST_WRITE_ROOT);
   MemoryMappedFileDeadlockResolver* resolver = NULL;
-  CPPUNIT_ASSERT_NO_THROW(
-    resolver = new MemoryMappedFileDeadlockResolver(diskList));
+  ASSERT_NO_THROW(resolver = new MemoryMappedFileDeadlockResolver(diskList));
 
   // Try to deallocate garbage.
   void* memory = NULL;
-  CPPUNIT_ASSERT_THROW(resolver->deallocate(memory), AssertionFailedException);
+  ASSERT_THROW(resolver->deallocate(memory), AssertionFailedException);
 
   // Clean up.
-  CPPUNIT_ASSERT_NO_THROW(delete resolver);
+  ASSERT_NO_THROW(delete resolver);
 }

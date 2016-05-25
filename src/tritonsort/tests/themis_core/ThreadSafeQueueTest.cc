@@ -14,19 +14,19 @@ void* pusherThread(void* arg) {
 
 void* popperThread(void* arg) {
   int result = testQueue->blockingPop();
-  CPPUNIT_ASSERT_EQUAL(42, result);
+  EXPECT_EQ(42, result);
   return NULL;
 }
 
-void ThreadSafeQueueTest::setUp() {
+void ThreadSafeQueueTest::SetUp() {
   testQueue = new ThreadSafeQueue<int>();
 }
 
-void ThreadSafeQueueTest::tearDown() {
+void ThreadSafeQueueTest::TearDown() {
   delete testQueue;
 }
 
-void ThreadSafeQueueTest::testPushPop() {
+TEST_F(ThreadSafeQueueTest, testPushPop) {
   testQueue->push(1);
   testQueue->push(2);
   testQueue->push(16);
@@ -34,49 +34,45 @@ void ThreadSafeQueueTest::testPushPop() {
   testQueue->push(4);
 
   int testInt = 764;
-  CPPUNIT_ASSERT(testQueue->pop(testInt));
-  CPPUNIT_ASSERT_EQUAL(1, testInt);
-  CPPUNIT_ASSERT(testQueue->pop(testInt));
-  CPPUNIT_ASSERT_EQUAL(2, testInt);
-  CPPUNIT_ASSERT(testQueue->pop(testInt));
-  CPPUNIT_ASSERT_EQUAL(16, testInt);
-  CPPUNIT_ASSERT(testQueue->pop(testInt));
-  CPPUNIT_ASSERT_EQUAL(9, testInt);
-  CPPUNIT_ASSERT(testQueue->pop(testInt));
-  CPPUNIT_ASSERT_EQUAL(4, testInt);
-  CPPUNIT_ASSERT(!testQueue->pop(testInt));
-  CPPUNIT_ASSERT_EQUAL(4, testInt);
+  EXPECT_TRUE(testQueue->pop(testInt));
+  EXPECT_EQ(1, testInt);
+  EXPECT_TRUE(testQueue->pop(testInt));
+  EXPECT_EQ(2, testInt);
+  EXPECT_TRUE(testQueue->pop(testInt));
+  EXPECT_EQ(16, testInt);
+  EXPECT_TRUE(testQueue->pop(testInt));
+  EXPECT_EQ(9, testInt);
+  EXPECT_TRUE(testQueue->pop(testInt));
+  EXPECT_EQ(4, testInt);
+  EXPECT_TRUE(!testQueue->pop(testInt));
+  EXPECT_EQ(4, testInt);
 }
 
-void ThreadSafeQueueTest::testBlockingPop() {
+TEST_F(ThreadSafeQueueTest, testBlockingPop) {
   pthread_t pusherThreadID;
   pthread_t popperThreadID;
 
-  CPPUNIT_ASSERT_EQUAL(0, pthread_create(
-                         &popperThreadID, NULL, &popperThread, NULL));
+  EXPECT_EQ(0, pthread_create(&popperThreadID, NULL, &popperThread, NULL));
   usleep(10000);
-  CPPUNIT_ASSERT_EQUAL(0, pthread_create(
-                         &pusherThreadID, NULL, &pusherThread, NULL));
+  EXPECT_EQ(0, pthread_create(&pusherThreadID, NULL, &pusherThread, NULL));
 
-  CPPUNIT_ASSERT_EQUAL(0, pthread_join(pusherThreadID, NULL));
-  CPPUNIT_ASSERT_EQUAL(0, pthread_join(popperThreadID, NULL));
+  EXPECT_EQ(0, pthread_join(pusherThreadID, NULL));
+  EXPECT_EQ(0, pthread_join(popperThreadID, NULL));
 
-  CPPUNIT_ASSERT(testQueue->empty());
+  EXPECT_TRUE(testQueue->empty());
 
-  CPPUNIT_ASSERT_EQUAL(0, pthread_create(
-                         &pusherThreadID, NULL, &pusherThread, NULL));
-  CPPUNIT_ASSERT_EQUAL(0, pthread_create(
-                         &popperThreadID, NULL, &popperThread, NULL));
+  EXPECT_EQ(0, pthread_create(&pusherThreadID, NULL, &pusherThread, NULL));
+  EXPECT_EQ(0, pthread_create(&popperThreadID, NULL, &popperThread, NULL));
 
-  CPPUNIT_ASSERT_EQUAL(0, pthread_join(pusherThreadID, NULL));
-  CPPUNIT_ASSERT_EQUAL(0, pthread_join(popperThreadID, NULL));
+  EXPECT_EQ(0, pthread_join(pusherThreadID, NULL));
+  EXPECT_EQ(0, pthread_join(popperThreadID, NULL));
 }
 
-void ThreadSafeQueueTest::testEmpty() {
-  CPPUNIT_ASSERT(testQueue->empty());
+TEST_F(ThreadSafeQueueTest, testEmpty) {
+  EXPECT_TRUE(testQueue->empty());
   testQueue->push(17);
-  CPPUNIT_ASSERT(!testQueue->empty());
+  EXPECT_TRUE(!testQueue->empty());
   int dummyInt = 0;
-  CPPUNIT_ASSERT(testQueue->pop(dummyInt));
-  CPPUNIT_ASSERT(testQueue->empty());
+  EXPECT_TRUE(testQueue->pop(dummyInt));
+  EXPECT_TRUE(testQueue->empty());
 }

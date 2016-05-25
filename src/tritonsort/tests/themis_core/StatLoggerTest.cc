@@ -2,8 +2,10 @@
 #include "core/Params.h"
 #include "core/StatLogger.h"
 
-void StatLoggerTest::testLoggingToUnregisteredKeyThrowsException() {
+#ifdef TRITONSORT_ASSERTS
+TEST_F(StatLoggerTest, testLoggingToUnregisteredKeyThrowsException) {
   StatLogger testLogger("testLogger");
 
-  CPPUNIT_ASSERT_THROW(testLogger.add(42, 610), AssertionFailedException);
+  ASSERT_THROW(testLogger.add(42, 610), AssertionFailedException);
 }
+#endif //TRITONSORT_ASSERTS

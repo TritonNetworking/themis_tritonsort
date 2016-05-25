@@ -18,7 +18,8 @@ ADD_EXECUTABLE(tests tests.cc TestUtils.cc ${buffers_Files} ${common_Files}
 TARGET_LINK_LIBRARIES(tests ${CPPUNIT_LIBRARIES} gtest tritonsort_common
   tritonsort_core mapreduce_workers ${MEMORY_MGMT_LINK_LIBRARY})
 
-ADD_EXECUTABLE(tests_gtest tests_gtest.cc TestUtils.cc ${common_Files})
+ADD_EXECUTABLE(tests_gtest tests_gtest.cc TestUtils.cc ${common_Files}
+  ${themis_core_Files})
 TARGET_LINK_LIBRARIES(tests_gtest gtest tritonsort_common
   tritonsort_core mapreduce_workers ${MEMORY_MGMT_LINK_LIBRARY})
 

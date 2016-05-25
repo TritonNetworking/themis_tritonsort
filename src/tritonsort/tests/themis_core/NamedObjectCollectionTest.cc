@@ -2,44 +2,39 @@
 #include "common/DummyWorkUnit.h"
 #include "core/NamedObjectCollection.h"
 
-void NamedObjectCollectionTest::testGloballyScopedObject() {
+TEST_F(NamedObjectCollectionTest, testGloballyScopedObject) {
   NamedObjectCollection collection;
 
   DummyWorkUnit workUnit;
 
   collection.add("dummy", &workUnit);
-  CPPUNIT_ASSERT(collection.contains<DummyWorkUnit>("dummy"));
-  CPPUNIT_ASSERT_EQUAL(collection.get<DummyWorkUnit>("dummy"), &workUnit);
+  EXPECT_TRUE(collection.contains<DummyWorkUnit>("dummy"));
+  EXPECT_EQ(collection.get<DummyWorkUnit>("dummy"), &workUnit);
 }
 
-void NamedObjectCollectionTest::testScopedObject() {
+TEST_F(NamedObjectCollectionTest, testScopedObject) {
   NamedObjectCollection collection;
 
   DummyWorkUnit workUnit;
 
   collection.add("some_scope", "dummy", &workUnit);
 
-  CPPUNIT_ASSERT(collection.contains<DummyWorkUnit>(
-                   "some_scope", "dummy"));
-  CPPUNIT_ASSERT_EQUAL(collection.get<DummyWorkUnit>("some_scope", "dummy"),
-                       &workUnit);
+  EXPECT_TRUE(collection.contains<DummyWorkUnit>("some_scope", "dummy"));
+  EXPECT_EQ(collection.get<DummyWorkUnit>("some_scope", "dummy"), &workUnit);
 
   // "dummy" doesn't exist in global scope, so this should fail.
-  CPPUNIT_ASSERT(!collection.contains<DummyWorkUnit>("dummy"));
-  CPPUNIT_ASSERT_THROW(collection.get<DummyWorkUnit>("dummy"),
-                       AssertionFailedException);
+  EXPECT_TRUE(!collection.contains<DummyWorkUnit>("dummy"));
+  ASSERT_THROW(collection.get<DummyWorkUnit>("dummy"),
+               AssertionFailedException);
 }
 
-void NamedObjectCollectionTest::testObjectInGlobalScopeButNotInLocalScope() {
+TEST_F(NamedObjectCollectionTest, testObjectInGlobalScopeButNotInLocalScope) {
   NamedObjectCollection collection;
 
   DummyWorkUnit workUnit;
 
   collection.add("dummy", &workUnit);
 
-  CPPUNIT_ASSERT_EQUAL(collection.get<DummyWorkUnit>(
-                         "nonexistant_scope", "dummy"),
-                       &workUnit);
+  EXPECT_EQ(collection.get<DummyWorkUnit>("nonexistant_scope", "dummy"),
+            &workUnit);
 }
-
-

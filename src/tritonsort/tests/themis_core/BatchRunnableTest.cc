@@ -9,7 +9,7 @@
 #include "core/WorkerFactory.h"
 #include "core/WorkerTracker.h"
 
-void BatchRunnableTest::testBasic() {
+TEST_F(BatchRunnableTest, testBasic) {
   Params params;
   params.add<uint64_t>("CORES_PER_NODE", 16);
   params.add<uint64_t>("NUM_WORKERS.test_phase.mock_batch", 1);
@@ -41,12 +41,12 @@ void BatchRunnableTest::testBasic() {
   MockBatchRunnable* worker = dynamic_cast<MockBatchRunnable*>(
     batchRunnableTracker.getWorkers()[0]);
 
-  CPPUNIT_ASSERT(worker != NULL);
+  EXPECT_TRUE(worker != NULL);
 
   batchRunnableTracker.spawn();
 
   batchRunnableTracker.waitForWorkersToFinish();
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 200, worker->getNumWorkUnitsProcessed());
+  EXPECT_EQ((uint64_t) 200, worker->getNumWorkUnitsProcessed());
   batchRunnableTracker.destroyWorkers();
 }
