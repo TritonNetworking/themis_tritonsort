@@ -4,7 +4,7 @@
 #include "config.h"
 #include "core/MemoryAllocatorInterface.h"
 #include "mapreduce/common/KeyValuePair.h"
-#include "tests/common/MemoryAllocatingTestFixture.h"
+#include "tests/mapreduce/common/MemoryAllocatingTestFixture.h"
 
 class KeyPartitionerInterface;
 

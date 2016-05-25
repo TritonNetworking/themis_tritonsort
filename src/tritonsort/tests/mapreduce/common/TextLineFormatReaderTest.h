@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "mapreduce/common/FilenameToStreamIDMap.h"
-#include "tests/common/MemoryAllocatingTestFixture.h"
+#include "tests/mapreduce/common/MemoryAllocatingTestFixture.h"
 #include "tests/themis_core/MockWorkerTracker.h"
 
 class BaseBuffer;
