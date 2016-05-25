@@ -15,10 +15,10 @@ RECURSE_CC_FILES(mapreduce)
 
 ADD_EXECUTABLE(tests tests.cc TestUtils.cc ${buffers_Files} ${common_Files}
   ${themis_core_Files} ${mapreduce_Files})
-TARGET_LINK_LIBRARIES(tests ${CPPUNIT_LIBRARIES} tritonsort_common
+TARGET_LINK_LIBRARIES(tests ${CPPUNIT_LIBRARIES} gtest tritonsort_common
   tritonsort_core mapreduce_workers ${MEMORY_MGMT_LINK_LIBRARY})
 
-ADD_EXECUTABLE(tests_gtest tests_gtest.cc TestUtils.cc)
+ADD_EXECUTABLE(tests_gtest tests_gtest.cc TestUtils.cc ${common_Files})
 TARGET_LINK_LIBRARIES(tests_gtest gtest tritonsort_common
   tritonsort_core mapreduce_workers ${MEMORY_MGMT_LINK_LIBRARY})
 

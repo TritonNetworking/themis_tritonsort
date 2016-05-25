@@ -17,7 +17,6 @@
 #include "core/TritonSortAssert.h"
 #include "core/Utils.h"
 #include "core/constants.h"
-#include "tests/common/CommonTestSuite.h"
 #include "tests/mapreduce/MapReduceTestSuite.h"
 #include "tests/themis_core/CoreTestSuite.h"
 
@@ -72,7 +71,6 @@ int main(int argc, char** argv) {
   controller.addListener( &progress );
 
   CppUnit::TestRunner runner;
-  runner.addTest(new CommonTestSuite());
   runner.addTest(new CoreTestSuite());
   runner.addTest(new MapReduceTestSuite());
 
