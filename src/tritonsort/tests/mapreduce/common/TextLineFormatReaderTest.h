@@ -15,28 +15,12 @@ class ByteStreamConverter;
 class KVPairBuffer;
 
 class TextLineFormatReaderTest : public MemoryAllocatingTestFixture {
-  CPPUNIT_TEST_SUITE( TextLineFormatReaderTest );
-  CPPUNIT_TEST( testLongLines );
-  CPPUNIT_TEST( testNewlineAtEnd );
-  CPPUNIT_TEST( testWindowsLineFeeds );
-  CPPUNIT_TEST( testEmptyLines );
-  CPPUNIT_TEST( testLineSpanningBuffers );
-  CPPUNIT_TEST( testWindowsLineFeedSpanningBuffers );
-  CPPUNIT_TEST( testLineOverflowsBuffer );
-  CPPUNIT_TEST_SUITE_END();
 public:
   TextLineFormatReaderTest();
-  void setUp();
-  void tearDown();
-  void testLongLines();
-  void testWindowsLineFeeds();
-  void testNewlineAtEnd();
-  void testEmptyLines();
-  void testLineSpanningBuffers();
-  void testWindowsLineFeedSpanningBuffers();
-  void testLineOverflowsBuffer();
+  void SetUp();
+  void TearDown();
 
-private:
+protected:
   void testBufferContainsLines(
     KVPairBuffer& buffer, std::vector<std::string>& expectedLines);
   void runInputsAndVerifyOutputs(

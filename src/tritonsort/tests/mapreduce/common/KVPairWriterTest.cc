@@ -10,7 +10,7 @@
 #include "mapreduce/common/PhaseZeroKVPairWriteStrategy.h"
 #include "mapreduce/functions/partition/SinglePartitionMergingPartitionFunction.h"
 
-void KVPairWriterTest::setUp() {
+void KVPairWriterTest::SetUp() {
   bufferFactory = NULL;
   parentWorker = NULL;
   writer = NULL;
@@ -26,12 +26,12 @@ void KVPairWriterTest::setUp() {
       "dummy_phase_name", "dummy_stage_name", 0, params, *memoryAllocator,
       dependencies));
 
-  CPPUNIT_ASSERT(parentWorker != NULL);
+  EXPECT_TRUE(parentWorker != NULL);
 
   createNewKVPairWriter(1, NULL, NULL);
 }
 
-void KVPairWriterTest::tearDown() {
+void KVPairWriterTest::TearDown() {
   if (bufferFactory != NULL) {
     delete bufferFactory;
     bufferFactory = NULL;
@@ -123,7 +123,7 @@ void KVPairWriterTest::createNewTuple(uint8_t** key, uint64_t keyLength,
   }
 }
 
-void KVPairWriterTest::testStandardWrite() {
+TEST_F(KVPairWriterTest, testStandardWrite) {
   createNewKVPairWriter(1, NULL, NULL);
 
   uint32_t keyLength = 20;
@@ -161,7 +161,7 @@ void KVPairWriterTest::testStandardWrite() {
   value = NULL;
 }
 
-void KVPairWriterTest::testLargeTuple() {
+TEST_F(KVPairWriterTest, testLargeTuple) {
   createNewKVPairWriter(1, NULL, NULL);
 
   uint32_t keyLength = 500;
@@ -201,7 +201,7 @@ void KVPairWriterTest::testLargeTuple() {
   value = NULL;
 }
 
-void KVPairWriterTest::testHugeTuple() {
+TEST_F(KVPairWriterTest, testHugeTuple) {
   createNewKVPairWriter(1, NULL, NULL);
 
   uint32_t keyLength = 900;
@@ -222,17 +222,17 @@ void KVPairWriterTest::testHugeTuple() {
   const std::list<KVPairBuffer*>& emittedBuffers =
     parentWorker->getEmittedBuffers();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), emittedBuffers.size());
+  EXPECT_EQ(static_cast<size_t>(1), emittedBuffers.size());
 
   KVPairBuffer* buffer = *emittedBuffers.begin();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(KeyValuePair::tupleSize(900, 400)),
-                       buffer->getCurrentSize());
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(2000), buffer->getCapacity());
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(1), buffer->getNumTuples());
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(900, 400)),
+            buffer->getCurrentSize());
+  EXPECT_EQ(static_cast<uint64_t>(2000), buffer->getCapacity());
+  EXPECT_EQ(static_cast<uint64_t>(1), buffer->getNumTuples());
 
   KeyValuePair emittedKVPair;
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   checkTuple(emittedKVPair, key, keyLength, value, valueLength);
 
   parentWorker->returnEmittedBuffersToPool();
@@ -243,16 +243,16 @@ void KVPairWriterTest::testHugeTuple() {
   writer->write(kvPair);
   writer->flushBuffers();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), emittedBuffers.size());
+  EXPECT_EQ(static_cast<size_t>(1), emittedBuffers.size());
 
   buffer = *emittedBuffers.begin();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(KeyValuePair::tupleSize(900, 400)),
-                       buffer->getCurrentSize());
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(2000), buffer->getCapacity());
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(1), buffer->getNumTuples());
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(900, 400)),
+            buffer->getCurrentSize());
+  EXPECT_EQ(static_cast<uint64_t>(2000), buffer->getCapacity());
+  EXPECT_EQ(static_cast<uint64_t>(1), buffer->getNumTuples());
 
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   checkTuple(emittedKVPair, key, keyLength, value, valueLength);
 
   parentWorker->returnEmittedBuffersToPool();
@@ -278,7 +278,7 @@ void KVPairWriterTest::appendTuple(uint8_t* key, uint32_t keyLength,
   writer->commitWrite(valueLength);
 }
 
-void KVPairWriterTest::testSetupAndCommitTupleWrite() {
+TEST_F(KVPairWriterTest, testSetupAndCommitTupleWrite) {
   createNewKVPairWriter(1, NULL, NULL);
 
   uint32_t keyLength = 20;
@@ -312,7 +312,7 @@ void KVPairWriterTest::testSetupAndCommitTupleWrite() {
   delete[] expectedValue;
 }
 
-void KVPairWriterTest::testSetupAndCommitLargeTuple() {
+TEST_F(KVPairWriterTest, testSetupAndCommitLargeTuple) {
   createNewKVPairWriter(1, NULL, NULL);
 
   uint32_t keyLength = 500;
@@ -351,17 +351,16 @@ void KVPairWriterTest::testSetupAndCommitLargeTuple() {
 void KVPairWriterTest::checkTuple(KeyValuePair& kvPair, uint8_t* referenceKey,
                                   uint32_t keyLength, uint8_t* referenceValue,
                                   uint32_t valueLength) {
-  CPPUNIT_ASSERT_EQUAL(keyLength, kvPair.getKeyLength());
+  EXPECT_EQ(keyLength, kvPair.getKeyLength());
 
   if (referenceKey != NULL) {
-    CPPUNIT_ASSERT_EQUAL(0, memcmp(referenceKey, kvPair.getKey(), keyLength));
+    EXPECT_EQ(0, memcmp(referenceKey, kvPair.getKey(), keyLength));
   }
 
-  CPPUNIT_ASSERT_EQUAL(valueLength, kvPair.getValueLength());
+  EXPECT_EQ(valueLength, kvPair.getValueLength());
 
   if (referenceValue != NULL) {
-    CPPUNIT_ASSERT_EQUAL(0, memcmp(referenceValue, kvPair.getValue(),
-                                   valueLength));
+    EXPECT_EQ(0, memcmp(referenceValue, kvPair.getValue(), valueLength));
   }
 }
 
@@ -371,16 +370,16 @@ void KVPairWriterTest::validateStandardWrite(
   const std::list<KVPairBuffer*>& emittedBuffers =
     parentWorker->getEmittedBuffers();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), emittedBuffers.size());
+  EXPECT_EQ(static_cast<size_t>(1), emittedBuffers.size());
 
   KVPairBuffer* buffer = emittedBuffers.front();
-  CPPUNIT_ASSERT_EQUAL(
+  EXPECT_EQ(
     static_cast<uint64_t>(KeyValuePair::tupleSize(keyLength, valueLength)),
     buffer->getCurrentSize());
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(1), buffer->getNumTuples());
+  EXPECT_EQ(static_cast<uint64_t>(1), buffer->getNumTuples());
 
   KeyValuePair emittedKVPair;
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   checkTuple(emittedKVPair, key, keyLength, value, valueLength);
 }
 
@@ -389,26 +388,26 @@ void KVPairWriterTest::validateLargeWrite(
   const std::list<KVPairBuffer*>& emittedBuffers =
     parentWorker->getEmittedBuffers();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(2), emittedBuffers.size());
+  EXPECT_EQ(static_cast<size_t>(2), emittedBuffers.size());
 
   for (std::list<KVPairBuffer*>::const_iterator iter = emittedBuffers.begin();
        iter != emittedBuffers.end(); iter++) {
     KVPairBuffer* buffer = *iter;
 
-    CPPUNIT_ASSERT_EQUAL(
+    EXPECT_EQ(
       static_cast<uint64_t>(KeyValuePair::tupleSize(keyLength, valueLength)),
       buffer->getCurrentSize());
-    CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(1), buffer->getNumTuples());
+    EXPECT_EQ(static_cast<uint64_t>(1), buffer->getNumTuples());
 
     KeyValuePair emittedKVPair;
 
-    CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+    EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
 
     checkTuple(emittedKVPair, key, keyLength, value, valueLength);
   }
 }
 
-void KVPairWriterTest::testPhaseZeroStrategy() {
+TEST_F(KVPairWriterTest, testPhaseZeroStrategy) {
   PhaseZeroKVPairWriteStrategy* phaseZeroStrategy =
     new PhaseZeroKVPairWriteStrategy();
 
@@ -427,7 +426,7 @@ void KVPairWriterTest::testPhaseZeroStrategy() {
   const std::list<KVPairBuffer*>& emittedBuffers =
     parentWorker->getEmittedBuffers();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), emittedBuffers.size());
+  EXPECT_EQ(static_cast<size_t>(1), emittedBuffers.size());
 
   KVPairBuffer* buffer = emittedBuffers.front();
 
@@ -438,27 +437,27 @@ void KVPairWriterTest::testPhaseZeroStrategy() {
     KeyValuePair::tupleSize(50, sizeof(uint64_t)) +
     KeyValuePair::tupleSize(22, sizeof(uint64_t));
 
-  CPPUNIT_ASSERT_EQUAL(totalSize, buffer->getCurrentSize());
+  EXPECT_EQ(totalSize, buffer->getCurrentSize());
 
   KeyValuePair emittedKVPair;
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   uint64_t value = KeyValuePair::tupleSize(20, 80);
   uint8_t* valuePointer = reinterpret_cast<uint8_t*>(&value);
   checkTuple(emittedKVPair, key, 20, valuePointer, sizeof(valuePointer));
 
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   value = KeyValuePair::tupleSize(30, 60);
   checkTuple(emittedKVPair, key, 30, valuePointer, sizeof(valuePointer));
 
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   value = KeyValuePair::tupleSize(50, 70);
   checkTuple(emittedKVPair, key, 50, valuePointer, sizeof(valuePointer));
 
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_EQ(true, buffer->getNextKVPair(emittedKVPair));
   value = KeyValuePair::tupleSize(22, 37);
   checkTuple(emittedKVPair, key, 22, valuePointer, sizeof(valuePointer));
 
-  CPPUNIT_ASSERT_EQUAL(false, buffer->getNextKVPair(emittedKVPair));
+  EXPECT_TRUE(!buffer->getNextKVPair(emittedKVPair));
 
   parentWorker->returnEmittedBuffersToPool();
 

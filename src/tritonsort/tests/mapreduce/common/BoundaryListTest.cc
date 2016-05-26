@@ -7,7 +7,7 @@
 
 extern const char* TEST_WRITE_ROOT;
 
-void BoundaryListTest::testTupleHeap() {
+TEST_F(BoundaryListTest, testTupleHeap) {
   // Make sure the TupleHeap data structure used in BoundaryCalculator actually
   // sorts tuples correctly.
   // This is more of a test of our heap entry comparator function than anything,
@@ -62,12 +62,12 @@ void BoundaryListTest::testTupleHeap() {
   uint64_t expectedIDs[6] = {2, 6, 1, 5, 4, 3};
 
   for (unsigned int i = 0; i < 6; i ++) {
-    CPPUNIT_ASSERT_MESSAGE("Heap pre-maturely empty", !heap.empty());
+    EXPECT_TRUE(!heap.empty());
     HeapEntry* top = heap.top();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Heap out of order", expectedIDs[i], top->id);
+    EXPECT_EQ(expectedIDs[i], top->id);
     heap.pop();
   }
-  CPPUNIT_ASSERT_MESSAGE("Heap not empty all tuples popped", heap.empty());
+  EXPECT_TRUE(heap.empty());
 
   // Cleanup
   delete[] buffer1;
@@ -112,7 +112,8 @@ void BoundaryListTest::testLocalPartitionsInternal(
   verifyLocalPartitionFunction(keyPartitioner, tuple, 90, 0, 179, 7, 1);
 }
 
-void BoundaryListTest::testLocalPartitions() {
+#ifdef TRITONSORT_ASSERTS
+TEST_F(BoundaryListTest, testLocalPartitions) {
   uint64_t numNodes = 3;
   uint64_t numPhysicalDisksPerNode = 2;
   uint64_t numLogicalDisksPerPhysicalDisk = 2;
@@ -136,7 +137,7 @@ void BoundaryListTest::testLocalPartitions() {
     numPartitionGroups);
 
   // Sanity check: keyPartitioner and keyPartitioner2 should not be equal
-  CPPUNIT_ASSERT(!keyPartitionerPtr->equals(*keyPartitionerPtr2));
+  EXPECT_TRUE(!keyPartitionerPtr->equals(*keyPartitionerPtr2));
 
   KeyPartitionerInterface& keyPartitioner2 = *keyPartitionerPtr2;
 
@@ -154,8 +155,9 @@ void BoundaryListTest::testLocalPartitions() {
 
   delete keyPartitionerPtr;
 }
+#endif //TRITONSORT_ASSERTS
 
-void BoundaryListTest::testGlobalPartitions() {
+TEST_F(BoundaryListTest, testGlobalPartitions) {
   // Create the partition boundaries
   KeyValuePair tuple;
   uint8_t* byteBuffer;
@@ -269,8 +271,7 @@ void BoundaryListTest::verifyLocalPartitionFunction(
     tuple, keyLength, valueLength, keyByteValue);
   uint64_t partition = keyPartitioner.localPartition(
     tuple.getKey(), tuple.getKeyLength(), partitionGroup);
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Bad local partition function",
-                               expectedPartition, partition);
+  EXPECT_EQ(expectedPartition, partition);
   delete[] byteBuffer;
 }
 
@@ -283,8 +284,7 @@ void BoundaryListTest::verifyGlobalPartitionFunction(
     tuple, keyLength, valueLength, keyByteValue);
   uint64_t partition = keyPartitioner.globalPartition(
     tuple.getKey(), tuple.getKeyLength());
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Bad global partition function",
-                               expectedPartition, partition);
+  EXPECT_EQ(expectedPartition, partition);
   delete[] byteBuffer;
 }
 
@@ -338,7 +338,7 @@ KeyPartitionerInterface* BoundaryListTest::createNewKeyPartitioner(
   return keyPartitioner;
 }
 
-void BoundaryListTest::testWriteToFileAndLoad() {
+TEST_F(BoundaryListTest, testWriteToFileAndLoad) {
   uint64_t numNodes = 3;
   uint64_t numPhysicalDisksPerNode = 2;
   uint64_t numLogicalDisksPerPhysicalDisk = 2;
@@ -350,7 +350,7 @@ void BoundaryListTest::testWriteToFileAndLoad() {
     numPartitionGroups);
 
   // Sanity check: boundary list should equal itself
-  CPPUNIT_ASSERT(keyPartitioner->equals(*keyPartitioner));
+  EXPECT_TRUE(keyPartitioner->equals(*keyPartitioner));
 
   // Dump boundary list to file, then read it back again
 
@@ -363,8 +363,8 @@ void BoundaryListTest::testWriteToFileAndLoad() {
 
   KeyPartitioner loadedKeyPartitioner(file);
 
-  CPPUNIT_ASSERT(keyPartitioner->equals(loadedKeyPartitioner));
-  CPPUNIT_ASSERT(loadedKeyPartitioner.equals(*keyPartitioner));
+  EXPECT_TRUE(keyPartitioner->equals(loadedKeyPartitioner));
+  EXPECT_TRUE(loadedKeyPartitioner.equals(*keyPartitioner));
 
   file.unlink();
 

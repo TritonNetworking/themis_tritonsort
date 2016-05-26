@@ -11,10 +11,10 @@ void RadixSortStrategyTests::testUniformSize(
     strategy, numRecords, keyLength, valueLength, secondaryKeys);
 }
 
-void RadixSortStrategyTests::testNormal() {
+TEST_F(RadixSortStrategyTests, testNormal) {
   testUniformSize(5000, 10, 90, false);
 }
 
-void RadixSortStrategyTests::testSecondaryKeys() {
+TEST_F(RadixSortStrategyTests, testSecondaryKeys) {
   testUniformSize(5000, 10, 90, true);
 }

@@ -1,19 +1,10 @@
 #ifndef THEMIS_MAPRED_NGRAM_MAP_FUNCTION_TEST_H
 #define THEMIS_MAPRED_NGRAM_MAP_FUNCTION_TEST_H
 
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/extensions/HelperMacros.h>
+#include "gtest/gtest.h"
 
-class NGramMapFunctionTest : public CppUnit::TestFixture {
-  CPPUNIT_TEST_SUITE( NGramMapFunctionTest );
-  CPPUNIT_TEST( testMapNGrams );
-  CPPUNIT_TEST_SUITE_END();
-public:
-  void testMapNGrams();
-
-private:
+class NGramMapFunctionTest : public ::testing::Test {
+protected:
   void insertExpectedKey(std::set<std::string>& expectedKeys, const char* key);
 };
 

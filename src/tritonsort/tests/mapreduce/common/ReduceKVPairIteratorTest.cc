@@ -4,7 +4,7 @@
 #include "mapreduce/workers/reducer/ReduceKVPairIterator.h"
 #include "tests/mapreduce/common/ReduceKVPairIteratorTest.h"
 
-void ReduceKVPairIteratorTest::setUp() {
+void ReduceKVPairIteratorTest::SetUp() {
   dummyMemory = NULL;
   buffer = NULL;
 
@@ -22,7 +22,7 @@ void ReduceKVPairIteratorTest::setUp() {
   buffer = new KVPairBuffer(bufferMemory, 10000);
 }
 
-void ReduceKVPairIteratorTest::tearDown() {
+void ReduceKVPairIteratorTest::TearDown() {
   if (dummyMemory != NULL) {
     delete[] dummyMemory;
   }
@@ -57,7 +57,7 @@ void ReduceKVPairIteratorTest::setupBuffer() {
   buffer->addKVPair(kvPair);
 }
 
-void ReduceKVPairIteratorTest::testMultipleKeys() {
+TEST_F(ReduceKVPairIteratorTest, testMultipleKeys) {
   setupBuffer();
 
   ReduceKVPairIterator iterator(*buffer);
@@ -74,45 +74,44 @@ void ReduceKVPairIteratorTest::validateCompleteIteration(
 
   // We should first be given `dummyMemory + 50`'s key and be able to iterate
   // through the three records with that key
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 20, 10);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // Now, we should be given `dummyMemory + 10`'s key, and be able to iterate
   // through its two values
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(
+      memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // At this point, there should be no more records left in the buffer through
   // which to iterate
-  CPPUNIT_ASSERT(!iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(!iterator.startNextKey(key, keyLength));
 }
 
-void ReduceKVPairIteratorTest::testEndIterationInMiddle() {
+TEST_F(ReduceKVPairIteratorTest, testEndIterationInMiddle) {
   setupBuffer();
 
   ReduceKVPairIterator iterator(*buffer);
@@ -123,37 +122,36 @@ void ReduceKVPairIteratorTest::testEndIterationInMiddle() {
   KeyValuePair kvPair;
 
   // Only iterate through the first two records for key `dummyMemory + 50`
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
   // Despite the fact that we haven't iterated through the third record for the
   // first key, we should advance to the second key and be able to read all its
   // records
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(
+      memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 }
 
-void ReduceKVPairIteratorTest::testResetInMiddle() {
+TEST_F(ReduceKVPairIteratorTest, testResetInMiddle) {
   setupBuffer();
 
   ReduceKVPairIterator iterator(*buffer);
@@ -164,16 +162,15 @@ void ReduceKVPairIteratorTest::testResetInMiddle() {
   KeyValuePair kvPair;
 
   // Start iterating as normal ...
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
   // Not done iterating through the first key's records, but I'm still
@@ -181,58 +178,58 @@ void ReduceKVPairIteratorTest::testResetInMiddle() {
   iterator.reset();
 
   // The iterator should be placed back at the first record for the first key
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 20, 10);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // Now, start iterating over the second key
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(
+      memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
   // And reset again
   iterator.reset();
 
   // Should be back at the start of the _second_ key's records
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // And we should also be at the end of the buffer when we're done iterating
   // through them
-  CPPUNIT_ASSERT(!iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(!iterator.startNextKey(key, keyLength));
 }
 
 void ReduceKVPairIteratorTest::validateKVPair(
   KeyValuePair& kvPair, const uint8_t* key, uint32_t keyLength,
   const uint8_t* value, uint32_t valueLength) {
 
-  CPPUNIT_ASSERT_EQUAL(keyLength, kvPair.getKeyLength());
-  CPPUNIT_ASSERT(memcmp(kvPair.getKey(), key, keyLength) == 0);
-  CPPUNIT_ASSERT_EQUAL(valueLength, kvPair.getValueLength());
-  CPPUNIT_ASSERT(memcmp(kvPair.getValue(), value, valueLength) == 0);
+  EXPECT_EQ(keyLength, kvPair.getKeyLength());
+  EXPECT_TRUE(memcmp(kvPair.getKey(), key, keyLength) == 0);
+  EXPECT_EQ(valueLength, kvPair.getValueLength());
+  EXPECT_TRUE(memcmp(kvPair.getValue(), value, valueLength) == 0);
 }
 
-void ReduceKVPairIteratorTest::testReset() {
+TEST_F(ReduceKVPairIteratorTest, testReset) {
   setupBuffer();
 
   ReduceKVPairIterator iterator(*buffer);
@@ -243,67 +240,66 @@ void ReduceKVPairIteratorTest::testReset() {
   KeyValuePair kvPair;
 
   // Iterate all the way through the first key's records
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 20, 10);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // Resetting should put you back at the beginning of the first key's records
   iterator.reset();
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 20, 10);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // Iterate through the next key
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(
+      memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
   // Resetting should put you back at the beginning of the _second_ key's
   // records
   iterator.reset();
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
+  EXPECT_TRUE(!iterator.next(kvPair));
 
 }
 
-void ReduceKVPairIteratorTest::testCannotIterateIntoNextKey() {
+TEST_F(ReduceKVPairIteratorTest, testCannotIterateIntoNextKey) {
   setupBuffer();
 
   ReduceKVPairIterator iterator(*buffer);
@@ -314,44 +310,43 @@ void ReduceKVPairIteratorTest::testCannotIterateIntoNextKey() {
   KeyValuePair kvPair;
 
   // Iterate through the first key's records
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(memcmp(dummyMemory, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 50, 30);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 40, 20);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory, 50, dummyMemory + 20, 10);
 
   // At this point, I'm at the end of the first key's records. Calling next()
   // should once should return false and calling it again should fail an assert.
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
-  CPPUNIT_ASSERT_THROW(iterator.next(kvPair), AssertionFailedException);
+  EXPECT_TRUE(!iterator.next(kvPair));
+  ASSERT_THROW(iterator.next(kvPair), AssertionFailedException);
 
   // At this point I should be able to read the second key's records as normal,
   // despite overdoing it on the next() calls
-  CPPUNIT_ASSERT(iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(iterator.startNextKey(key, keyLength));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(50), keyLength);
-  CPPUNIT_ASSERT(
-    memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
+  EXPECT_EQ(static_cast<uint32_t>(50), keyLength);
+  EXPECT_TRUE(
+      memcmp(dummyMemory + 10, key, std::min<uint64_t>(keyLength, 50)) == 0);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 20, 2);
 
-  CPPUNIT_ASSERT(iterator.next(kvPair));
+  EXPECT_TRUE(iterator.next(kvPair));
   validateKVPair(kvPair, dummyMemory + 10, 50, dummyMemory + 4, 42);
 
   // Similarly, next() multiple times at the end of the buffer should fail
   // asserts.
-  CPPUNIT_ASSERT(!iterator.next(kvPair));
-  CPPUNIT_ASSERT_THROW(iterator.next(kvPair), AssertionFailedException);
+  EXPECT_TRUE(!iterator.next(kvPair));
+  ASSERT_THROW(iterator.next(kvPair), AssertionFailedException);
 
-  CPPUNIT_ASSERT(!iterator.startNextKey(key, keyLength));
+  EXPECT_TRUE(!iterator.startNextKey(key, keyLength));
 }

@@ -2,7 +2,7 @@
 #include "mapreduce/common/sorting/QuickSortStrategy.h"
 #include "tests/mapreduce/common/sorting/QuickSortStrategyTests.h"
 
-void QuickSortStrategyTests::testWithSecondaryKeys() {
+TEST_F(QuickSortStrategyTests, testWithSecondaryKeys) {
   // Same as testNormal, but check secondary keys
   testUniformRecordSizeBuffer(5000, 10, 90, true);
 }
@@ -18,8 +18,7 @@ void QuickSortStrategyTests::testUniformRecordSizeBuffer(
 }
 
 
-void QuickSortStrategyTests::testNormal() {
+TEST_F(QuickSortStrategyTests, testNormal) {
   // Run with 5000 records, with key length 10 and value length 90
   testUniformRecordSizeBuffer(5000, 10, 90, false);
 }
-

@@ -1,10 +1,7 @@
 #ifndef MAPRED_KVPAIR_WRITER_TEST_H
 #define MAPRED_KVPAIR_WRITER_TEST_H
 
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/extensions/HelperMacros.h>
+#include "gtest/gtest.h"
 
 #include "KVPairWriterParentWorker.h"
 
@@ -15,27 +12,12 @@ class PartitionFunctionInterface;
 class TupleSizeLoggingStrategyInterface;
 class MemoryAllocatorInterface;
 
-class KVPairWriterTest : public CppUnit::TestFixture {
-  CPPUNIT_TEST_SUITE( KVPairWriterTest );
-  CPPUNIT_TEST( testStandardWrite );
-  CPPUNIT_TEST( testLargeTuple );
-  CPPUNIT_TEST( testHugeTuple );
-  CPPUNIT_TEST( testSetupAndCommitTupleWrite );
-  CPPUNIT_TEST( testSetupAndCommitLargeTuple );
-  CPPUNIT_TEST( testPhaseZeroStrategy );
-  CPPUNIT_TEST_SUITE_END();
-
+class KVPairWriterTest : public ::testing::Test {
 public:
-  void setUp();
-  void tearDown();
-  void testStandardWrite();
-  void testLargeTuple();
-  void testHugeTuple();
-  void testSetupAndCommitTupleWrite();
-  void testSetupAndCommitLargeTuple();
-  void testPhaseZeroStrategy();
+  void SetUp();
+  void TearDown();
 
-private:
+protected:
   MemoryAllocatorInterface* memoryAllocator;
   KVPairBufferFactory* bufferFactory;
   KVPairWriterParentWorker* parentWorker;

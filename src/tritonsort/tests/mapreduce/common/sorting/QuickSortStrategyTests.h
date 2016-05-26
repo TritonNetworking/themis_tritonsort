@@ -6,15 +6,7 @@
 class KVPairBuffer;
 
 class QuickSortStrategyTests : public SortStrategyTestSuite {
-  CPPUNIT_TEST_SUITE( QuickSortStrategyTests );
-  CPPUNIT_TEST( testNormal );
-  CPPUNIT_TEST( testWithSecondaryKeys );
-  CPPUNIT_TEST_SUITE_END();
-public:
-  void testWithSecondaryKeys();
-  void testNormal();
-
-private:
+protected:
   void testUniformRecordSizeBuffer(
     uint64_t numRecords, uint64_t keyLength, uint64_t valueLength,
     bool secondaryKeys);

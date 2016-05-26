@@ -17,7 +17,6 @@
 #include "core/TritonSortAssert.h"
 #include "core/Utils.h"
 #include "core/constants.h"
-#include "tests/mapreduce/MapReduceTestSuite.h"
 
 
 const char* TEST_WRITE_ROOT;
@@ -70,7 +69,6 @@ int main(int argc, char** argv) {
   controller.addListener( &progress );
 
   CppUnit::TestRunner runner;
-  runner.addTest(new MapReduceTestSuite());
 
   std::string testPath;
 

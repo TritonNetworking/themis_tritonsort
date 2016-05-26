@@ -1,19 +1,16 @@
 #ifndef THEMIS_SORT_STRATEGY_TEST_SUITE_H
 #define THEMIS_SORT_STRATEGY_TEST_SUITE_H
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestCaller.h>
 #include <stdint.h>
+#include "gtest/gtest.h"
 
 #include "mapreduce/common/buffers/KVPairBuffer.h"
 #include "mapreduce/common/sorting/SortStrategyInterface.h"
 
-class SortStrategyTestSuite : public CppUnit::TestFixture {
+class SortStrategyTestSuite : public ::testing::Test {
 public:
-  void setUp();
-  void tearDown();
+  void SetUp();
+  void TearDown();
 
 protected:
   void testUniformSizeRecords(

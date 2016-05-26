@@ -1,4 +1,4 @@
-#include <cppunit/TestAssert.h>
+#include "gtest/gtest.h"
 
 #include "BytesCountMapVerifyingWriter.h"
 #include "mapreduce/common/KeyValuePair.h"
@@ -9,16 +9,13 @@ BytesCountMapVerifyingWriter::BytesCountMapVerifyingWriter(
 }
 
 void BytesCountMapVerifyingWriter::write(KeyValuePair& kvPair) {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected key lengths don't match.",
-                               expectedKeySize, kvPair.getKeyLength());
+  EXPECT_EQ(expectedKeySize, kvPair.getKeyLength());
 
   uint32_t expectedValueSize = sizeof(expectedCount);
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected value lengths don't match.",
-                               expectedValueSize, kvPair.getValueLength());
+  EXPECT_EQ(expectedValueSize, kvPair.getValueLength());
 
   uint64_t count = *(reinterpret_cast<const uint64_t*>(kvPair.getValue()));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected counts don't match.",
-                               expectedCount, count);
+  EXPECT_EQ(expectedCount, count);
 }
 
 void BytesCountMapVerifyingWriter::flushBuffers() {
