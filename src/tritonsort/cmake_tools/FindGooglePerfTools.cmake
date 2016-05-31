@@ -18,3 +18,5 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(GooglePerfTools
   "google_perftools is required: http://code.google.com/p/google-perftools/"
   tcmalloc_LIBRARY profiler_LIBRARY
   GooglePerfTools_INCLUDE_DIR)
+
+INCLUDE_DIRECTORIES(${GooglePerfTools_INCLUDE_DIR})
