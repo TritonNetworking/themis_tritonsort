@@ -1,5 +1,4 @@
 #include <limits>
-#include <math.h>
 
 #include "mapreduce/common/PhaseZeroOutputData.h"
 #include "mapreduce/common/Utils.h"

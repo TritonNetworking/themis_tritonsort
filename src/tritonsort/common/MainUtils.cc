@@ -2,7 +2,6 @@
 #include <functional>
 #include <iostream>
 #include <signal.h>
-#include <math.h>
 
 #include "MainUtils.h"
 #include "core/File.h"

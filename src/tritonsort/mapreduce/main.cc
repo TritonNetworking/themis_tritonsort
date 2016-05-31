@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <signal.h>
 #include <stdlib.h>
 
@@ -1358,7 +1358,7 @@ void deriveAdditionalParams(
 
   // Use only 90% of the available memory for the allocator
   params.add<uint64_t>(
-    "ALLOCATOR_CAPACITY", floor(0.9 * params.get<uint64_t>("MEM_SIZE")));
+      "ALLOCATOR_CAPACITY", std::floor(0.9 * params.get<uint64_t>("MEM_SIZE")));
 
   // Set alignment parameters:
   uint64_t alignmentMultiple = params.get<uint64_t>("ALIGNMENT_MULTIPLE");

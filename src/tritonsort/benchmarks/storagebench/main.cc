@@ -1,5 +1,4 @@
 #include <boost/math/common_factor.hpp>
-#include <math.h>
 #include <signal.h>
 #include <stdlib.h>
 

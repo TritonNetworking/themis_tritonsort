@@ -1,8 +1,8 @@
 #define __STDC_FORMAT_MACROS 1
 
+#include <cmath>
 #include <inttypes.h>
 #include <limits>
-#include <math.h>
 
 #include "core/LogLineFieldInfo.h"
 #include "core/ScopedLock.h"
@@ -58,7 +58,7 @@ void StatSummary::writeStatsToFile(
 
   int fileDescriptor = file.getFileDescriptor();
 
-  uint64_t mean = floor(streaming_mean);
+  uint64_t mean = std::floor(streaming_mean);
   uint64_t variance = sum_of_squares_of_mean_differences / count;
 
   logLineDescriptor.writeLogLineToFile(
