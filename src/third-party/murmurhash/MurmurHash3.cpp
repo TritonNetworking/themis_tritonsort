@@ -7,6 +7,9 @@
 // compile and run any of them on any platform, but your performance with the
 // non-native version will be less than optimal.
 
+// Fix to FORCE_INLINE macro due to node-murmurhash3 (MIT license,
+// see node-murmurhash3.LICENSE).
+
 #include "MurmurHash3.h"
 
 //-----------------------------------------------------------------------------
@@ -29,7 +32,7 @@
 
 #else	// defined(_MSC_VER)
 
-#define	FORCE_INLINE __attribute__((always_inline))
+#define	FORCE_INLINE inline __attribute__((always_inline))
 
 inline uint32_t rotl32 ( uint32_t x, int8_t r )
 {
@@ -332,4 +335,3 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 }
 
 //-----------------------------------------------------------------------------
-
