@@ -1,5 +1,5 @@
 #include <boost/math/common_factor.hpp>
-#include <math.h>
+#include <cmath>
 
 #include "common/AlignmentUtils.h"
 #include "core/Params.h"
@@ -56,7 +56,7 @@ uint64_t setNumPartitions(
   uint64_t totalNumDisks = numNodes * numIntermediateDisks;
   uint64_t dataPerDisk = estimatedIntermediateDataSize / totalNumDisks;
   uint64_t partitionsPerDisk = std::max<uint64_t>(
-    ceil(dataPerDisk / ((double) partitionSize)), 1);
+      std::ceil(dataPerDisk / ((double) partitionSize)), 1);
   uint64_t partitionsPerNode = partitionsPerDisk * numIntermediateDisks;
 
   // Number of partitions per node must be a multiple of both the number of

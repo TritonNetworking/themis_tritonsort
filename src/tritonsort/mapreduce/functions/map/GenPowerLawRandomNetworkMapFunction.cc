@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 #include "GenPowerLawRandomNetworkMapFunction.h"
 #include "core/Hash.h"
@@ -43,7 +43,7 @@ void GenPowerLawRandomNetworkMapFunction::map(KeyValuePair& kvPair,
     double frac = (1.0 / (i * i)) / sum;
 
     // number of vertices with degree i
-    uint64_t diff = floor(frac * numVertices + 0.5); // integer round
+    uint64_t diff = std::floor(frac * numVertices + 0.5); // integer round
 
     degreeVertexCDF[i] = degreeVertexCDF[i-1] + diff;
     degreeEdgeCDF[i] = degreeEdgeCDF[i-1] + diff * (i + 1); // extra one
