@@ -3,7 +3,7 @@
 #include "mapreduce/common/KeyValuePair.h"
 #include "tests/mapreduce/common/sorting/SortStrategyTestSuite.h"
 
-void SortStrategyTestSuite::setUp() {
+void SortStrategyTestSuite::SetUp() {
   inputBuffer = NULL;
   inputBufferMemory = NULL;
   outputBuffer = NULL;
@@ -11,7 +11,7 @@ void SortStrategyTestSuite::setUp() {
   scratchMemory = NULL;
 }
 
-void SortStrategyTestSuite::tearDown() {
+void SortStrategyTestSuite::TearDown() {
   if (inputBuffer != NULL) {
     delete inputBuffer;
   }
@@ -148,7 +148,7 @@ void SortStrategyTestSuite::assertSorted(
       int comp = compare(
         prevKey, prevKeyLength, kvPair.getKey(), kvPair.getKeyLength());
 
-      CPPUNIT_ASSERT(comp <= 0);
+      EXPECT_TRUE(comp <= 0);
 
       if (checkSecondaryKeys && comp == 0 &&
           prevValueLength >= sizeof(uint64_t) &&
@@ -158,7 +158,7 @@ void SortStrategyTestSuite::assertSorted(
         uint64_t currentValueSecondaryKey = *(reinterpret_cast<const uint64_t*>(
           kvPair.getValue()));
 
-        CPPUNIT_ASSERT(prevValueSecondaryKey <= currentValueSecondaryKey);
+        EXPECT_TRUE(prevValueSecondaryKey <= currentValueSecondaryKey);
       }
     }
 

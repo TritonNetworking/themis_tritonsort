@@ -19,7 +19,7 @@ BytesCountMapFunctionTest::~BytesCountMapFunctionTest() {
   delete[] valueBytes;
 }
 
-void BytesCountMapFunctionTest::testProperCountStored() {
+TEST_F(BytesCountMapFunctionTest, testProperCountStored) {
   Params params;
 
   SimpleMemoryAllocator memoryAllocator;

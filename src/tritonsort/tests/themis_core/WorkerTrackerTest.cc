@@ -7,7 +7,7 @@
 #include "tests/themis_core/TestWorkerImpls.h"
 #include "tests/themis_core/WorkerTrackerTest.h"
 
-void WorkerTrackerTest::testMultiSource() {
+TEST_F(WorkerTrackerTest, testMultiSource) {
   /**
      emitter_1 emits a certain number of work units that countdown counts. When
      all of emitter 1's work units are emitted (since it's a source tracker),
@@ -76,11 +76,10 @@ void WorkerTrackerTest::testMultiSource() {
 
   const std::queue<Resource*>& outWorkUnits = sinkTracker.getWorkQueue();
 
-  CPPUNIT_ASSERT_EQUAL((size_t) 1, outWorkUnits.size());
+  EXPECT_EQ((size_t) 1, outWorkUnits.size());
   CountWorkUnit* workUnit = dynamic_cast<CountWorkUnit*>(outWorkUnits.front());
-  CPPUNIT_ASSERT_MESSAGE("Got NULL or incorrectly typed work unit",
-                         workUnit != NULL);
-  CPPUNIT_ASSERT_EQUAL(numEmitters * workUnitsToEmit * 2, workUnit->count);
+  EXPECT_TRUE(workUnit != NULL);
+  EXPECT_EQ(numEmitters * workUnitsToEmit * 2, workUnit->count);
 
   sinkTracker.deleteAllWorkUnits();
 
@@ -122,7 +121,7 @@ WorkerTracker* WorkerTrackerTest::setupTrackerForQueueingTests(
   return itemHolderTracker;
 }
 
-void WorkerTrackerTest::testDefaultWorkQueueingPolicy() {
+TEST_F(WorkerTrackerTest, testDefaultWorkQueueingPolicy) {
   WorkerTracker* itemHolderTracker = NULL;
   CPUAffinitySetter* cpuAffinitySetter = NULL;
   SimpleMemoryAllocator* memoryAllocator = NULL;
@@ -180,7 +179,7 @@ void WorkerTrackerTest::testDefaultWorkQueueingPolicy() {
   delete itemHolderTracker;
 }
 
-void WorkerTrackerTest::testMultiDestination() {
+TEST_F(WorkerTrackerTest, testMultiDestination) {
   Params params;
 
   uint64_t numCores = 16;
@@ -236,17 +235,17 @@ void WorkerTrackerTest::testMultiDestination() {
 
   std::queue<Resource*> defaultWorkQueue(defaultSinkTracker.getWorkQueue());
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(3), defaultWorkQueue.size());
+  EXPECT_EQ(static_cast<uint64_t>(3), defaultWorkQueue.size());
 
-  CPPUNIT_ASSERT_EQUAL(
+  EXPECT_EQ(
     std::string("blam"), dynamic_cast<StringWorkUnit*>(
       defaultWorkQueue.front())->getString());
   defaultWorkQueue.pop();
-  CPPUNIT_ASSERT_EQUAL(
+  EXPECT_EQ(
     std::string("ham"), dynamic_cast<StringWorkUnit*>(
       defaultWorkQueue.front())->getString());
   defaultWorkQueue.pop();
-  CPPUNIT_ASSERT_EQUAL(
+  EXPECT_EQ(
     std::string("spam"), dynamic_cast<StringWorkUnit*>(
       defaultWorkQueue.front())->getString());
   defaultWorkQueue.pop();
@@ -262,17 +261,14 @@ void WorkerTrackerTest::checkSinkTrackerQueue(
   // Have to copy-construct so that we can pop from it
   std::queue<Resource*> workQueue(tracker.getWorkQueue());
 
-  CPPUNIT_ASSERT_EQUAL(size, workQueue.size());
+  EXPECT_EQ(size, workQueue.size());
 
   while (!workQueue.empty()) {
     StringWorkUnit* workUnit = dynamic_cast<StringWorkUnit*>(workQueue.front());
 
-    CPPUNIT_ASSERT_MESSAGE("Encountered unexpected NULL work unit "
-                           "in work queue", workUnit != NULL);
+    EXPECT_TRUE(workUnit != NULL);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Work unit ended up in an incorrect queue for its string",
-      expectedString, workUnit->getString());
+    EXPECT_EQ(expectedString, workUnit->getString());
 
     workQueue.pop();
   }
@@ -287,7 +283,7 @@ void WorkerTrackerTest::checkQueueSizes(
 
   for (uint64_t i = 0; i < workers.size(); i++) {
     static_cast<ManualConsumerWorker*>(workers[i])->getAllWorkFromTracker();
-    CPPUNIT_ASSERT_EQUAL(
+    EXPECT_EQ(
       expectedQueueSizes[i],
       static_cast<ManualConsumerWorker*>(workers[i])->workUnitQueueSize());
   }

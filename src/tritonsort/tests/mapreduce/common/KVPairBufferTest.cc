@@ -3,7 +3,7 @@
 
 #include "mapreduce/common/buffers/KVPairBuffer.h"
 
-void KVPairBufferTest::testMultipleCompleteBuffers() {
+TEST_F(KVPairBufferTest, testMultipleCompleteBuffers) {
   TestMemoryBackedKVPair p1(20, 80);
   TestMemoryBackedKVPair p2(70, 30);
   TestMemoryBackedKVPair p3(65, 35);
@@ -16,25 +16,25 @@ void KVPairBufferTest::testMultipleCompleteBuffers() {
   buffer.addKVPair(p2);
   buffer.addKVPair(p3);
 
-  CPPUNIT_ASSERT_EQUAL(totalSize, buffer.getCurrentSize());
+  EXPECT_EQ(totalSize, buffer.getCurrentSize());
 }
 
-void KVPairBufferTest::testSingleCompleteBuffer() {
+TEST_F(KVPairBufferTest, testSingleCompleteBuffer) {
   TestMemoryBackedKVPair p1(20, 80);
 
   KVPairBuffer buffer(*memoryAllocator, callerID, p1.getWriteSize(), 12800);
   buffer.addKVPair(p1);
 
-  CPPUNIT_ASSERT_EQUAL(p1.getWriteSize(), buffer.getCurrentSize());
+  EXPECT_EQ(p1.getWriteSize(), buffer.getCurrentSize());
 }
 
-void KVPairBufferTest::testEmpty() {
+TEST_F(KVPairBufferTest, testEmpty) {
   KVPairBuffer buffer(*memoryAllocator, callerID, 275, 12800);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 0, buffer.getCurrentSize());
+  EXPECT_EQ((uint64_t) 0, buffer.getCurrentSize());
 }
 
-void KVPairBufferTest::testSetupAndCommitAppendKVPair() {
+TEST_F(KVPairBufferTest, testSetupAndCommitAppendKVPair) {
   uint64_t bufferLength = 10000;
   uint32_t keyLength = 100;
   uint32_t maxValueLength = 700;
@@ -59,30 +59,32 @@ void KVPairBufferTest::testSetupAndCommitAppendKVPair() {
   buffer.resetIterator();
 
   KeyValuePair resultKVPair;
-  CPPUNIT_ASSERT(buffer.getNextKVPair(resultKVPair));
+  EXPECT_TRUE(buffer.getNextKVPair(resultKVPair));
 
   const uint8_t* resultKeyPtr = resultKVPair.getKey();
   const uint8_t* resultValPtr = resultKVPair.getValue();
-  CPPUNIT_ASSERT_EQUAL(0, memcmp(keyPtr, resultKeyPtr, keyLength));
-  CPPUNIT_ASSERT_EQUAL(keyLength, resultKVPair.getKeyLength());
-  CPPUNIT_ASSERT_EQUAL(0, memcmp(valPtr, resultValPtr, valueLength));
-  CPPUNIT_ASSERT_EQUAL(valueLength, resultKVPair.getValueLength());
+  EXPECT_EQ(0, memcmp(keyPtr, resultKeyPtr, keyLength));
+  EXPECT_EQ(keyLength, resultKVPair.getKeyLength());
+  EXPECT_EQ(0, memcmp(valPtr, resultValPtr, valueLength));
+  EXPECT_EQ(valueLength, resultKVPair.getValueLength());
 }
 
-void KVPairBufferTest::testBogusSetupAndCommitAppendKVPair() {
+#ifdef TRITONSORT_ASSERTS
+TEST_F(KVPairBufferTest, testBogusSetupAndCommitAppendKVPair) {
   KVPairBuffer buffer(*memoryAllocator, callerID, 1000, 12800);
 
   uint8_t* keyPtr = NULL;
   uint8_t* valPtr = NULL;
 
   // Shouldn't be able to set up an append bigger than the buffer
-  CPPUNIT_ASSERT_THROW(buffer.setupAppendKVPair(100, 2000, keyPtr, valPtr),
-                       AssertionFailedException);
+  ASSERT_THROW(buffer.setupAppendKVPair(100, 2000, keyPtr, valPtr),
+                 AssertionFailedException);
 
   // If we start normally ...
   buffer.setupAppendKVPair(100, 300, keyPtr, valPtr);
 
   // ... but then commit more than we say we were going to, it should fail.
-  CPPUNIT_ASSERT_THROW(buffer.commitAppendKVPair(keyPtr, valPtr, 600),
-                       AssertionFailedException);
+  ASSERT_THROW(buffer.commitAppendKVPair(keyPtr, valPtr, 600),
+                 AssertionFailedException);
 }
+#endif //TRITONSORT_ASSERTS

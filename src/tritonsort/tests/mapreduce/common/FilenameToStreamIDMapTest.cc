@@ -7,20 +7,20 @@ void FilenameToStreamIDMapTest::checkStreamInfo(
   const StreamInfo& streamInfo, const std::string& filename, uint64_t streamID,
   const std::set<uint64_t>& referenceJobIDs) {
 
-  CPPUNIT_ASSERT_EQUAL(streamID, streamInfo.getStreamID());
+  EXPECT_EQ(streamID, streamInfo.getStreamID());
 
   const std::set<uint64_t>& jobIDs = streamInfo.getJobIDs();
 
-  CPPUNIT_ASSERT_EQUAL(streamInfo.getFilename(), filename);
-  CPPUNIT_ASSERT_EQUAL(referenceJobIDs.size(), jobIDs.size());
+  EXPECT_EQ(streamInfo.getFilename(), filename);
+  EXPECT_EQ(referenceJobIDs.size(), jobIDs.size());
 
   for (std::set<uint64_t>::iterator iter = referenceJobIDs.begin();
        iter != referenceJobIDs.end(); iter++) {
-    CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(1), jobIDs.count(*iter));
+    EXPECT_EQ(static_cast<uint64_t>(1), jobIDs.count(*iter));
   }
 }
 
-void FilenameToStreamIDMapTest::testNormalAccess() {
+TEST_F(FilenameToStreamIDMapTest, testNormalAccess) {
   FilenameToStreamIDMap map;
 
   std::set<uint64_t> firstJobSet;
@@ -41,24 +41,24 @@ void FilenameToStreamIDMapTest::testNormalAccess() {
   checkStreamInfo(map.getStreamInfo("smoo"), "smoo", 3, secondJobSet);
 }
 
-void FilenameToStreamIDMapTest::testInvalidFilenameThrowsException() {
+TEST_F(FilenameToStreamIDMapTest, testInvalidFilenameThrowsException) {
   FilenameToStreamIDMap map;
 
-  CPPUNIT_ASSERT_THROW(map.getStreamInfo("missing"), AssertionFailedException);
+  ASSERT_THROW(map.getStreamInfo("missing"), AssertionFailedException);
 }
 
-void FilenameToStreamIDMapTest::testInvalidStreamIDThrowsException() {
+TEST_F(FilenameToStreamIDMapTest, testInvalidStreamIDThrowsException) {
   FilenameToStreamIDMap map;
 
-  CPPUNIT_ASSERT_THROW(map.getStreamInfo(37), AssertionFailedException);
+  ASSERT_THROW(map.getStreamInfo(37), AssertionFailedException);
 }
 
-void FilenameToStreamIDMapTest::testDuplicateFilenameThrowsException() {
+TEST_F(FilenameToStreamIDMapTest, testDuplicateFilenameThrowsException) {
   FilenameToStreamIDMap map;
   std::set<uint64_t> jobIDs;
   map.addFilename("duplicate", jobIDs);
 
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     map.addFilename("duplicate", jobIDs), AssertionFailedException);
 
 }

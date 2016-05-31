@@ -1,21 +1,13 @@
 #include "UtilsTest.h"
 #include "core/Utils.h"
 
-void UtilsTest::setUp() {
-
-}
-
-void UtilsTest::tearDown() {
-
-}
-
-void UtilsTest::testParseCommaDelimitedList() {
+TEST_F(UtilsTest, testParseCommaDelimitedList) {
   StringList testList;
   std::string testString1 = "  ";
 
   parseCommaDelimitedList<std::string, StringList>(testList, testString1);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 0, testList.size());
+  EXPECT_EQ((uint64_t) 0, testList.size());
 
   testList.clear();
 
@@ -23,7 +15,7 @@ void UtilsTest::testParseCommaDelimitedList() {
 
   parseCommaDelimitedList<std::string, StringList>(testList, testString2);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 4, testList.size());
+  EXPECT_EQ((uint64_t) 4, testList.size());
 
   uint64_t index = 1;
 
@@ -33,7 +25,7 @@ void UtilsTest::testParseCommaDelimitedList() {
     sprintf(testDiskNameBuffer, "/disk/%lu", index++);
     std::string testDiskStr(testDiskNameBuffer);
 
-    CPPUNIT_ASSERT_EQUAL(testDiskStr, *iter);
+    EXPECT_EQ(testDiskStr, *iter);
   }
 
   std::string testString3 = "42, 69, 8";
@@ -43,10 +35,10 @@ void UtilsTest::testParseCommaDelimitedList() {
   parseCommaDelimitedList< uint64_t, std::vector<uint64_t> >(
     testVector, testString3);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 3, testVector.size());
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 42, testVector[0]);
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 69, testVector[1]);
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 8, testVector[2]);
+  EXPECT_EQ((uint64_t) 3, testVector.size());
+  EXPECT_EQ((uint64_t) 42, testVector[0]);
+  EXPECT_EQ((uint64_t) 69, testVector[1]);
+  EXPECT_EQ((uint64_t) 8, testVector[2]);
 
   std::string testString4 = "42";
 
@@ -55,7 +47,7 @@ void UtilsTest::testParseCommaDelimitedList() {
   parseCommaDelimitedList< uint64_t, std::vector<uint64_t> >(
     testVector, testString4);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 1, testVector.size());
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 42, testVector[0]);
+  EXPECT_EQ((uint64_t) 1, testVector.size());
+  EXPECT_EQ((uint64_t) 42, testVector[0]);
 
 }

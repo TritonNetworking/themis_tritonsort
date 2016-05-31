@@ -5,7 +5,7 @@
 #include <set>
 
 #include "mapreduce/common/FilenameToStreamIDMap.h"
-#include "tests/common/MemoryAllocatingTestFixture.h"
+#include "tests/mapreduce/common/MemoryAllocatingTestFixture.h"
 #include "tests/themis_core/MockWorkerTracker.h"
 
 class BaseBuffer;
@@ -14,26 +14,12 @@ class ByteStreamConverter;
 class KVPairBuffer;
 
 class KVPairFormatReaderTest : public MemoryAllocatingTestFixture {
-  CPPUNIT_TEST_SUITE( KVPairFormatReaderTest );
-  CPPUNIT_TEST( testReadCompleteTuples );
-  CPPUNIT_TEST( testInputBufferTerminatesWithPartialHeader );
-  CPPUNIT_TEST( testInputBufferTerminatesAfterHeader );
-  CPPUNIT_TEST( testInputBufferTerminatesWithPartialTuple );
-  CPPUNIT_TEST( testHeaderStraddlesInputBuffers );
-  CPPUNIT_TEST( testTupleStraddlesInputBuffers );
-  CPPUNIT_TEST_SUITE_END();
 public:
   KVPairFormatReaderTest();
-  void setUp();
-  void tearDown();
-  void testReadCompleteTuples();
-  void testInputBufferTerminatesWithPartialHeader();
-  void testInputBufferTerminatesAfterHeader();
-  void testInputBufferTerminatesWithPartialTuple();
-  void testHeaderStraddlesInputBuffers();
-  void testTupleStraddlesInputBuffers();
+  void SetUp();
+  void TearDown();
 
-private:
+protected:
   void appendTuple(BaseBuffer* buffer, uint32_t keyLength,
                    uint32_t valueLength);
   void verifyBufferContainsTuple(uint8_t* buffer, uint32_t keyLength,

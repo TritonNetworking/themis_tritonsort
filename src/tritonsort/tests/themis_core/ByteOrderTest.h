@@ -1,22 +1,11 @@
 #ifndef THEMIS_BYTE_ORDER_TEST_H
 #define THEMIS_BYTE_ORDER_TEST_H
 
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/extensions/HelperMacros.h>
+#include "gtest/gtest.h"
 
-class ByteOrderTest : public CppUnit::TestFixture {
-  CPPUNIT_TEST_SUITE( ByteOrderTest );
-  CPPUNIT_TEST( testHostToNetwork );
-  CPPUNIT_TEST( testNetworkToHost );
-  CPPUNIT_TEST( testCyclicConversion );
-  CPPUNIT_TEST_SUITE_END();
+class ByteOrderTest : public ::testing::Test {
 public:
   ByteOrderTest();
-  void testHostToNetwork();
-  void testNetworkToHost();
-  void testCyclicConversion();
 
   uint64_t deadbeef;
 

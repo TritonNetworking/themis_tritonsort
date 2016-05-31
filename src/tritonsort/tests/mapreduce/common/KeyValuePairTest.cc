@@ -4,7 +4,7 @@
 #include "KeyValuePairTest.h"
 #include "mapreduce/common/KeyValuePair.h"
 
-void KeyValuePairTest::setUp() {
+void KeyValuePairTest::SetUp() {
   // Fill the raw buffer with the following tuples:
   // 10 90
   // 0 50
@@ -62,112 +62,68 @@ void KeyValuePairTest::setUp() {
 }
 
 
-void KeyValuePairTest::testKeyLength() {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect key length for tuple 1",
-    static_cast<uint32_t>(10),
-    KeyValuePair::keyLength(rawBuffer));
+TEST_F(KeyValuePairTest, testKeyLength) {
+  EXPECT_EQ(static_cast<uint32_t>(10), KeyValuePair::keyLength(rawBuffer));
 }
 
-void KeyValuePairTest::testValueLength() {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect value length for tuple 1",
-    static_cast<uint32_t>(90),
-    KeyValuePair::valueLength(rawBuffer));
+TEST_F(KeyValuePairTest, testValueLength) {
+  EXPECT_EQ(static_cast<uint32_t>(90), KeyValuePair::valueLength(rawBuffer));
 }
 
-void KeyValuePairTest::testTupleSize() {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect tuple size for tuple 1",
-    static_cast<uint64_t>(KeyValuePair::tupleSize(10, 90)),
-    KeyValuePair::tupleSize(rawBuffer));
+TEST_F(KeyValuePairTest, testTupleSize) {
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(10, 90)),
+            KeyValuePair::tupleSize(rawBuffer));
 }
 
-void KeyValuePairTest::testNextTuple() {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "nextTuple() should point to the end of tuple 1",
-    endOfFirstTuple, KeyValuePair::nextTuple(rawBuffer));
+TEST_F(KeyValuePairTest, testNextTuple) {
+  EXPECT_EQ(endOfFirstTuple, KeyValuePair::nextTuple(rawBuffer));
 }
 
-void KeyValuePairTest::testKey() {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect first byte of tuple 1 key",
-                               firstByte, *(KeyValuePair::key(rawBuffer)));
+TEST_F(KeyValuePairTest, testKey) {
+  EXPECT_EQ(firstByte, *(KeyValuePair::key(rawBuffer)));
 }
 
-void KeyValuePairTest::testValue() {
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect first byte of tuple 1 value",
-                               firstByte, *(KeyValuePair::value(rawBuffer)));
+TEST_F(KeyValuePairTest, testValue) {
+  EXPECT_EQ(firstByte, *(KeyValuePair::value(rawBuffer)));
 }
 
-void KeyValuePairTest::testMultipleTuples() {
+TEST_F(KeyValuePairTest, testMultipleTuples) {
   // The other tests check the first tuple, so skip to the second.
   uint8_t* buffer = endOfFirstTuple;
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect key length for tuple 2",
-    static_cast<uint32_t>(0),
-    KeyValuePair::keyLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect value length for tuple 2",
-    static_cast<uint32_t>(50),
-    KeyValuePair::valueLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect tuple size for tuple 2",
-    static_cast<uint64_t>(KeyValuePair::tupleSize(0, 50)),
-    KeyValuePair::tupleSize(buffer));
+  EXPECT_EQ(static_cast<uint32_t>(0), KeyValuePair::keyLength(buffer));
+  EXPECT_EQ(static_cast<uint32_t>(50), KeyValuePair::valueLength(buffer));
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(0, 50)),
+            KeyValuePair::tupleSize(buffer));
   // No key.
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect first byte of tuple 2 value",
-                               firstByte, *(KeyValuePair::value(buffer)));
+  EXPECT_EQ(firstByte, *(KeyValuePair::value(buffer)));
   uint8_t* nextTuple = KeyValuePair::nextTuple(buffer);
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Next tuple (3) isn't at the right offset",
-    static_cast<uint64_t>(KeyValuePair::tupleSize(buffer)),
-    reinterpret_cast<uint64_t>(nextTuple) -
-    reinterpret_cast<uint64_t>(buffer));
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(buffer)),
+            reinterpret_cast<uint64_t>(nextTuple) -
+            reinterpret_cast<uint64_t>(buffer));
   buffer = nextTuple;
 
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect key length for tuple 3",
-    static_cast<uint32_t>(10),
-    KeyValuePair::keyLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect value length for tuple 3",
-    static_cast<uint32_t>(0),
-    KeyValuePair::valueLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect tuple size for tuple 3",
-    static_cast<uint64_t>(KeyValuePair::tupleSize(10, 0)),
-    KeyValuePair::tupleSize(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect first byte of tuple 3 key",
-    firstByte, *(KeyValuePair::key(buffer)));
+  EXPECT_EQ(static_cast<uint32_t>(10), KeyValuePair::keyLength(buffer));
+  EXPECT_EQ(static_cast<uint32_t>(0), KeyValuePair::valueLength(buffer));
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(10, 0)),
+            KeyValuePair::tupleSize(buffer));
+  EXPECT_EQ(firstByte, *(KeyValuePair::key(buffer)));
   // No value.
   nextTuple = KeyValuePair::nextTuple(buffer);
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Next tuple (4) isn't at the right offset",
-    static_cast<uint64_t>(KeyValuePair::tupleSize(buffer)),
-    reinterpret_cast<uint64_t>(nextTuple) -
-    reinterpret_cast<uint64_t>(buffer));
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(buffer)),
+            reinterpret_cast<uint64_t>(nextTuple) -
+            reinterpret_cast<uint64_t>(buffer));
   buffer = nextTuple;
 
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect key length for tuple 4",
-    static_cast<uint32_t>(0),
-    KeyValuePair::keyLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect value length for tuple 4",
-    static_cast<uint32_t>(0),
-    KeyValuePair::valueLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect tuple size for tuple 4",
-    static_cast<uint64_t>(KeyValuePair::tupleSize(0, 0)),
-    KeyValuePair::tupleSize(buffer));
+  EXPECT_EQ(static_cast<uint32_t>(0), KeyValuePair::keyLength(buffer));
+  EXPECT_EQ(static_cast<uint32_t>(0), KeyValuePair::valueLength(buffer));
+  EXPECT_EQ(static_cast<uint64_t>(KeyValuePair::tupleSize(0, 0)),
+            KeyValuePair::tupleSize(buffer));
   // No key or value.
   nextTuple = KeyValuePair::nextTuple(buffer);
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Last tuple end position is wrong.",
-                               endOfBuffer, nextTuple);
+  EXPECT_EQ(endOfBuffer, nextTuple);
 }
 
-void KeyValuePairTest::testSerialize() {
+TEST_F(KeyValuePairTest, testSerialize) {
   KeyValuePair kvPair1;
 
   uint8_t* keyBlob = makeSequentialBlob(10);
@@ -182,21 +138,21 @@ void KeyValuePairTest::testSerialize() {
   KeyValuePair kvPair2;
   kvPair2.deserialize(serializedPair1);
 
-  CPPUNIT_ASSERT(kvPairsEqual(kvPair1, kvPair2));
+  EXPECT_TRUE(kvPairsEqual(kvPair1, kvPair2));
 
   delete[] keyBlob;
   delete[] valueBlob;
   delete[] serializedPair1;
 }
 
-void KeyValuePairTest::testEqualsNoFields() {
+TEST_F(KeyValuePairTest, testEqualsNoFields) {
   KeyValuePair p1;
   KeyValuePair p2;
 
-  CPPUNIT_ASSERT(kvPairsEqual(p1, p2));
+  EXPECT_TRUE(kvPairsEqual(p1, p2));
 }
 
-void KeyValuePairTest::testEqualsDifferentKeyLengths() {
+TEST_F(KeyValuePairTest, testEqualsDifferentKeyLengths) {
   KeyValuePair p1;
   KeyValuePair p2;
 
@@ -206,17 +162,17 @@ void KeyValuePairTest::testEqualsDifferentKeyLengths() {
   p1.setKey(blob1, 7);
   p2.setKey(blob2, 10);
 
-  CPPUNIT_ASSERT(!kvPairsEqual(p1, p2));
+  EXPECT_TRUE(!kvPairsEqual(p1, p2));
 
   p2.setKey(blob1, 7);
 
-  CPPUNIT_ASSERT(kvPairsEqual(p1, p2));
+  EXPECT_TRUE(kvPairsEqual(p1, p2));
 
   delete[] blob1;
   delete[] blob2;
 }
 
-void KeyValuePairTest::testEqualsDifferentValueLengths() {
+TEST_F(KeyValuePairTest, testEqualsDifferentValueLengths) {
   KeyValuePair p1;
   KeyValuePair p2;
 
@@ -226,17 +182,17 @@ void KeyValuePairTest::testEqualsDifferentValueLengths() {
   p1.setValue(blob1, 7);
   p2.setValue(blob2, 10);
 
-  CPPUNIT_ASSERT(!kvPairsEqual(p1, p2));
+  EXPECT_TRUE(!kvPairsEqual(p1, p2));
 
   p2.setValue(blob1, 7);
 
-  CPPUNIT_ASSERT(kvPairsEqual(p1, p2));
+  EXPECT_TRUE(kvPairsEqual(p1, p2));
 
   delete[] blob1;
   delete[] blob2;
 }
 
-void KeyValuePairTest::testEqualsDifferentKeys() {
+TEST_F(KeyValuePairTest, testEqualsDifferentKeys) {
   KeyValuePair p1;
   KeyValuePair p2;
 
@@ -247,17 +203,17 @@ void KeyValuePairTest::testEqualsDifferentKeys() {
   p1.setKey(blob1, 7);
   p2.setKey(blob2, 7);
 
-  CPPUNIT_ASSERT(!kvPairsEqual(p1, p2));
+  EXPECT_TRUE(!kvPairsEqual(p1, p2));
 
   p1.setKey(blob2, 7);
 
-  CPPUNIT_ASSERT(kvPairsEqual(p1, p2));
+  EXPECT_TRUE(kvPairsEqual(p1, p2));
 
   delete[] blob1;
   delete[] blob2;
 }
 
-void KeyValuePairTest::testEqualsDifferentValues() {
+TEST_F(KeyValuePairTest, testEqualsDifferentValues) {
   KeyValuePair p1;
   KeyValuePair p2;
 
@@ -268,11 +224,11 @@ void KeyValuePairTest::testEqualsDifferentValues() {
   p1.setValue(blob1, 7);
   p2.setValue(blob2, 7);
 
-  CPPUNIT_ASSERT(!kvPairsEqual(p1, p2));
+  EXPECT_TRUE(!kvPairsEqual(p1, p2));
 
   p1.setValue(blob2, 7);
 
-  CPPUNIT_ASSERT(kvPairsEqual(p1, p2));
+  EXPECT_TRUE(kvPairsEqual(p1, p2));
 
   delete[] blob1;
   delete[] blob2;

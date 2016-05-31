@@ -10,7 +10,7 @@
 
 extern const char* TEST_WRITE_ROOT;
 
-void StatWriterTest::testNormalOperation() {
+TEST_F(StatWriterTest, testNormalOperation) {
   Params params;
   params.add<bool>("ENABLE_STAT_WRITER", true);
   params.add<std::string>("LOG_DIR", TEST_WRITE_ROOT);
@@ -44,7 +44,7 @@ void StatWriterTest::testNormalOperation() {
   logFile.open(File::READ);
   uint64_t fileSize = logFile.getCurrentSize();
 
-  CPPUNIT_ASSERT_MESSAGE("Log file shouldn't be empty", fileSize > 0);
+  EXPECT_TRUE(fileSize > 0);
 
   char* buffer = new char[fileSize];
   memset(buffer, 0, fileSize);
@@ -68,7 +68,7 @@ void StatWriterTest::testNormalOperation() {
 
   uint64_t numLines = lineStartIndices.size();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(8), numLines);
+  EXPECT_EQ(static_cast<uint64_t>(8), numLines);
 
   re2::RE2 collLineRegex(
     "COLL\\s+test_phase\\s+0\\s+test_logger\\s+dummy_stat\\s+[0-9]+\\s+"
@@ -76,17 +76,15 @@ void StatWriterTest::testNormalOperation() {
 
   uint64_t stat;
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 0", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[0]), collLineRegex, &stat));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(42), stat);
+  EXPECT_EQ(static_cast<uint64_t>(42), stat);
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 1", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[1]), collLineRegex, &stat));
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(64), stat);
+  EXPECT_EQ(static_cast<uint64_t>(64), stat);
 
   re2::RE2 statLineRegex("SUMM\\s+test_phase\\s+0\\s+test_logger\\s+dummy_stat"
                          "\\s+(.*?)\\s+([0-9]+)");
@@ -94,53 +92,47 @@ void StatWriterTest::testNormalOperation() {
   std::string statName;
   uint64_t statValue;
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 2", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[2]), statLineRegex, &statName,
-    &statValue));
+      &statValue));
 
-  CPPUNIT_ASSERT_EQUAL(std::string("min"), statName);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(42), statValue);
+  EXPECT_EQ(std::string("min"), statName);
+  EXPECT_EQ(static_cast<uint64_t>(42), statValue);
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 3", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[3]), statLineRegex, &statName,
-    &statValue));
+      &statValue));
 
-  CPPUNIT_ASSERT_EQUAL(std::string("max"), statName);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(64), statValue);
+  EXPECT_EQ(std::string("max"), statName);
+  EXPECT_EQ(static_cast<uint64_t>(64), statValue);
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 4", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[4]), statLineRegex, &statName,
-    &statValue));
+      &statValue));
 
-  CPPUNIT_ASSERT_EQUAL(std::string("sum"), statName);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(106), statValue);
+  EXPECT_EQ(std::string("sum"), statName);
+  EXPECT_EQ(static_cast<uint64_t>(106), statValue);
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 5", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[5]), statLineRegex, &statName,
-    &statValue));
+      &statValue));
 
-  CPPUNIT_ASSERT_EQUAL(std::string("count"), statName);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(2), statValue);
+  EXPECT_EQ(std::string("count"), statName);
+  EXPECT_EQ(static_cast<uint64_t>(2), statValue);
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 6", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[6]), statLineRegex, &statName,
-    &statValue));
+      &statValue));
 
-  CPPUNIT_ASSERT_EQUAL(std::string("mean"), statName);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(53), statValue);
+  EXPECT_EQ(std::string("mean"), statName);
+  EXPECT_EQ(static_cast<uint64_t>(53), statValue);
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "Incorrect log line 7", re2::RE2::FullMatch(
+  EXPECT_TRUE(re2::RE2::FullMatch(
       std::string(buffer + lineStartIndices[7]), statLineRegex, &statName,
-    &statValue));
+      &statValue));
 
-  CPPUNIT_ASSERT_EQUAL(std::string("variance"), statName);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint64_t>(121), statValue);
+  EXPECT_EQ(std::string("variance"), statName);
+  EXPECT_EQ(static_cast<uint64_t>(121), statValue);
 
   delete[] buffer;
 }

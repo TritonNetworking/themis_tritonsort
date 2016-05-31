@@ -7,8 +7,8 @@
 #include "tests/mapreduce/common/KVPairWriterParentWorker.h"
 #include "tests/mapreduce/common/ReservoirSamplingKVPairWriterTest.h"
 
-void
-ReservoirSamplingKVPairWriterTest::testSetupAndCommitWriteBeforeSampling() {
+TEST_F(ReservoirSamplingKVPairWriterTest,
+       testSetupAndCommitWriteBeforeSampling) {
   SimpleMemoryAllocator memoryAllocator;
   KVPairWriterParentWorker parent(memoryAllocator, 10000);
 
@@ -54,23 +54,21 @@ ReservoirSamplingKVPairWriterTest::testSetupAndCommitWriteBeforeSampling() {
   // Make sure that the tuple actually got written as expected
   const std::list<KVPairBuffer*>& emittedBuffers = parent.getEmittedBuffers();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), emittedBuffers.size());
+  EXPECT_EQ(static_cast<size_t>(1), emittedBuffers.size());
 
   KVPairBuffer* buffer = emittedBuffers.front();
 
   KeyValuePair kvPair;
-  CPPUNIT_ASSERT_EQUAL(true, buffer->getNextKVPair(kvPair));
-  CPPUNIT_ASSERT(buffer != NULL);
+  EXPECT_EQ(true, buffer->getNextKVPair(kvPair));
+  EXPECT_TRUE(buffer != NULL);
 
   delete buffer;
 
   uint64_t expectedKey = Hash::hash(key, keyLength);
   uint64_t expectedValue = KeyValuePair::tupleSize(keyLength, actualValueSize);
 
-  CPPUNIT_ASSERT_EQUAL(
-    expectedKey, *(reinterpret_cast<const uint64_t*>(kvPair.getKey())));
+  EXPECT_EQ(expectedKey, *(reinterpret_cast<const uint64_t*>(kvPair.getKey())));
 
-  CPPUNIT_ASSERT_EQUAL(
-    expectedValue,
-    *(reinterpret_cast<const uint64_t*>(kvPair.getValue())));
+  EXPECT_EQ(expectedValue,
+            *(reinterpret_cast<const uint64_t*>(kvPair.getValue())));
 }

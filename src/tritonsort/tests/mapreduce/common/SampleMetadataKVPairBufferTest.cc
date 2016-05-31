@@ -4,7 +4,7 @@
 #include "mapreduce/common/PhaseZeroSampleMetadata.h"
 #include "mapreduce/common/buffers/SampleMetadataKVPairBuffer.h"
 
-void SampleMetadataKVPairBufferTest::testReadAndWriteMetadata() {
+TEST_F(SampleMetadataKVPairBufferTest, testReadAndWriteMetadata) {
   uint64_t keyLength = 92;
   uint64_t valueLength = 900;
   uint64_t numTuples = 10;
@@ -37,19 +37,18 @@ void SampleMetadataKVPairBufferTest::testReadAndWriteMetadata() {
     buffer.commitAppendKVPair(keyPtr, valPtr, valueLength);
   }
 
-  CPPUNIT_ASSERT_EQUAL(buffer.getCapacity(), buffer.getCurrentSize());
-  CPPUNIT_ASSERT_EQUAL(numTuples * tupleSize, buffer.getCapacity());
-  CPPUNIT_ASSERT_EQUAL(numTuples, buffer.getNumTuples());
-  CPPUNIT_ASSERT_EQUAL(
-    numTuples * KeyValuePair::tupleSize(keyLength, valueLength),
-    buffer.getCurrentSize());
+  EXPECT_EQ(buffer.getCapacity(), buffer.getCurrentSize());
+  EXPECT_EQ(numTuples * tupleSize, buffer.getCapacity());
+  EXPECT_EQ(numTuples, buffer.getNumTuples());
+  EXPECT_EQ(numTuples * KeyValuePair::tupleSize(keyLength, valueLength),
+            buffer.getCurrentSize());
 
   PhaseZeroSampleMetadata metadata(42, 17, 140, 55, 56, 90210);
   buffer.setSampleMetadata(metadata);
 
   PhaseZeroSampleMetadata* outputMetadata = buffer.getSampleMetadata();
 
-  CPPUNIT_ASSERT(metadata.equals(*outputMetadata));
+  EXPECT_TRUE(metadata.equals(*outputMetadata));
 
   delete outputMetadata;
 
@@ -60,15 +59,15 @@ void SampleMetadataKVPairBufferTest::testReadAndWriteMetadata() {
     const uint8_t* keyPtr = kvPair.getKey();
     const uint8_t* valPtr = kvPair.getValue();
 
-    CPPUNIT_ASSERT_EQUAL(0, memcmp(keyPtr, referenceKey, keyLength));
-    CPPUNIT_ASSERT_EQUAL(0, memcmp(valPtr, referenceValue, valueLength));
+    EXPECT_EQ(0, memcmp(keyPtr, referenceKey, keyLength));
+    EXPECT_EQ(0, memcmp(valPtr, referenceValue, valueLength));
   }
 
   delete[] referenceKey;
   delete[] referenceValue;
 }
 
-void SampleMetadataKVPairBufferTest::testPrepareForSending() {
+TEST_F(SampleMetadataKVPairBufferTest, testPrepareForSending) {
   uint64_t numTuples = 70;
   uint64_t keyLength = 10;
   uint64_t valueLength = 0;
@@ -99,20 +98,19 @@ void SampleMetadataKVPairBufferTest::testPrepareForSending() {
   PhaseZeroSampleMetadata metadata(65, 14, 30, 188, 188, 777);
   buffer.setSampleMetadata(metadata);
 
-  CPPUNIT_ASSERT_EQUAL(tupleSize * numTuples, buffer.getCurrentSize());
-  CPPUNIT_ASSERT_EQUAL(buffer.getCurrentSize(), buffer.getCapacity());
-  CPPUNIT_ASSERT_EQUAL(numTuples, buffer.getNumTuples());
+  EXPECT_EQ(tupleSize * numTuples, buffer.getCurrentSize());
+  EXPECT_EQ(buffer.getCurrentSize(), buffer.getCapacity());
+  EXPECT_EQ(numTuples, buffer.getNumTuples());
 
   buffer.prepareBufferForSending();
 
-  CPPUNIT_ASSERT_EQUAL(
+  EXPECT_EQ(
     (uint64_t) tupleSize * numTuples + PhaseZeroSampleMetadata::tupleSize(),
     buffer.getCurrentSize());
-  CPPUNIT_ASSERT_EQUAL(buffer.getCurrentSize(), buffer.getCapacity());
-  CPPUNIT_ASSERT_EQUAL(numTuples + 1, buffer.getNumTuples());
-  CPPUNIT_ASSERT_EQUAL(
-    numTuples * tupleSize + PhaseZeroSampleMetadata::tupleSize(),
-    buffer.getCurrentSize());
+  EXPECT_EQ(buffer.getCurrentSize(), buffer.getCapacity());
+  EXPECT_EQ(numTuples + 1, buffer.getNumTuples());
+  EXPECT_EQ(numTuples * tupleSize + PhaseZeroSampleMetadata::tupleSize(),
+            buffer.getCurrentSize());
 
   delete[] referenceKey;
 }

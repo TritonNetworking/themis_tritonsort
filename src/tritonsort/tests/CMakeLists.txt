@@ -2,18 +2,17 @@ INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/RecurseCCFiles.cmake")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TritonSort_SOURCE_DIR}/cmake_tools")
 
-FIND_PACKAGE(CppUnit REQUIRED)
-
-INCLUDE_DIRECTORIES(${CPPUNIT_INCLUDE_DIR})
+ADD_SUBDIRECTORY(${GTEST_ROOT_DIR} "${CMAKE_CURRENT_BINARY_DIR}/gtest")
+INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include)
 
 RECURSE_CC_FILES(common)
 RECURSE_CC_FILES(themis_core)
 RECURSE_CC_FILES(mapreduce)
 
-ADD_EXECUTABLE(tests tests.cc TestUtils.cc ${buffers_Files} ${common_Files}
-  ${themis_core_Files} ${mapreduce_Files})
-TARGET_LINK_LIBRARIES(tests ${CPPUNIT_LIBRARIES} tritonsort_common
-  tritonsort_core mapreduce_workers ${MEMORY_MGMT_LINK_LIBRARY})
+ADD_EXECUTABLE(tests tests.cc TestUtils.cc ${common_Files} ${themis_core_Files}
+  ${mapreduce_Files})
+TARGET_LINK_LIBRARIES(tests gtest tritonsort_common tritonsort_core
+  mapreduce_workers ${MEMORY_MGMT_LINK_LIBRARY})
 
 IF(DEFINED MEMORY_MGMT_CXX_FLAG)
 SET_TARGET_PROPERTIES(tests PROPERTIES COMPILE_FLAGS

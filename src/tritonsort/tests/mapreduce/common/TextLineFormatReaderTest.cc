@@ -12,7 +12,7 @@ TextLineFormatReaderTest::TextLineFormatReaderTest()
   filenameToStreamIDMap.addFilename(filename, jobIDs);
 }
 
-void TextLineFormatReaderTest::setUp() {
+void TextLineFormatReaderTest::SetUp() {
   // Create a new converter and put it in front of the mock tracker.
   converter = new ByteStreamConverter(
     0, "converter", *memoryAllocator, 500, 0, filenameToStreamIDMap,
@@ -28,12 +28,12 @@ void TextLineFormatReaderTest::setUp() {
   streamClosedBuffer->setStreamID(0);
 }
 
-void TextLineFormatReaderTest::tearDown() {
+void TextLineFormatReaderTest::TearDown() {
   downstreamTracker.deleteAllWorkUnits();
   delete converter;
 }
 
-void TextLineFormatReaderTest::testLongLines() {
+TEST_F(TextLineFormatReaderTest, testLongLines) {
   std::string longLineBuffer(
     "To be, or not to be, that is the question: Whether 'tis Nobler in the "
     "mind to suffer\nThe Slings and Arrows of outrageous Fortune,");
@@ -56,7 +56,7 @@ void TextLineFormatReaderTest::testLongLines() {
   runInputsAndVerifyOutputs(inputs, expectedLines);
 }
 
-void TextLineFormatReaderTest::testWindowsLineFeeds() {
+TEST_F(TextLineFormatReaderTest, testWindowsLineFeeds) {
   std::string longLineBuffer(
     "To be, or not to be, that is the question: Whether 'tis Nobler in the "
     "mind to suffer\r\nThe Slings and Arrows of outrageous Fortune,");
@@ -79,7 +79,7 @@ void TextLineFormatReaderTest::testWindowsLineFeeds() {
   runInputsAndVerifyOutputs(inputs, expectedLines);
 }
 
-void TextLineFormatReaderTest::testNewlineAtEnd() {
+TEST_F(TextLineFormatReaderTest, testNewlineAtEnd) {
   std::string longLineBuffer(
     "To be, or not to be, that is the question: Whether 'tis Nobler in the "
     "mind to suffer\r\nThe Slings and Arrows of outrageous Fortune,\n");
@@ -102,7 +102,7 @@ void TextLineFormatReaderTest::testNewlineAtEnd() {
   runInputsAndVerifyOutputs(inputs, expectedLines);
 }
 
-void TextLineFormatReaderTest::testEmptyLines() {
+TEST_F(TextLineFormatReaderTest, testEmptyLines) {
   std::string longLineBuffer(
     "Or to take Arms against a Sea of troubles, And by opposing end them:\n\n"
     "to die,\n\nto sleep\n\nNo more\n");
@@ -126,7 +126,7 @@ void TextLineFormatReaderTest::testEmptyLines() {
   runInputsAndVerifyOutputs(inputs, expectedLines);
 }
 
-void TextLineFormatReaderTest::testLineSpanningBuffers() {
+TEST_F(TextLineFormatReaderTest, testLineSpanningBuffers) {
   std::string testString1("Devoutly to be wish'd. To die, to sleep;");
   std::string testString2(
     " To sleep: perchance to dream:\nay, there's the rub;");
@@ -154,7 +154,7 @@ void TextLineFormatReaderTest::testLineSpanningBuffers() {
   runInputsAndVerifyOutputs(inputs, expectedLines);
 }
 
-void TextLineFormatReaderTest::testWindowsLineFeedSpanningBuffers() {
+TEST_F(TextLineFormatReaderTest, testWindowsLineFeedSpanningBuffers) {
   std::string testString1(
     "Devoutly to be wish'd. To die, to sleep; To sleep: perchance to dream:\r");
   std::string testString2(
@@ -183,7 +183,7 @@ void TextLineFormatReaderTest::testWindowsLineFeedSpanningBuffers() {
   runInputsAndVerifyOutputs(inputs, expectedLines);
 }
 
-void TextLineFormatReaderTest::testLineOverflowsBuffer() {
+TEST_F(TextLineFormatReaderTest, testLineOverflowsBuffer) {
   std::string longLineBuffer(
     "This is the only test in this suite that does not quote Hamlet\n"
     "01234567890123456789012345678901234567890123456789"
@@ -238,20 +238,17 @@ void TextLineFormatReaderTest::testBufferContainsLines(
 
   for (std::vector<std::string>::iterator iter = expectedLines.begin();
        iter != expectedLines.end(); iter++) {
-    CPPUNIT_ASSERT_EQUAL(true, buffer.getNextKVPair(kvPair));
+    EXPECT_EQ(true, buffer.getNextKVPair(kvPair));
     if (filenameSize > 0) {
-      CPPUNIT_ASSERT_EQUAL(filenameSize, kvPair.getKeyLength());
-      CPPUNIT_ASSERT_EQUAL(
-        0, strncmp(
+      EXPECT_EQ(filenameSize, kvPair.getKeyLength());
+      EXPECT_EQ(0, strncmp(
           filename.c_str(), reinterpret_cast<const char*>(kvPair.getKey()),
           filenameSize));
     }
-    CPPUNIT_ASSERT_EQUAL(
-      static_cast<uint32_t>(iter->size()), kvPair.getValueLength());
-    CPPUNIT_ASSERT_EQUAL(
-      0, memcmp(kvPair.getValue(), iter->c_str(), iter->size()));
+    EXPECT_EQ(static_cast<uint32_t>(iter->size()), kvPair.getValueLength());
+    EXPECT_EQ(0, memcmp(kvPair.getValue(), iter->c_str(), iter->size()));
   }
-  CPPUNIT_ASSERT_EQUAL(false, buffer.getNextKVPair(kvPair));
+  EXPECT_TRUE(!buffer.getNextKVPair(kvPair));
 }
 
 void TextLineFormatReaderTest::runInputsAndVerifyOutputs(
@@ -260,19 +257,17 @@ void TextLineFormatReaderTest::runInputsAndVerifyOutputs(
   // Convert all input buffers.
   for (std::list<ByteStreamBuffer*>::iterator iter = inputs.begin();
        iter != inputs.end(); iter++) {
-    CPPUNIT_ASSERT_NO_THROW(converter->run(*iter));
+    ASSERT_NO_THROW(converter->run(*iter));
   }
 
   // Verify that closing the stream deletes the format reader. and does not
-  CPPUNIT_ASSERT_NO_THROW(converter->run(streamClosedBuffer));
-  CPPUNIT_ASSERT_NO_THROW(converter->teardown());
+  ASSERT_NO_THROW(converter->run(streamClosedBuffer));
+  ASSERT_NO_THROW(converter->teardown());
 
   std::queue<Resource*> outputBuffers(downstreamTracker.getWorkQueue());
 
   // Verify we have the correct number of output buffers
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Wrong number of output buffers",
-    expectedLinesList.size(), outputBuffers.size());
+  EXPECT_EQ(expectedLinesList.size(), outputBuffers.size());
 
   // Verify each individual output buffer.
   std::list<std::vector<std::string>*>::const_iterator expectedLinesIter =
@@ -282,27 +277,21 @@ void TextLineFormatReaderTest::runInputsAndVerifyOutputs(
       dynamic_cast<KVPairBuffer*>(outputBuffers.front());
     outputBuffers.pop();
 
-    CPPUNIT_ASSERT_MESSAGE(
-      "Did not get KVPairBuffer out", outputBuffer != NULL);
+    EXPECT_TRUE(outputBuffer != NULL);
 
     std::vector<std::string>* expectedLines = *expectedLinesIter;
     expectedLinesIter++;
-    CPPUNIT_ASSERT_MESSAGE(
-      "Got NULL expected lines vector", expectedLines != NULL);
+    EXPECT_TRUE(expectedLines != NULL);
 
     testBufferContainsLines(*outputBuffer, *expectedLines);
 
     // Verify the output buffer has the right source name and job IDs.
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Wrong source name", filename, outputBuffer->getSourceName());
+    EXPECT_EQ(filename, outputBuffer->getSourceName());
     const std::set<uint64_t>& outputBufferJobIDs = outputBuffer->getJobIDs();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Wrong number of job IDs name", jobIDs.size(), outputBufferJobIDs.size());
+    EXPECT_EQ(jobIDs.size(), outputBufferJobIDs.size());
     for (std::set<uint64_t>::const_iterator iter = jobIDs.begin();
          iter != jobIDs.end(); iter++) {
-      CPPUNIT_ASSERT_MESSAGE(
-        "Missing job ID",
-        outputBufferJobIDs.find(*iter) != outputBufferJobIDs.end());
+      EXPECT_TRUE(outputBufferJobIDs.find(*iter) != outputBufferJobIDs.end());
     }
   }
 }

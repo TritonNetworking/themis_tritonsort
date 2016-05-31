@@ -2,54 +2,54 @@
 #include "common/DummyWorkUnit.h"
 #include "core/ResourceQueue.h"
 
-void ResourceQueueTest::testEmpty() {
+TEST_F(ResourceQueueTest, testEmpty) {
   ResourceQueue q(1);
-  CPPUNIT_ASSERT(q.empty());
+  EXPECT_TRUE(q.empty());
   DummyWorkUnit* dummy = new DummyWorkUnit;
   q.push(dummy);
-  CPPUNIT_ASSERT(!q.empty());
+  EXPECT_TRUE(!q.empty());
   q.pop();
-  CPPUNIT_ASSERT(q.empty());
+  EXPECT_TRUE(q.empty());
   delete dummy;
 }
 
-void ResourceQueueTest::testSize() {
+TEST_F(ResourceQueueTest, testSize) {
   DummyWorkUnit* dummy1 = new DummyWorkUnit();
   DummyWorkUnit* dummy2 = new DummyWorkUnit();
   DummyWorkUnit* dummy3 = new DummyWorkUnit();
 
   ResourceQueue q(3);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 0, q.size());
+  EXPECT_EQ((uint64_t) 0, q.size());
 
   q.push(dummy1);
   q.push(dummy2);
   q.push(dummy3);
 
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 3, q.size());
+  EXPECT_EQ((uint64_t) 3, q.size());
   q.pop();
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 2, q.size());
+  EXPECT_EQ((uint64_t) 2, q.size());
   q.push(dummy1);
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 3, q.size());
+  EXPECT_EQ((uint64_t) 3, q.size());
   q.pop();
   q.pop();
   q.pop();
-  CPPUNIT_ASSERT_EQUAL((uint64_t) 0, q.size());
+  EXPECT_EQ((uint64_t) 0, q.size());
 
   delete dummy1;
   delete dummy2;
   delete dummy3;
 }
 
-void ResourceQueueTest::testFront() {
+TEST_F(ResourceQueueTest, testFront) {
   DummyWorkUnit* dummy = new DummyWorkUnit();
   ResourceQueue q(1);
   q.push(dummy);
-  CPPUNIT_ASSERT_EQUAL(dummy, dynamic_cast<DummyWorkUnit*>(q.front()));
+  EXPECT_EQ(dummy, dynamic_cast<DummyWorkUnit*>(q.front()));
   delete dummy;
 }
 
-void ResourceQueueTest::testStealFrom() {
+TEST_F(ResourceQueueTest, testStealFrom) {
 // Overkill is one of my many modes
   for (uint64_t destQueueSize = 1; destQueueSize < 5; destQueueSize++) {
     for (uint64_t sourceQueueSize = 1; sourceQueueSize <= destQueueSize;
@@ -153,31 +153,27 @@ void ResourceQueueTest::testStealFrom(uint64_t sourceQueueSize,
   uint64_t resultingDestQueueSize = destQueue.size();
   uint64_t resultingSourceQueueSize = sourceQueue.size();
 
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(messageText,
-                               numDestElements + numElementsToSteal,
-                               resultingDestQueueSize);
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(messageText,
-                               numSourceElements - numElementsToSteal,
-                               resultingSourceQueueSize);
+  EXPECT_EQ(numDestElements + numElementsToSteal, resultingDestQueueSize)
+      << messageText;
+  EXPECT_EQ(numSourceElements - numElementsToSteal, resultingSourceQueueSize)
+      << messageText;
 
   // Verify the contents of the queues
 
   for (uint64_t i = 0; i < resultingDestQueueSize; i++) {
     if (i < numDestElements) {
-      CPPUNIT_ASSERT_EQUAL_MESSAGE(
-        messageText, destDummies[i], dynamic_cast<DummyWorkUnit*>(
-          destQueue.front()));
+      EXPECT_EQ(destDummies[i], dynamic_cast<DummyWorkUnit*>(
+          destQueue.front())) << messageText;
     } else {
-      CPPUNIT_ASSERT_EQUAL_MESSAGE(
-        messageText, sourceDummies[i - numDestElements],
-        dynamic_cast<DummyWorkUnit*>(destQueue.front()));
+      EXPECT_EQ(sourceDummies[i - numDestElements],
+                dynamic_cast<DummyWorkUnit*>(destQueue.front())) << messageText;
     }
     destQueue.pop();
   }
 
   for (uint64_t i = 0; i < resultingSourceQueueSize; i++) {
-    CPPUNIT_ASSERT_EQUAL(sourceDummies[i + numElementsToSteal],
-                         dynamic_cast<DummyWorkUnit*>(sourceQueue.front()));
+    EXPECT_EQ(sourceDummies[i + numElementsToSteal],
+              dynamic_cast<DummyWorkUnit*>(sourceQueue.front()));
     sourceQueue.pop();
   }
 

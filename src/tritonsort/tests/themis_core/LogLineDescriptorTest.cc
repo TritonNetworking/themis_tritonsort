@@ -33,13 +33,12 @@ void LogLineDescriptorTest::readJsonObjectFromFile(
   referenceFile.read(reinterpret_cast<uint8_t*>(fileBuffer), fileSize);
   referenceFile.close();
 
-  CPPUNIT_ASSERT(
-    reader.parse(fileBuffer, fileBuffer + fileSize, value));
+  EXPECT_TRUE(reader.parse(fileBuffer, fileBuffer + fileSize, value));
 
   delete[] fileBuffer;
 }
 
-void LogLineDescriptorTest::testConstantFields() {
+TEST_F(LogLineDescriptorTest, testConstantFields) {
   LogLineDescriptor descriptor;
 
   descriptor.setLogLineTypeName("SMOO")
@@ -67,14 +66,13 @@ void LogLineDescriptorTest::testConstantFields() {
     oss << "Mine:" << std::endl;
     oss << writer.write(description) << std::endl << std::endl;
 
-    CPPUNIT_FAIL(oss.str());
+    FAIL() << oss.str();
   }
 
-  CPPUNIT_ASSERT_EQUAL(
-    referenceLogLineFormat, descriptor.getLogLineFormatString());
+  EXPECT_EQ(referenceLogLineFormat, descriptor.getLogLineFormatString());
 }
 
-void LogLineDescriptorTest::testNoTypeNameThrowsException() {
+TEST_F(LogLineDescriptorTest, testNoTypeNameThrowsException) {
   LogLineDescriptor descriptor;
 
   descriptor.addConstantStringField("spam", "blah")
@@ -82,10 +80,10 @@ void LogLineDescriptorTest::testNoTypeNameThrowsException() {
     .addConstantIntField("ham", -46)
     .addField("foo", LogLineFieldInfo::STRING);
 
-  CPPUNIT_ASSERT_THROW(descriptor.finalize(), AssertionFailedException);
+  ASSERT_THROW(descriptor.finalize(), AssertionFailedException);
 }
 
-void LogLineDescriptorTest::testInheritingDescriptor() {
+TEST_F(LogLineDescriptorTest, testInheritingDescriptor) {
   LogLineDescriptor parent;
 
   parent.addConstantStringField("spam", "blah")
@@ -105,14 +103,12 @@ void LogLineDescriptorTest::testInheritingDescriptor() {
     "FOO\t%s\t%" PRIu64 "\tblah\t288230376151711744\t%" PRIu64 "\t%" PRId64
     "\n");
 
-  CPPUNIT_ASSERT_MESSAGE(
-    "JSON object doesn't match reference",
-    referenceDescription == child.getDescriptionJson());
-  CPPUNIT_ASSERT_EQUAL(
-    referenceLogLineFormat, child.getLogLineFormatString());
+  EXPECT_TRUE(referenceDescription == child.getDescriptionJson());
+  EXPECT_EQ(referenceLogLineFormat, child.getLogLineFormatString());
 }
 
-void LogLineDescriptorTest::testNoFinalizeThrowsException() {
+#ifdef TRITONSORT_ASSERTS
+TEST_F(LogLineDescriptorTest, testNoFinalizeThrowsException) {
   LogLineDescriptor descriptor;
 
   descriptor.setLogLineTypeName("SMOO")
@@ -121,7 +117,6 @@ void LogLineDescriptorTest::testNoFinalizeThrowsException() {
     .addConstantIntField("ham", -46)
     .addField("foo", LogLineFieldInfo::STRING);
 
-  CPPUNIT_ASSERT_THROW(descriptor.getDescriptionJson(),
-                       AssertionFailedException);
+  ASSERT_THROW(descriptor.getDescriptionJson(), AssertionFailedException);
 }
-
+#endif //TRITONSORT_ASSERTS

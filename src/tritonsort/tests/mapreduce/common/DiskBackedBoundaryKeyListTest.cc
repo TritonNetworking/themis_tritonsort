@@ -52,33 +52,33 @@ void DiskBackedBoundaryKeyListTest::validateTestKeyList(
     std::pair<const uint8_t*, uint32_t> upperBoundKey =
       boundaries->getUpperBoundKey();
 
-    CPPUNIT_ASSERT(lowerBoundKey.first != NULL);
+    EXPECT_TRUE(lowerBoundKey.first != NULL);
 
     for (uint32_t lowerKeyIndex = 0; lowerKeyIndex < lowerBoundKey.second;
          lowerKeyIndex++) {
-      CPPUNIT_ASSERT_EQUAL(
+      EXPECT_EQ(
         static_cast<uint8_t>(i + 1), lowerBoundKey.first[lowerKeyIndex]);
     }
 
     if (upperBoundKey.first != NULL) {
       for (uint32_t upperKeyIndex = 0; upperKeyIndex < upperBoundKey.second;
            upperKeyIndex++) {
-        CPPUNIT_ASSERT_EQUAL(
+        EXPECT_EQ(
           static_cast<uint8_t>(i + 2), upperBoundKey.first[upperKeyIndex]);
       }
     } else {
-      CPPUNIT_ASSERT_EQUAL(i, static_cast<uint8_t>(numPartitions - 1));
+      EXPECT_EQ(i, static_cast<uint8_t>(numPartitions - 1));
     }
   }
 }
 
-void DiskBackedBoundaryKeyListTest::testLoadBoundaryKeys() {
+TEST_F(DiskBackedBoundaryKeyListTest, testLoadBoundaryKeys) {
   DiskBackedBoundaryKeyList* boundaryKeyList = newTestKeyList(5);
   validateTestKeyList(boundaryKeyList, 5);
   delete boundaryKeyList;
 }
 
-void DiskBackedBoundaryKeyListTest::testPersistAcrossReinstantiation() {
+TEST_F(DiskBackedBoundaryKeyListTest, testPersistAcrossReinstantiation) {
   // Create a test boundary list
   DiskBackedBoundaryKeyList* boundaryKeyList = newTestKeyList(5);
 
@@ -101,7 +101,7 @@ void DiskBackedBoundaryKeyListTest::testPersistAcrossReinstantiation() {
   delete loadedBoundaryList;
 }
 
-void DiskBackedBoundaryKeyListTest::testPartitionBoundaryRange() {
+TEST_F(DiskBackedBoundaryKeyListTest, testPartitionBoundaryRange) {
   DiskBackedBoundaryKeyList* boundaryKeyList = newTestKeyList(5);
 
   PartitionBoundaries* boundaries = boundaryKeyList->getPartitionBoundaries(
@@ -112,27 +112,27 @@ void DiskBackedBoundaryKeyListTest::testPartitionBoundaryRange() {
   std::pair<const uint8_t*, uint32_t> upperBoundKey =
     boundaries->getUpperBoundKey();
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(2), lowerBoundKey.second);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(2), lowerBoundKey.first[0]);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(2), lowerBoundKey.first[1]);
+  EXPECT_EQ(static_cast<uint32_t>(2), lowerBoundKey.second);
+  EXPECT_EQ(static_cast<uint8_t>(2), lowerBoundKey.first[0]);
+  EXPECT_EQ(static_cast<uint8_t>(2), lowerBoundKey.first[1]);
 
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint32_t>(5), upperBoundKey.second);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(5), upperBoundKey.first[0]);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(5), upperBoundKey.first[1]);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(5), upperBoundKey.first[2]);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(5), upperBoundKey.first[3]);
-  CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(5), upperBoundKey.first[4]);
+  EXPECT_EQ(static_cast<uint32_t>(5), upperBoundKey.second);
+  EXPECT_EQ(static_cast<uint8_t>(5), upperBoundKey.first[0]);
+  EXPECT_EQ(static_cast<uint8_t>(5), upperBoundKey.first[1]);
+  EXPECT_EQ(static_cast<uint8_t>(5), upperBoundKey.first[2]);
+  EXPECT_EQ(static_cast<uint8_t>(5), upperBoundKey.first[3]);
+  EXPECT_EQ(static_cast<uint8_t>(5), upperBoundKey.first[4]);
 
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     boundaryKeyList->getPartitionBoundaries(1, 5), AssertionFailedException);
-  CPPUNIT_ASSERT_THROW(
+  ASSERT_THROW(
     boundaryKeyList->getPartitionBoundaries(3, 2), AssertionFailedException);
 
   delete boundaries;
 
   boundaries = boundaryKeyList->getPartitionBoundaries(2, 4);
 
-  CPPUNIT_ASSERT_EQUAL(
+  EXPECT_EQ(
     static_cast<const uint8_t*>(NULL), boundaries->getUpperBoundKey().first);
 
   delete boundaries;

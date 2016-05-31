@@ -1,16 +1,13 @@
 #ifndef THEMIS_MEMORY_ALLOCATING_TEST_FIXTURE
 #define THEMIS_MEMORY_ALLOCATING_TEST_FIXTURE
 
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestSuite.h>
-#include <cppunit/extensions/HelperMacros.h>
 #include <stdint.h>
+#include "gtest/gtest.h"
 
 #include "common/DummyWorker.h"
 #include "core/MemoryAllocatorInterface.h"
 
-class MemoryAllocatingTestFixture : public CppUnit::TestFixture {
+class MemoryAllocatingTestFixture : public ::testing::Test {
 public:
   MemoryAllocatingTestFixture();
   virtual ~MemoryAllocatingTestFixture();

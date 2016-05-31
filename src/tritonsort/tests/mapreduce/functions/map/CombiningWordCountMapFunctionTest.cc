@@ -4,7 +4,7 @@
 #include "tests/mapreduce/functions/map/CombiningWordCountMapFunctionTest.h"
 #include "tests/mapreduce/functions/map/CombiningWordCountMapVerifyingWriter.h"
 
-void CombiningWordCountMapFunctionTest::testProperCombination() {
+TEST_F(CombiningWordCountMapFunctionTest, testProperCombination) {
   std::string key("spam_file.txt");
   std::string value(
     "Well, there's egg and bacon; egg sausage and bacon; egg and spam; "
@@ -37,12 +37,11 @@ void CombiningWordCountMapFunctionTest::testProperCombination() {
   for (std::map<std::string, uint64_t>::iterator
          iter = expectedCountsMap.begin(); iter != expectedCountsMap.end();
        iter++) {
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      iter->first, iter->second, writer.counts[iter->first].front());
+    EXPECT_EQ(iter->second, writer.counts[iter->first].front()) << iter->first;
   }
 }
 
-void CombiningWordCountMapFunctionTest::testTooManyKeysToCache() {
+TEST_F(CombiningWordCountMapFunctionTest, testTooManyKeysToCache) {
   std::string key("spam_file.txt");
   std::string value(
     "spam spam spam spam spam spam spam spam LOVELY SPAM spam WONDERFUL SPAM "
@@ -73,9 +72,8 @@ void CombiningWordCountMapFunctionTest::testTooManyKeysToCache() {
 
   for (std::map<std::string, uint64_t>::iterator iter =
          singleEntryCounts.begin(); iter != singleEntryCounts.end(); iter++) {
-  CPPUNIT_ASSERT_EQUAL(
-    static_cast<uint64_t>(1), writer.counts[iter->first].size());
-  CPPUNIT_ASSERT_EQUAL(iter->second, writer.counts[iter->first].front());
+  EXPECT_EQ(static_cast<uint64_t>(1), writer.counts[iter->first].size());
+  EXPECT_EQ(iter->second, writer.counts[iter->first].front());
   }
 
   std::list<uint64_t> expectedSpammmmmCounts;
@@ -89,14 +87,13 @@ void CombiningWordCountMapFunctionTest::testTooManyKeysToCache() {
 void CombiningWordCountMapFunctionTest::assertListsEqual(
   std::list<uint64_t>& expected, std::list<uint64_t>& received) {
 
-  CPPUNIT_ASSERT_EQUAL(
-    expected.size(), received.size());
+  EXPECT_EQ(expected.size(), received.size());
 
   std::list<uint64_t>::iterator expectedIter = expected.begin();
   std::list<uint64_t>::iterator receivedIter = received.begin();
 
   while (expectedIter != expected.end()) {
-    CPPUNIT_ASSERT_EQUAL(*expectedIter, *receivedIter);
+    EXPECT_EQ(*expectedIter, *receivedIter);
     expectedIter++;
     receivedIter++;
   }

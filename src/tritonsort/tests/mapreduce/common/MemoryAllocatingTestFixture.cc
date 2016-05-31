@@ -1,5 +1,5 @@
 #include "common/SimpleMemoryAllocator.h"
-#include "tests/common/MemoryAllocatingTestFixture.h"
+#include "tests/mapreduce/common/MemoryAllocatingTestFixture.h"
 
 MemoryAllocatingTestFixture::MemoryAllocatingTestFixture()
   : dummyParentWorker(0, "test") {
@@ -12,4 +12,3 @@ MemoryAllocatingTestFixture::~MemoryAllocatingTestFixture() {
     delete memoryAllocator;
   }
 }
-

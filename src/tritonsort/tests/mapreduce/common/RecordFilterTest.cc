@@ -10,7 +10,7 @@
 
 extern const char* TEST_WRITE_ROOT;
 
-void RecordFilterTest::testLoadFromMap() {
+TEST_F(RecordFilterTest, testLoadFromMap) {
   uint64_t recoveringJobID = 42;
   uint64_t jobID = 44;
   uint64_t numPartitions = 10;
@@ -59,10 +59,10 @@ void RecordFilterTest::testLoadFromMap() {
   RecordFilterMap recordFilterMap(params, mockCoordinatorClient);
 
   const RecordFilter* nullRecordFilter = recordFilterMap.get(recoveringJobID);
-  CPPUNIT_ASSERT(nullRecordFilter == NULL);
+  EXPECT_TRUE(nullRecordFilter == NULL);
 
   const RecordFilter* recordFilter = recordFilterMap.get(jobID);
-  CPPUNIT_ASSERT(recordFilter != NULL);
+  EXPECT_TRUE(recordFilter != NULL);
 
   uint8_t keyInFirstRange[3] = {3, 1, 2};
   uint8_t keyBetweenFirstAndSecondRange[1] = {7};
@@ -70,9 +70,9 @@ void RecordFilterTest::testLoadFromMap() {
   uint8_t firstKeyInThirdRange[1] = {9};
   uint8_t secondKeyInThirdRange[4] = {0xff, 0xff, 0xff, 0xff};
 
-  CPPUNIT_ASSERT(recordFilter->pass(keyInFirstRange, 3));
-  CPPUNIT_ASSERT(!recordFilter->pass(keyBetweenFirstAndSecondRange, 1));
-  CPPUNIT_ASSERT(recordFilter->pass(keyInSecondRange, 4));
-  CPPUNIT_ASSERT(recordFilter->pass(firstKeyInThirdRange, 1));
-  CPPUNIT_ASSERT(recordFilter->pass(secondKeyInThirdRange, 4));
+  EXPECT_TRUE(recordFilter->pass(keyInFirstRange, 3));
+  EXPECT_TRUE(!recordFilter->pass(keyBetweenFirstAndSecondRange, 1));
+  EXPECT_TRUE(recordFilter->pass(keyInSecondRange, 4));
+  EXPECT_TRUE(recordFilter->pass(firstKeyInThirdRange, 1));
+  EXPECT_TRUE(recordFilter->pass(secondKeyInThirdRange, 4));
 }

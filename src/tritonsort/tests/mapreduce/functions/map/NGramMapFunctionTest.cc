@@ -15,7 +15,7 @@ void NGramMapFunctionTest::insertExpectedKey(
     std::string(reinterpret_cast<char*>(&keyHash), sizeof(uint64_t)));
 }
 
-void NGramMapFunctionTest::testMapNGrams() {
+TEST_F(NGramMapFunctionTest, testMapNGrams) {
   StringListVerifyingWriter writer;
 
   NGramMapFunction mapFunction(3);
@@ -47,7 +47,7 @@ void NGramMapFunctionTest::testMapNGrams() {
 
   for (std::set<std::string>::iterator expectedIter = expectedKeys.begin();
        expectedIter != expectedKeys.end(); expectedIter++) {
-    CPPUNIT_ASSERT_MESSAGE(
-      (*expectedIter).c_str(), receivedKeys.count(*expectedIter) == 1);
+    EXPECT_TRUE(receivedKeys.count(*expectedIter) == 1) <<
+        (*expectedIter).c_str();
   }
 }

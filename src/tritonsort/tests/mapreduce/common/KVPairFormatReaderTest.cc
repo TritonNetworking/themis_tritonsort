@@ -18,7 +18,7 @@ KVPairFormatReaderTest::KVPairFormatReaderTest()
   }
 }
 
-void KVPairFormatReaderTest::setUp() {
+void KVPairFormatReaderTest::SetUp() {
   // Create a new converter and put it in front of the mock tracker.
   converter = new ByteStreamConverter(
     0, "converter", *memoryAllocator, 0, 0, filenameToStreamIDMap,
@@ -34,12 +34,12 @@ void KVPairFormatReaderTest::setUp() {
   streamClosedBuffer->setStreamID(0);
 }
 
-void KVPairFormatReaderTest::tearDown() {
+void KVPairFormatReaderTest::TearDown() {
   downstreamTracker.deleteAllWorkUnits();
   delete converter;
 }
 
-void KVPairFormatReaderTest::testReadCompleteTuples() {
+TEST_F(KVPairFormatReaderTest, testReadCompleteTuples) {
   // Create an input buffer with 3 complete tuples with key/value lengths:
   // 10, 90
   // 37, 22
@@ -79,7 +79,7 @@ void KVPairFormatReaderTest::testReadCompleteTuples() {
     inputs, expectedBufferSizes, expectedKeySizes, expectedValueSizes);
 }
 
-void KVPairFormatReaderTest::testInputBufferTerminatesWithPartialHeader() {
+TEST_F(KVPairFormatReaderTest, testInputBufferTerminatesWithPartialHeader) {
   // Create an input buffer with 1 complete tuple with key/value lengths:
   // 0, 50
   appendTuple(inputBuffer, 0, 50);
@@ -105,7 +105,7 @@ void KVPairFormatReaderTest::testInputBufferTerminatesWithPartialHeader() {
     inputs, expectedBufferSizes, expectedKeySizes, expectedValueSizes);
 }
 
-void KVPairFormatReaderTest::testInputBufferTerminatesAfterHeader() {
+TEST_F(KVPairFormatReaderTest, testInputBufferTerminatesAfterHeader) {
   // Create an input buffer with 1 complete tuple with key/value lengths:
   // 11, 22
   appendTuple(inputBuffer, 11, 22);
@@ -134,7 +134,7 @@ void KVPairFormatReaderTest::testInputBufferTerminatesAfterHeader() {
     inputs, expectedBufferSizes, expectedKeySizes, expectedValueSizes);
 }
 
-void KVPairFormatReaderTest::testInputBufferTerminatesWithPartialTuple() {
+TEST_F(KVPairFormatReaderTest, testInputBufferTerminatesWithPartialTuple) {
   // Create an input buffer with 1 complete tuple with key/value lengths:
   // 12, 124
   appendTuple(inputBuffer, 12, 124);
@@ -166,7 +166,7 @@ void KVPairFormatReaderTest::testInputBufferTerminatesWithPartialTuple() {
     inputs, expectedBufferSizes, expectedKeySizes, expectedValueSizes);
 }
 
-void KVPairFormatReaderTest::testHeaderStraddlesInputBuffers() {
+TEST_F(KVPairFormatReaderTest, testHeaderStraddlesInputBuffers) {
   // Create an input buffer with 5 complete tuple with key/value lengths:
   // 100, 91
   appendTuple(inputBuffer, 100, 91);
@@ -238,7 +238,7 @@ void KVPairFormatReaderTest::testHeaderStraddlesInputBuffers() {
     inputs, expectedBufferSizes, expectedKeySizes, expectedValueSizes);
 }
 
-void KVPairFormatReaderTest::testTupleStraddlesInputBuffers() {
+TEST_F(KVPairFormatReaderTest, testTupleStraddlesInputBuffers) {
   // Create an input buffer with 5 complete tuple with key/value lengths:
   // 100, 80
   appendTuple(inputBuffer, 100, 80);
@@ -330,17 +330,14 @@ void KVPairFormatReaderTest::verifyBufferContainsTuple(uint8_t* buffer,
                                                        uint32_t valueLength) {
   ASSERT(keyLength + valueLength <= 250,
          "Test tuples can only be 250 (plus header) bytes.");
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect key length", keyLength, KeyValuePair::keyLength(buffer));
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Incorrect value length", valueLength,
+  EXPECT_EQ(keyLength, KeyValuePair::keyLength(buffer));
+  EXPECT_EQ(valueLength,
     KeyValuePair::valueLength(buffer));
 
   // Get the start of the tuple data, which is the start of the key.
   uint8_t* tupleStart = KeyValuePair::key(buffer);
   for (uint8_t i = 0; i < keyLength + valueLength; ++i) {
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Incorrect tuple data", i, tupleStart[i]);
+    EXPECT_EQ(i, tupleStart[i]);
   }
 }
 
@@ -352,15 +349,13 @@ void KVPairFormatReaderTest::runInputsAndVerifyOutputs(
   // Convert all input buffers.
   for (std::list<ByteStreamBuffer*>::iterator iter = inputs.begin();
        iter != inputs.end(); iter++) {
-    CPPUNIT_ASSERT_NO_THROW(converter->run(*iter));
+    ASSERT_NO_THROW(converter->run(*iter));
   }
 
   std::queue<Resource*> outputBuffers(downstreamTracker.getWorkQueue());
 
   // Verify we have the correct number of output buffers
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Wrong number of output buffers", expectedBufferSizes.size(),
-    outputBuffers.size());
+  EXPECT_EQ(expectedBufferSizes.size(), outputBuffers.size());
 
   // Verify each output buffer and each tuple within.
   std::list<uint32_t>::const_iterator keySizeIter = keySizes.begin();
@@ -371,51 +366,41 @@ void KVPairFormatReaderTest::runInputsAndVerifyOutputs(
       dynamic_cast<KVPairBuffer*>(outputBuffers.front());
     outputBuffers.pop();
 
-    CPPUNIT_ASSERT_MESSAGE(
-      "Did not get KVPairBuffer out", outputBuffer != NULL);
+    EXPECT_TRUE(outputBuffer != NULL);
 
     // Verify buffer size
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Output buffer contains wrong number of bytes.", *sizeIter,
-      outputBuffer->getCurrentSize());
+    EXPECT_EQ(*sizeIter, outputBuffer->getCurrentSize());
     sizeIter++;
 
     // Verify tuples.
     KeyValuePair kvPair;
 
     while (outputBuffer->getNextKVPair(kvPair)) {
-      CPPUNIT_ASSERT_EQUAL_MESSAGE(
-        "Wrong key size", kvPair.getKeyLength(), *keySizeIter);
-      CPPUNIT_ASSERT_EQUAL_MESSAGE(
-        "Wrong value size", kvPair.getValueLength(), *valueSizeIter);
+      EXPECT_EQ(kvPair.getKeyLength(), *keySizeIter);
+      EXPECT_EQ(kvPair.getValueLength(), *valueSizeIter);
 
       keySizeIter++;
       valueSizeIter++;
     }
 
     // Verify the output buffer has the right source name and job IDs.
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Wrong source name", filename, outputBuffer->getSourceName());
+    EXPECT_EQ(filename, outputBuffer->getSourceName());
     const std::set<uint64_t>& outputBufferJobIDs = outputBuffer->getJobIDs();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-      "Wrong number of job IDs name", jobIDs.size(), outputBufferJobIDs.size());
+    EXPECT_EQ(jobIDs.size(), outputBufferJobIDs.size());
     for (std::set<uint64_t>::const_iterator iter = jobIDs.begin();
          iter != jobIDs.end(); iter++) {
-      CPPUNIT_ASSERT_MESSAGE(
-        "Missing job ID",
-        outputBufferJobIDs.find(*iter) != outputBufferJobIDs.end());
+      EXPECT_TRUE(outputBufferJobIDs.find(*iter) != outputBufferJobIDs.end());
     }
   }
 
   // Make sure we used up all of the expected tuples.
-  CPPUNIT_ASSERT_MESSAGE("Leftover keys", keySizeIter == keySizes.end());
-  CPPUNIT_ASSERT_MESSAGE("Leftover values", valueSizeIter == valueSizes.end());
+  EXPECT_TRUE(keySizeIter == keySizes.end());
+  EXPECT_TRUE(valueSizeIter == valueSizes.end());
 
   // Verify that closing the stream deletes the format reader and does not
   // produce any new output buffers.
-  CPPUNIT_ASSERT_NO_THROW(converter->run(streamClosedBuffer));
-  CPPUNIT_ASSERT_NO_THROW(converter->teardown());
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(
-    "Wrong number of output buffers after teardown", expectedBufferSizes.size(),
-    downstreamTracker.getWorkQueue().size());
+  ASSERT_NO_THROW(converter->run(streamClosedBuffer));
+  ASSERT_NO_THROW(converter->teardown());
+  EXPECT_EQ(expectedBufferSizes.size(),
+            downstreamTracker.getWorkQueue().size());
 }
