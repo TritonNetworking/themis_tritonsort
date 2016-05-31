@@ -9,3 +9,5 @@ INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(Re2
   "libre2 is required: http://code.google.com/p/re2/"
   Re2_INCLUDE_DIR Re2_LIBRARY)
+
+INCLUDE_DIRECTORIES(${Re2_INCLUDE_DIR})
