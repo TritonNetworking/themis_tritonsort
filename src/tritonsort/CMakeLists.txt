@@ -24,6 +24,7 @@ IF(ENABLE_ASSERTS)
 ENDIF(ENABLE_ASSERTS)
 
 FIND_PACKAGE(Re2 REQUIRED)
+FIND_PACKAGE(aio REQUIRED)
 FIND_PACKAGE(GooglePerfTools REQUIRED)
 
 SET(MEMORY_MANAGER "tcmalloc" CACHE STRING "The memory manager to which tests, IO benchmarks, phase zero, and phase one are linked; valid values are malloc, jemalloc, tcmalloc")
@@ -72,7 +73,7 @@ SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${EXTRA_COMPILE_FLAGS}")
 INCLUDE_DIRECTORIES(${TritonSort_SOURCE_DIR} ${TritonSort_BINARY_DIR}
   ${ThirdParty_SOURCE_DIR}/jsoncpp/include ${Re2_INCLUDE_DIR}
   ${JEMALLOC_INCLUDE_DIR} ${GooglePerfTools_INCLUDE_DIR}
-  ${ThirdParty_SOURCE_DIR})
+  ${LIBAIO_INCLUDE_DIR} ${ThirdParty_SOURCE_DIR})
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.in
   ${PROJECT_SOURCE_DIR}/config.h)
