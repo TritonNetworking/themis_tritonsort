@@ -65,10 +65,10 @@ LogLineFieldInfo* LogLineFieldInfo::newVariableField(
 
   switch (type) {
   case UNSIGNED_INTEGER:
-    formatString.assign("%"PRIu64);
+    formatString.assign("%" PRIu64);
     break;
   case SIGNED_INTEGER:
-    formatString.assign("%"PRId64);
+    formatString.assign("%" PRId64);
     break;
   case STRING:
     formatString.assign("%s");
