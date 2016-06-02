@@ -8,4 +8,4 @@ INCLUDE_DIRECTORIES(${TritonSort_SOURCE_DIR}
 
 ADD_EXECUTABLE(loggrep loggrep.cc)
 
-TARGET_LINK_LIBRARIES(loggrep re2 tritonsort_core)
+TARGET_LINK_LIBRARIES(loggrep ${Re2_LIBRARY} tritonsort_core)

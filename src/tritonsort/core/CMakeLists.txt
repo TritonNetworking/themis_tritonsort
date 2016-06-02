@@ -1,7 +1,7 @@
 FILE(GLOB CoreFiles "*.cc")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS}
-  ${ThirdParty_SOURCE_DIR}/jsoncpp/include ${YAML_CPP_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${ThirdParty_SOURCE_DIR}/jsoncpp/include
+  ${YAML_CPP_SOURCE_DIR}/include)
 
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
