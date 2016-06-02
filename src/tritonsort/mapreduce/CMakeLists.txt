@@ -45,9 +45,6 @@ ADD_LIBRARY(mapreduce_workers STATIC ${common_Files}
   ${mapreduce_writer_WorkerFiles}
   )
 
-FIND_PACKAGE(OpenSSL REQUIRED)
-FIND_PACKAGE(hiredis REQUIRED)
-
 TARGET_LINK_LIBRARIES(mapreduce_workers tritonsort_core tritonsort_common
   ${OPENSSL_CRYPTO_LIBRARIES} ${hiredis_LIBRARY})
 

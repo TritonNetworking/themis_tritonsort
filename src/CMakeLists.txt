@@ -8,6 +8,23 @@ SET(GTEST_ROOT_DIR $ENV{GTEST_ROOT_DIR} CACHE STRING "Location of root googletes
 SET(CMAKE_INCLUDE_PATH "${CUSTOM_USR_PATH}/include;/opt/local/include;/usr/local/include;/usr/include")
 SET(CMAKE_LIBRARY_PATH "${CUSTOM_USR_PATH}/lib;/opt/local/lib;/usr/local/lib;/usr/lib")
 
+# Load dependencies
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${BalancedSystems_SOURCE_DIR}/tritonsort/cmake_tools")
+INCLUDE("${BalancedSystems_SOURCE_DIR}/tritonsort/cmake_tools/RecurseCCFiles.cmake")
+FIND_PACKAGE(Re2 REQUIRED)
+FIND_PACKAGE(aio REQUIRED)
+FIND_PACKAGE(GooglePerfTools REQUIRED)
+FIND_PACKAGE(JeMalloc REQUIRED)
+FIND_PACKAGE(GooglePerfTools REQUIRED)
+FIND_PACKAGE(ZLIB REQUIRED)
+FIND_PACKAGE(pthread REQUIRED)
+FIND_PACKAGE(rt REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
+FIND_PACKAGE(OpenSSL REQUIRED)
+FIND_PACKAGE(hiredis REQUIRED)
+
+MARK_AS_ADVANCED(Boost_DIR)
+
 ADD_SUBDIRECTORY(third-party)
 ADD_SUBDIRECTORY(tritonsort)
 ADD_SUBDIRECTORY(gensort)

@@ -2,12 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(TritonSort)
 
-MARK_AS_ADVANCED(Boost_DIR)
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TritonSort_SOURCE_DIR}/cmake_tools")
-
-INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/RecurseCCFiles.cmake")
-
 # =============
 # BEGIN OPTIONS
 # =============
@@ -23,15 +17,8 @@ IF(ENABLE_ASSERTS)
   SET(TRITONSORT_ASSERTS 1)
 ENDIF(ENABLE_ASSERTS)
 
-FIND_PACKAGE(Re2 REQUIRED)
-FIND_PACKAGE(aio REQUIRED)
-FIND_PACKAGE(GooglePerfTools REQUIRED)
-
 SET(MEMORY_MANAGER "tcmalloc" CACHE STRING "The memory manager to which tests, IO benchmarks, phase zero, and phase one are linked; valid values are malloc, jemalloc, tcmalloc")
 SET(MEMORY_MANAGER_PHASE_TWO "tcmalloc" CACHE STRING "The memory manager to which phase two is linked; valid values are malloc, jemalloc, tcmalloc")
-
-FIND_PACKAGE(JeMalloc REQUIRED)
-FIND_PACKAGE(GooglePerfTools REQUIRED)
 
 IF(${MEMORY_MANAGER} STREQUAL "malloc")
   # Using the normal memory manager; do nothing
