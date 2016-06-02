@@ -46,7 +46,7 @@ ADD_LIBRARY(mapreduce_workers STATIC ${common_Files}
   )
 
 TARGET_LINK_LIBRARIES(mapreduce_workers tritonsort_core tritonsort_common
-  ${OPENSSL_CRYPTO_LIBRARIES} ${hiredis_LIBRARY})
+  ${hiredis_LIBRARY})
 
 # Create a version of MapReduce for phase zero/one, and another version for
 # phase two

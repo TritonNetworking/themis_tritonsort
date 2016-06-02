@@ -3,8 +3,6 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
-#include "core/Params.h"
-#include <openssl/sha.h>
 #include <iostream>
 #include <algorithm>
 #include <iterator>
@@ -12,7 +10,8 @@
 #include <sstream>
 #include <vector>
 
-
+#include "core/Hash.h"
+#include "core/Params.h"
 #include "ParseNetworkMapFunction.h"
 
 ParseNetworkMapFunction::ParseNetworkMapFunction(uint64_t _numVertices,
@@ -22,24 +21,6 @@ ParseNetworkMapFunction::ParseNetworkMapFunction(uint64_t _numVertices,
                                                        uint64_t _numPeers)
   : numVertices(_numVertices), fileURL(_fileURL),
     maxNeighbors(_maxNeighbors), mypeerid(_mypeerid), numPeers(_numPeers) {
-}
-
-uint64_t sha1sum1(uint64_t in){
-
-  char shaInBuf[17];
-  unsigned char shaOutBuf[20];
-
-  sprintf(shaInBuf, "%016lX", in);
-  SHA1((const unsigned char *)shaInBuf, strlen(shaInBuf), shaOutBuf);
-
-  uint64_t out;
-  unsigned char *ptr = (unsigned char *) (&out);
-
-  for(uint8_t i = 0; i < sizeof(uint64_t); i++){
-    ptr[i] = shaOutBuf[i];
-  }
-
-  return out;
 }
 
 /**
@@ -104,7 +85,7 @@ void ParseNetworkMapFunction::map(KeyValuePair& kvPair,
 
       for(uint64_t j = 0; j < numEdges; j++){
         uint64_t nid = atol(tokens.at(j+2).c_str());
-        outputValue[j + 1] = sha1sum1(nid);
+        outputValue[j + 1] = Hash::hash(nid);
         //fprintf(stdout, "%ld ", nid);
       }
       //fprintf(stdout, "\n");
@@ -114,7 +95,7 @@ void ParseNetworkMapFunction::map(KeyValuePair& kvPair,
       memcpy(&outputValue[numEdges + 1], &initialPageRank, sizeof(double));
 
       KeyValuePair outputKVPair;
-      uint64_t key = sha1sum1(atol(tokens.at(0).c_str()));
+      uint64_t key = Hash::hash(atol(tokens.at(0).c_str()));
       outputKVPair.setKey(reinterpret_cast<const uint8_t *>(&key),
           sizeof(uint64_t));
       outputKVPair.setValue(reinterpret_cast<const uint8_t *>(outputValue),

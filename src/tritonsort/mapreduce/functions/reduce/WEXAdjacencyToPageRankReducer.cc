@@ -2,7 +2,7 @@
 #include "mapreduce/common/KeyValuePair.h"
 #include "mapreduce/functions/reduce/WEXAdjacencyToPageRankReducer.h"
 
-const double WEXAdjacencyToPageRankReducer::INITIAL_PAGERANK;
+const double WEXAdjacencyToPageRankReducer::INITIAL_PAGERANK = 1.0;
 
 void WEXAdjacencyToPageRankReducer::reduce(
   const uint8_t* key, uint64_t keyLength, KVPairIterator& iterator,
@@ -44,4 +44,3 @@ void WEXAdjacencyToPageRankReducer::reduce(
 
   writer.commitWrite(valueOffset);
 }
-

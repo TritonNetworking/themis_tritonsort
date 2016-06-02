@@ -222,7 +222,7 @@ void KVPairBuffer::calculateTupleMetadata() {
   uint8_t* iterator = const_cast<uint8_t*>(getRawBuffer());
   uint8_t* endOfBuffer = iterator + currentSize;
   numTuples = 0;
-  minKeyLength = std::numeric_limits<uint64_t>::max();
+  minKeyLength = std::numeric_limits<uint32_t>::max();
   maxKeyLength = 0;
 
   // Iterate through the buffer counting tuples and calculating maximum key

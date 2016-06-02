@@ -16,7 +16,7 @@ public:
     const uint8_t* key, uint64_t keyLength, KVPairIterator& iterator,
     KVPairWriterInterface& writer);
 private:
-  static const double INITIAL_PAGERANK = 1.0;
+  static const double INITIAL_PAGERANK;
 };
 
 #endif // THEMIS_MR_WEX_ADJACENCY_TO_PAGERANK_REDUCER_H
