@@ -1,0 +1,11 @@
+FIND_PATH(JSONCPP_INCLUDE_DIR "jsoncpp/json/json.h")
+
+FIND_LIBRARY(JSONCPP_LIBRARY jsoncpp)
+
+MARK_AS_ADVANCED(jsoncpp JSONCPP_INCLUDE_DIR JSONCPP_LIBRARY)
+
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(jsoncpp "jsoncpp required: https://github.com/open-source-parsers/jsoncpp"
+  JSONCPP_INCLUDE_DIR JSONCPP_LIBRARY)
+
+INCLUDE_DIRECTORIES(${JSONCPP_INCLUDE_DIR}/jsoncpp)
