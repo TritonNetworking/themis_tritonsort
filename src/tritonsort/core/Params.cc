@@ -1,8 +1,7 @@
 
 #include <boost/filesystem.hpp>
 #include <sstream>
-#include <yaml-cpp/node.h>
-#include <yaml-cpp/parser.h>
+#include <yaml-cpp/yaml.h>
 
 #include "core/Params.h"
 #include "core/StatusPrinter.h"
@@ -53,27 +52,10 @@ bool Params::containsv(const char* format, ...) const {
 void Params::parseFile(const char* filename) {
   ASSERT(fileExists(filename), "Can't find params file '%s'", filename);
 
-  YAML::Node doc;
-  YAML::Node dummyNextDoc;
-
-  // Parse the config file into a YAML node
-
-  try {
-    std::ifstream fileInputStream(filename);
-    YAML::Parser parser(fileInputStream);
-
-    ABORT_IF(!parser.GetNextDocument(doc), "Failed to parse YAML document "
-             "from '%s'", filename);
-
-    ABORT_IF(parser.GetNextDocument(dummyNextDoc), "Only expected to parse "
-             "one YAML document from '%s', but parsed more than one", filename);
-  } catch (YAML::ParserException& e) {
-    ABORT("Parse error while parsing '%s': %s", filename, e.what());
-  }
+  YAML::Node doc = YAML::LoadFile(filename);
 
   // Iterate over the resulting YAML node, adding all parameters to the
   // internal parameter map
-
   parseYAMLNode(doc);
 }
 
@@ -101,17 +83,15 @@ void Params::parseYAMLNode(
 
   std::string keyPrefix(keyConcatStream.str());
 
-  for (YAML::Iterator iter = node.begin(); iter != node.end(); iter++) {
-    const YAML::Node& key = iter.first();
-    const YAML::Node& value = iter.second();
+  for (YAML::const_iterator iter = node.begin(); iter != node.end(); iter++) {
+    const YAML::Node& key = iter->first;
+    const YAML::Node& value = iter->second;
 
     ABORT_IF(key.Type() != YAML::NodeType::Scalar,
              "YAML config files are expected to have scalar keys");
 
-    std::string keyStr;
+    std::string keyStr = key.as<std::string>();
     std::string valueStr;
-
-    key >> keyStr;
 
     switch (value.Type()) {
     case YAML::NodeType::Null:
@@ -119,7 +99,7 @@ void Params::parseYAMLNode(
             keyStr.c_str());
       break;
     case YAML::NodeType::Scalar:
-      value >> valueStr;
+      valueStr = value.as<std::string>();
 
       if (keyPrefix.size() > 0) {
         add(keyPrefix + keyStr, valueStr);
@@ -138,6 +118,9 @@ void Params::parseYAMLNode(
 
       // Done dealing with the map, so pop the current key from the stack
       keyStack.pop_back();
+      break;
+    case YAML::NodeType::Undefined:
+      ABORT("Undefined node type");
       break;
     }
   }
