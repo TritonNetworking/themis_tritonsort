@@ -1,4 +1,4 @@
-FIND_PATH(YAMLCPP_INCLUDE_DIR "yaml-cpp/parser.h")
+FIND_PATH(YAMLCPP_INCLUDE_DIR "yaml-cpp/yaml.h")
 
 FIND_LIBRARY(YAMLCPP_LIBRARY yaml-cpp)
 
