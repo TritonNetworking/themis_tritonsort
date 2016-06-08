@@ -1,7 +1,7 @@
 #ifndef MAPRED_BOUNDARY_LIST_TEST_H
 #define MAPRED_BOUNDARY_LIST_TEST_H
 
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/MemoryAllocatorInterface.h"
 #include "mapreduce/common/KeyValuePair.h"
 #include "tests/mapreduce/common/MemoryAllocatingTestFixture.h"

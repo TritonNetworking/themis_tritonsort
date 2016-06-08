@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "config.h"
+#include "tritonsort/config.h"
 
 #include <jemalloc/jemalloc.h>
 const char* malloc_conf = "lg_chunk:20,lg_tcache_gc_sweep:30";

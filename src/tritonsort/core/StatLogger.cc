@@ -4,7 +4,7 @@
 #include "StatLogger.h"
 #include "StatWriter.h"
 #include "StatusPrinter.h"
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/LogDataContainer.h"
 #include "core/MemoryUtils.h"
 #include "core/Params.h"

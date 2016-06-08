@@ -1,4 +1,4 @@
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/StatusPrinter.h"
 #include "core/WorkerBarrier.h"
 

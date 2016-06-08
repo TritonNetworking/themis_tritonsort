@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/TritonSortAssert.h"
 
 bool TritonSortAssertions::testMode = false;

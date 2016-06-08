@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "config.h"
+#include "tritonsort/config.h"
 
 /// Exception thrown if an assertion fails
 class AssertionFailedException : public std::exception {

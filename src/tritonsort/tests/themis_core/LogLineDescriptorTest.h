@@ -4,7 +4,7 @@
 #include <json/json.h>
 #include "googletest.h"
 
-#include "config.h"
+#include "tritonsort/config.h"
 
 class LogLineDescriptorTest : public ::testing::Test {
 protected:
