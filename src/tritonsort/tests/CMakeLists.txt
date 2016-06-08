@@ -2,9 +2,6 @@ INCLUDE("${TritonSort_SOURCE_DIR}/cmake_tools/RecurseCCFiles.cmake")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TritonSort_SOURCE_DIR}/cmake_tools")
 
-ADD_SUBDIRECTORY(${GTEST_ROOT_DIR} "${CMAKE_CURRENT_BINARY_DIR}/gtest")
-INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include)
-
 RECURSE_CC_FILES(common)
 RECURSE_CC_FILES(themis_core)
 RECURSE_CC_FILES(mapreduce)
