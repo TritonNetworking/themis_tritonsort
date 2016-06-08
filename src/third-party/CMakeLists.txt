@@ -1,6 +1,6 @@
 PROJECT(ThirdParty)
 
-ADD_SUBDIRECTORY(googletest)
+MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 
-ADD_LIBRARY(murmurhash
-  murmurhash/MurmurHash3.cpp)
+ADD_SUBDIRECTORY(googletest)
+ADD_SUBDIRECTORY(murmurhash)
