@@ -2,7 +2,7 @@
 #define THEMIS_SORT_STRATEGY_TEST_SUITE_H
 
 #include <stdint.h>
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 #include "mapreduce/common/buffers/KVPairBuffer.h"
 #include "mapreduce/common/sorting/SortStrategyInterface.h"

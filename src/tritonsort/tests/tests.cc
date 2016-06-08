@@ -4,7 +4,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string>
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 #include "common/MainUtils.h"
 #include "config.h"

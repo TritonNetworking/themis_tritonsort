@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_STAT_LOGGER_TEST_H
 #define TRITONSORT_STAT_LOGGER_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class StatLoggerTest : public ::testing::Test {
 };

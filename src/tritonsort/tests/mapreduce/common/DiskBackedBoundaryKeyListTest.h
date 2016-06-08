@@ -1,7 +1,7 @@
 #ifndef THEMIS_DISK_BACKED_BOUNDARY_KEY_LIST_TEST_H
 #define THEMIS_DISK_BACKED_BOUNDARY_KEY_LIST_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class DiskBackedBoundaryKeyList;
 

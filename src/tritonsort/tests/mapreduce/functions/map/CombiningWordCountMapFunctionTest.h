@@ -2,7 +2,7 @@
 #define MAPRED_COMBINING_WORD_COUNT_MAP_FUNCTION_TEST_H
 
 #include <list>
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class CombiningWordCountMapFunctionTest : public ::testing::Test {
 protected:

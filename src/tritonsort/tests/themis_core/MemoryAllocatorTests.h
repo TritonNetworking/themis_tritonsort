@@ -1,7 +1,7 @@
 #ifndef THEMIS_MEMORY_ALLOCATOR_TESTS_H
 #define THEMIS_MEMORY_ALLOCATOR_TESTS_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class MemoryAllocatorTests : public ::testing::Test {
 };

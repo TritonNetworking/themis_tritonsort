@@ -1,7 +1,7 @@
 #ifndef THEMIS_MAPRED_NGRAM_MAP_FUNCTION_TEST_H
 #define THEMIS_MAPRED_NGRAM_MAP_FUNCTION_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class NGramMapFunctionTest : public ::testing::Test {
 protected:

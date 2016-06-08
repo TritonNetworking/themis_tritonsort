@@ -1,7 +1,7 @@
 #ifndef THEMIS_MAPRED_READ_REQUEST_TEST_H
 #define THEMIS_MAPRED_READ_REQUEST_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class ReadRequestTest : public ::testing::Test {
 };

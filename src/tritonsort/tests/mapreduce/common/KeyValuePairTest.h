@@ -2,7 +2,7 @@
 #define MAPRED_KEY_VALUE_PAIR_TEST_H
 
 #include <stdint.h>
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 #include "mapreduce/common/KeyValuePair.h"
 

@@ -2,7 +2,7 @@
 #define THEMIS_MEMORY_ALLOCATING_TEST_FIXTURE
 
 #include <stdint.h>
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 #include "common/DummyWorker.h"
 #include "core/MemoryAllocatorInterface.h"

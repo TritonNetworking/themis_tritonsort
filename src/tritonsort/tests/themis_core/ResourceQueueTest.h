@@ -2,7 +2,7 @@
 #define TRITONSORT_RESOURCE_QUEUE_TEST_H
 
 #include <stdint.h>
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class ResourceQueueTest : public ::testing::Test {
 protected:

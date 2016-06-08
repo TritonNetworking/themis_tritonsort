@@ -1,7 +1,7 @@
 #ifndef THEMIS_BYTE_ORDER_TEST_H
 #define THEMIS_BYTE_ORDER_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class ByteOrderTest : public ::testing::Test {
 public:

@@ -1,7 +1,7 @@
 #ifndef MAPRED_BYTES_COUNT_MAP_FUNCTION_TEST_H
 #define MAPRED_BYTES_COUNT_MAP_FUNCTION_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class BytesCountMapFunctionTest : public ::testing::Test {
 public:

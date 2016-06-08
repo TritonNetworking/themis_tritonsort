@@ -1,7 +1,7 @@
 #ifndef THEMIS_FILE_TEST_H
 #define THEMIS_FILE_TEST_H
 
-#include "gtest/gtest.h"
+#include "gtest.h"
 
 class FileTest : public ::testing::Test {
 };
