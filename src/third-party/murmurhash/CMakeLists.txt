@@ -1,2 +1,2 @@
 ADD_LIBRARY(murmurhash
-  murmurhash/MurmurHash3.cpp)
+  MurmurHash3.cpp)
