@@ -24,8 +24,6 @@
 #include "core/TritonSortAssert.h"
 #include "core/Utils.h"
 #include "core/constants.h"
-#include "json/reader.h"
-#include "json/value.h"
 
 // TODO: Super inefficient; I doubt this will bottleneck us at all, but
 // we may want to improve this implementation if it does.

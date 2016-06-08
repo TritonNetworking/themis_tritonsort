@@ -7,7 +7,7 @@
    the monitor.
  */
 
-#include "json/value.h"
+#include <json.h>
 
 class ResourceMonitorClient {
 public:

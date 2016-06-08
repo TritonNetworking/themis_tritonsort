@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_LOG_LINE_DESCRIPTOR_TEST_H
 #define TRITONSORT_LOG_LINE_DESCRIPTOR_TEST_H
 
-#include <json/value.h>
+#include <json.h>
 #include "gtest/gtest.h"
 
 #include "config.h"
