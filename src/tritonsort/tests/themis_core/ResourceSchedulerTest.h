@@ -2,7 +2,7 @@
 #define TRITONSORT_RESOURCE_SCHEDULER_TEST_H
 
 #include <pthread.h>
-#include "gtest/gtest.h"
+#include "googletest.h"
 
 #include "core/FCFSPolicy.h"
 #include "core/MLFQPolicy.h"

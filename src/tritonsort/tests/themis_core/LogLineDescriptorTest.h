@@ -2,7 +2,7 @@
 #define TRITONSORT_LOG_LINE_DESCRIPTOR_TEST_H
 
 #include <json/json.h>
-#include "gtest/gtest.h"
+#include "googletest.h"
 
 #include "config.h"
 

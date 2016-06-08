@@ -1,0 +1,6 @@
+#ifndef THIRDPARTY_GOOGLETEST_H
+#define THIRDPARTY_GOOGLETEST_H
+
+#include "gtest/gtest.h"
+
+#endif //THIRDPARTY_GOOGLETEST_H

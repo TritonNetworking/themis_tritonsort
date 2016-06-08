@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include "googletest.h"
 
 #include "BytesCountMapVerifyingWriter.h"
 #include "mapreduce/common/KeyValuePair.h"

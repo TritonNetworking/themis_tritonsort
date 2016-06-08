@@ -1,7 +1,7 @@
 #ifndef _TRITONSORT_THREADSAFEQUEUETEST_H
 #define _TRITONSORT_THREADSAFEQUEUETEST_H
 
-#include "gtest/gtest.h"
+#include "googletest.h"
 
 class ThreadSafeQueueTest : public ::testing::Test {
   void SetUp();

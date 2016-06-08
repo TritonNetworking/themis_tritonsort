@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "gtest/gtest.h"
+#include "googletest.h"
 
 class ReduceKVPairIterator;
 class KVPairBuffer;

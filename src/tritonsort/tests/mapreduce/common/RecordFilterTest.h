@@ -1,7 +1,7 @@
 #ifndef THEMIS_RECORD_FILTER_TEST_H
 #define THEMIS_RECORD_FILTER_TEST_H
 
-#include "gtest/gtest.h"
+#include "googletest.h"
 
 class RecordFilterTest : public ::testing::Test {
 };
