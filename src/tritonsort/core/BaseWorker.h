@@ -13,7 +13,7 @@
 #include <string>
 
 
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/CPUAffinitySetter.h"
 #include "core/CumulativeTimer.h"
 #include "core/IntervalStatLoggerClient.h"

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "config.h"
+#include "tritonsort/config.h"
 #include "mapreduce/common/KeyValuePair.h"
 #include "tests/mapreduce/common/MemoryAllocatingTestFixture.h"
 

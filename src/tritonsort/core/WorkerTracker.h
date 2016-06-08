@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/Params.h"
 #include "core/ResourceMonitor.h"
 #include "core/ResourceMonitorClient.h"

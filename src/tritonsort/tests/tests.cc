@@ -7,7 +7,7 @@
 #include "googletest.h"
 
 #include "common/MainUtils.h"
-#include "config.h"
+#include "tritonsort/config.h"
 #include "core/Params.h"
 #include "core/TritonSortAssert.h"
 #include "core/Utils.h"
