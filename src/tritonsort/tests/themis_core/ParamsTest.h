@@ -2,7 +2,7 @@
 #define _TRITONSORT_TEST_PARAMSTEST_H
 
 #include <string>
-#include "gtest.h"
+#include "googletest.h"
 
 #include "core/Params.h"
 

@@ -1,7 +1,7 @@
 #ifndef _TRITONSORT_TEST_DEFAULT_ALLOCATOR_POLICY_TEST_H
 #define _TRITONSORT_TEST_DEFAULT_ALLOCATOR_POLICY_TEST_H
 
-#include "gtest.h"
+#include "googletest.h"
 
 #include "core/MemoryAllocationContext.h"
 #include "core/MemoryAllocatorPolicy.h"

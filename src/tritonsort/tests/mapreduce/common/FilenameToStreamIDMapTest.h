@@ -1,7 +1,7 @@
 #ifndef MAPRED_FILENAME_TO_STREAM_ID_MAP_TEST_H
 #define MAPRED_FILENAME_TO_STREAM_ID_MAP_TEST_H
 
-#include "gtest.h"
+#include "googletest.h"
 
 #include "mapreduce/common/StreamInfo.h"
 

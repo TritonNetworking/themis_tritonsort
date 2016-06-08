@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_GLOB_TEST_H
 #define TRITONSORT_GLOB_TEST_H
 
-#include "gtest.h"
+#include "googletest.h"
 
 class GlobTest : public ::testing::Test {
 public:

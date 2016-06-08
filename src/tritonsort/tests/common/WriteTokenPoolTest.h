@@ -1,7 +1,7 @@
 #ifndef THEMIS_WRITE_TOKEN_POOL_TEST_H
 #define THEMIS_WRITE_TOKEN_POOL_TEST_H
 
-#include "gtest.h"
+#include "googletest.h"
 
 class WriteTokenPoolTest : public ::testing::Test {
 };

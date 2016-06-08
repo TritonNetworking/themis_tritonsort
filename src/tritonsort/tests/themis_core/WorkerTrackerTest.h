@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_WORKER_TRACKER_TEST_H
 #define TRITONSORT_WORKER_TRACKER_TEST_H
 
-#include "gtest.h"
+#include "googletest.h"
 
 #include "core/WorkerTracker.h"
 
