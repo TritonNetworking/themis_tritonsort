@@ -2,7 +2,7 @@
 #define TRITONSORT_STAT_WRITER_H
 
 #include <errno.h>
-#include <json.h>
+#include <json/json.h>"
 #include <list>
 #include <map>
 #include <pthread.h>

@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_STAT_CONTAINER_INTERFACE_H
 #define TRITONSORT_STAT_CONTAINER_INTERFACE_H
 
-#include <json.h>
+#include <json/json.h>"
 #include <list>
 #include <map>
 #include <set>
