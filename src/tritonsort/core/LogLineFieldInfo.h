@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_LOG_LINE_FIELD_INFO_H
 #define TRITONSORT_LOG_LINE_FIELD_INFO_H
 
-#include <json/value.h>
+#include <json/json.h>
 #include <stdint.h>
 #include <string>
 

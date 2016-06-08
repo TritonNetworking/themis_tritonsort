@@ -3,8 +3,6 @@
 #include <boost/filesystem.hpp>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <json/reader.h>
-#include <json/writer.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
