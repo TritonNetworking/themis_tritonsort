@@ -1,7 +1,7 @@
 #ifndef TRITONSORT_HASH_H
 #define TRITONSORT_HASH_H
 
-#include "murmurhash/MurmurHash3.h"
+#include "murmurhash.h"
 
 /**
    Hash is a utility class that provides a basic interface to the MurmurHash3
