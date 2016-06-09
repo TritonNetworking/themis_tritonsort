@@ -12,8 +12,12 @@ RadixSort::RadixSort(bool _useSecondaryKeys)
     maxKeySize(0),
     offsetSize(UINT64_T),
     inputBuckets(0),
+#ifdef TRITONSORT_CXX_11
+    bucketTables{BucketTable(histogram), BucketTable(histogram)},
+#else //TRITONSORT_CXX_11
     bucketTables((BucketTable[2])
                  { BucketTable(histogram), BucketTable(histogram) }),
+#endif //TRITONSORT_CXX_11
     logger("RadixSort") {
   sortTimeStatID = logger.registerStat("sort_time");
   distributeFromBufferStatID = logger.registerStat("distribute_buffer_time");
