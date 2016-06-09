@@ -69,7 +69,8 @@ TEST_F(BufferListTest, testBulkMoveWithNonMultipleBytes) {
 
   // Create 5 buffers with 100, 200, 300, 400, 500 bytes respectively.
   uint64_t numListables = 5;
-  DummyListable listables[numListables];
+  std::vector<DummyListable> listables;
+  listables.resize(numListables);
   for (uint64_t i = 0; i < numListables; i++) {
     listables[i].setSize((i + 1) * 100);
   }

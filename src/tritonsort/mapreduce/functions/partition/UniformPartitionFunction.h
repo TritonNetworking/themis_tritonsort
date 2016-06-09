@@ -2,6 +2,7 @@
 #define THEMIS_UNIFORM_PARTITION_FUNCTION_H
 
 #include "core/constants.h"
+#include "core/TritonSortAssert.h"
 #include "mapreduce/common/PartitionFunctionInterface.h"
 
 class Params;

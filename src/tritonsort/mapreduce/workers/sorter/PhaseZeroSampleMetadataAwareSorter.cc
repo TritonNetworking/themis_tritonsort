@@ -65,7 +65,7 @@ void PhaseZeroSampleMetadataAwareSorter::emitOutputBuffer(
   outputBufferWithMetadata->resetIterator();
   KeyValuePair kvPair;
   SimpleKVPairWriter writer(
-    boost::bind(&BaseWorker::emitWorkUnit, this, _1),
+    boost::bind(&PhaseZeroSampleMetadataAwareSorter::emitWorkUnit, this, _1),
     boost::bind(&PhaseZeroSampleMetadataAwareSorter::getOutputChunk, this, _1));
   while (outputBufferWithMetadata->getNextKVPair(kvPair)) {
     writer.write(kvPair);

@@ -6,6 +6,7 @@
 
 class ByteStreamConverter;
 class FormatReaderInterface;
+class Params;
 class StreamInfo;
 
 /**

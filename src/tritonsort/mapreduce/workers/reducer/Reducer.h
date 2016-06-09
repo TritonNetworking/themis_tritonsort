@@ -8,6 +8,7 @@
 
 class KVPairBuffer;
 class KVPairWriter;
+class KVPairWriterInterface;
 class ReduceFunction;
 
 /**

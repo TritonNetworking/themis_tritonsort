@@ -3,6 +3,7 @@
 
 #include <hiredis/hiredis.h>
 #include <json/json.h>
+#include <set>
 
 #include "mapreduce/common/CoordinatorClientInterface.h"
 

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "core/LogDataContainer.h"
+#include "core/StatContainerInterface.h"
 #include "core/Thread.h"
 #include "core/ThreadSafeQueue.h"
 

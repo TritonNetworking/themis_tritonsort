@@ -1,6 +1,8 @@
 #ifndef TRITONSORT_MAPREDUCE_SORT_STRATEGY_INTERFACE_H
 #define TRITONSORT_MAPREDUCE_SORT_STRATEGY_INTERFACE_H
 
+#include <stdint.h>
+
 #include "common/sort_constants.h"
 
 class KVPairBuffer;
