@@ -16,7 +16,7 @@ std::queue<StatusPrinter::Channel> StatusPrinter::channelsForMessages;
 pthread_mutex_t StatusPrinter::statusPrintMutex;
 pthread_cond_t StatusPrinter::messageQueueNotEmpty;
 bool StatusPrinter::stop = false;
-Thread StatusPrinter::thread("StatusPrinter", &StatusPrinter::run);
+themis::Thread StatusPrinter::thread("StatusPrinter", &StatusPrinter::run);
 std::map<StatusPrinter::Channel, std::string> StatusPrinter::channelHeaders;
 std::ostream* StatusPrinter::outputStream;
 

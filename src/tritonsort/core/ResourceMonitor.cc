@@ -15,7 +15,8 @@
 
 
 pthread_mutex_t ResourceMonitor::lock;
-Thread ResourceMonitor::thread("ResourceMonitor", &ResourceMonitor::run);
+themis::Thread ResourceMonitor::thread(
+    "ResourceMonitor", &ResourceMonitor::run);
 bool ResourceMonitor::stop = false;
 bool ResourceMonitor::initialized = false;
 Socket* ResourceMonitor::serverSocket = NULL;

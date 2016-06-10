@@ -25,7 +25,7 @@ class Params;
    responsible for garbage-collecting StatLoggers' statistic containers when
    the StatLoggers destruct.
  */
-class StatWriter : private Thread {
+class StatWriter : private themis::Thread {
 public:
   /// Initialize the singleton StatWriter
   /**

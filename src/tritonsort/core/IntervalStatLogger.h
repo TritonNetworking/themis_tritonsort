@@ -62,7 +62,7 @@ private:
   static void* run(void* arg);
 
   static pthread_mutex_t stateChangeLock;
-  static Thread thread;
+  static themis::Thread thread;
   static bool initialized;
   static bool spawned;
   static bool stop;

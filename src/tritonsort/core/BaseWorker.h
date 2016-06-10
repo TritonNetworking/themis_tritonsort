@@ -52,7 +52,7 @@ typedef unsigned int uint;
 
 class BaseWorker
   : public IntervalStatLoggerClient, public ResourceMonitorClient,
-    private Thread {
+    private themis::Thread {
 public:
   /// Constructor
   /**

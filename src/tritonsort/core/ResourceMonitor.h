@@ -84,7 +84,7 @@ public:
 
 private:
   static pthread_mutex_t lock;
-  static Thread thread;
+  static themis::Thread thread;
   static bool stop;
 
   static bool initialized;

@@ -4,6 +4,8 @@
 #include "core/TritonSortAssert.h"
 #include "core/Utils.h"
 
+namespace themis {
+
 Thread::Thread(const std::string& _threadName, void* (*_threadFunction) (void*))
   : threadID(0),
     stop(true),
@@ -79,3 +81,5 @@ void* Thread::thread(void* args) {
   // If we didn't set a function, don't do anything and return NULL.
   return NULL;
 }
+
+} // namespace themis

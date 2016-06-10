@@ -8,7 +8,7 @@
 #include "core/ScopedLock.h"
 
 BaseWorker::BaseWorker(uint64_t _id, const std::string& _name)
-  : Thread(static_cast<std::ostringstream&>(
+    : themis::Thread(static_cast<std::ostringstream&>(
              std::ostringstream().flush() << _name << " " << _id).str()),
     id(_id),
     tracker(NULL),
@@ -79,7 +79,7 @@ void BaseWorker::spawn() {
            "Must set a CPUAffinitySetter before spawning");
 
   // Start mainLoop() in a separate thread.
-  Thread::startThread();
+  themis::Thread::startThread();
 
   // Set the CPU affinity of the mainLoop() thread
   cpu_set_t cpuAffinityMask;
@@ -90,7 +90,7 @@ void BaseWorker::spawn() {
     getName(), id, cpuAffinityMask, cpuAffinitySetter->getNumCores());
 
   int status = pthread_setaffinity_np(
-    Thread::threadID, sizeof(cpu_set_t), &cpuAffinityMask);
+      themis::Thread::threadID, sizeof(cpu_set_t), &cpuAffinityMask);
 
   if (status != 0) {
     ABORT("Setting CPU affinity failed: error %d: %s", status,
@@ -293,7 +293,7 @@ void BaseWorker::mainLoop(bool testing) {
 }
 
 void BaseWorker::waitForWorkerToFinish() {
-  Thread::stopThread();
+  themis::Thread::stopThread();
 }
 
 
