@@ -4,8 +4,10 @@
 
 #include "tritonsort/config.h"
 
+#ifdef USE_JEMALLOC
 #include <jemalloc/jemalloc.h>
 const char* malloc_conf = "lg_chunk:20,lg_tcache_gc_sweep:30";
+#endif // USE_JEMALLOC
 
 #include "benchmarks/storagebench/workers/StorageBenchWorkerImpls.h"
 #include "common/AlignmentUtils.h"
