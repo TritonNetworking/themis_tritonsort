@@ -5,8 +5,9 @@
 
 #include "googletest.h"
 
-class ReduceKVPairIterator;
 class KVPairBuffer;
+class KeyValuePair;
+class ReduceKVPairIterator;
 
 class ReduceKVPairIteratorTest : public ::testing::Test {
 public:

@@ -1,5 +1,4 @@
 #include "benchmarks/mixediobench/workers/demux/Demux.h"
-#include "mapreduce/common/buffers/KVPairBuffer.h"
 
 Demux::Demux(uint64_t id, const std::string& stageName)
   : SingleUnitRunnable<KVPairBuffer>(id, stageName) {

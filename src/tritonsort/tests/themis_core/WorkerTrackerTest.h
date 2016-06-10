@@ -5,6 +5,7 @@
 
 #include "core/WorkerTracker.h"
 
+class MockWorkerTracker;
 class SimpleMemoryAllocator;
 
 class WorkerTrackerTest : public ::testing::Test {

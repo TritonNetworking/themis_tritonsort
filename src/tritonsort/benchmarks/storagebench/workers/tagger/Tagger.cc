@@ -1,6 +1,5 @@
 #include "benchmarks/storagebench/workers/tagger/Tagger.h"
 #include "common/PartitionFile.h"
-#include "common/buffers/ByteStreamBuffer.h"
 #include "core/MemoryUtils.h"
 #include "mapreduce/common/StreamInfo.h"
 #include "mapreduce/common/buffers/KVPairBuffer.h"
