@@ -2,10 +2,10 @@
 #define THEMIS_MEMORY_ALLOCATING_TEST_FIXTURE
 
 #include <stdint.h>
-#include "googletest.h"
 
 #include "common/DummyWorker.h"
 #include "core/MemoryAllocatorInterface.h"
+#include "third-party/googletest.h"
 
 class MemoryAllocatingTestFixture : public ::testing::Test {
 public:

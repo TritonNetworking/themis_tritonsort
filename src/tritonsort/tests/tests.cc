@@ -4,7 +4,6 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string>
-#include "googletest.h"
 
 #include "common/MainUtils.h"
 #include "tritonsort/config.h"
@@ -12,6 +11,7 @@
 #include "core/TritonSortAssert.h"
 #include "core/Utils.h"
 #include "core/constants.h"
+#include "third-party/googletest.h"
 
 const char* TEST_WRITE_ROOT;
 const char* TEST_BINARY_ROOT;

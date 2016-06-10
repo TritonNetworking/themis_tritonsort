@@ -3,7 +3,8 @@
 
 #include <set>
 #include <stdint.h>
-#include "googletest.h"
+
+#include "third-party/googletest.h"
 
 class CPUAffinitySetterTest : public ::testing::Test {
 protected:

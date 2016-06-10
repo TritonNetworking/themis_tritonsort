@@ -2,7 +2,8 @@
 #define TRITONSORT_RESOURCE_QUEUE_TEST_H
 
 #include <stdint.h>
-#include "googletest.h"
+
+#include "third-party/googletest.h"
 
 class ResourceQueueTest : public ::testing::Test {
 protected:

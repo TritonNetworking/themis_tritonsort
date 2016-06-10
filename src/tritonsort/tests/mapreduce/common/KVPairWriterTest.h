@@ -1,7 +1,7 @@
 #ifndef MAPRED_KVPAIR_WRITER_TEST_H
 #define MAPRED_KVPAIR_WRITER_TEST_H
 
-#include "googletest.h"
+#include "third-party/googletest.h"
 
 #include "KVPairWriterParentWorker.h"
 

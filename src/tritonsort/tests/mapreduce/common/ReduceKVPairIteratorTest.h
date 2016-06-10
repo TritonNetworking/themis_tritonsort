@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "googletest.h"
+#include "third-party/googletest.h"
 
 class KVPairBuffer;
 class KeyValuePair;

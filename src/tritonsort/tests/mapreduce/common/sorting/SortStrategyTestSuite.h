@@ -2,10 +2,10 @@
 #define THEMIS_SORT_STRATEGY_TEST_SUITE_H
 
 #include <stdint.h>
-#include "googletest.h"
 
 #include "mapreduce/common/buffers/KVPairBuffer.h"
 #include "mapreduce/common/sorting/SortStrategyInterface.h"
+#include "third-party/googletest.h"
 
 class SortStrategyTestSuite : public ::testing::Test {
 public:

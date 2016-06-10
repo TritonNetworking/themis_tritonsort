@@ -1,13 +1,13 @@
 #define __STDC_FORMAT_MACROS 1
 
 #include <errno.h>
-#include <json/json.h>
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
 
 #include "core/LogLineDescriptor.h"
 #include "core/TritonSortAssert.h"
+#include "third-party/jsoncpp.h"
 
 LogLineDescriptor::LogLineDescriptor()
   : description(Json::objectValue) {

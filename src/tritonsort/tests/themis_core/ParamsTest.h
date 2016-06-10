@@ -2,9 +2,9 @@
 #define _TRITONSORT_TEST_PARAMSTEST_H
 
 #include <string>
-#include "googletest.h"
 
 #include "core/Params.h"
+#include "third-party/googletest.h"
 
 class ParamsTest : public ::testing::Test {
 public:

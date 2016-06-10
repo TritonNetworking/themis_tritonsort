@@ -2,9 +2,9 @@
 #define MAPRED_KEY_VALUE_PAIR_TEST_H
 
 #include <stdint.h>
-#include "googletest.h"
 
 #include "mapreduce/common/KeyValuePair.h"
+#include "third-party/googletest.h"
 
 class KeyValuePairTest : public ::testing::Test {
 public:

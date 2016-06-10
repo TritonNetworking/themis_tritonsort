@@ -5,13 +5,13 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <json/json.h>
 
 #include "Utils.h"
 #include "core/Params.h"
 #include "core/ResourceMonitor.h"
 #include "core/ScopedLock.h"
 #include "core/TritonSortAssert.h"
+#include "third-party/jsoncpp.h"
 
 
 pthread_mutex_t ResourceMonitor::lock;
