@@ -7,6 +7,8 @@
 #include "core/StatLogger.h"
 #include "mapreduce/common/KVPairBufferFactory.h"
 
+class ReadRequest;
+
 /**
    A WholeFileReader will read an entire file into a single KVPairBuffer.
  */

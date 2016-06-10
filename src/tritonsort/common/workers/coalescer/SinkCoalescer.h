@@ -3,6 +3,8 @@
 
 #include <limits.h>
 
+#include "common/buffers/BufferList.h"
+#include "common/BufferListContainer.h"
 #include "common/WriteTokenPool.h"
 #include "core/SingleUnitRunnable.h"
 

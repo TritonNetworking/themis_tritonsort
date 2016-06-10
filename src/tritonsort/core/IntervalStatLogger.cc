@@ -7,7 +7,8 @@
 #include "core/ScopedLock.h"
 #include "core/TritonSortAssert.h"
 
-Thread IntervalStatLogger::thread("IntervalLogger", &IntervalStatLogger::run);
+themis::Thread IntervalStatLogger::thread(
+    "IntervalLogger", &IntervalStatLogger::run);
 bool IntervalStatLogger::initialized = false;
 bool IntervalStatLogger::spawned = false;
 bool IntervalStatLogger::stop = false;

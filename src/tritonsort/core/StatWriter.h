@@ -2,7 +2,6 @@
 #define TRITONSORT_STAT_WRITER_H
 
 #include <errno.h>
-#include <json/json.h>
 #include <list>
 #include <map>
 #include <pthread.h>
@@ -12,8 +11,10 @@
 #include <string>
 
 #include "core/LogDataContainer.h"
+#include "core/StatContainerInterface.h"
 #include "core/Thread.h"
 #include "core/ThreadSafeQueue.h"
+#include "third-party/jsoncpp.h"
 
 class File;
 class Params;
@@ -24,7 +25,7 @@ class Params;
    responsible for garbage-collecting StatLoggers' statistic containers when
    the StatLoggers destruct.
  */
-class StatWriter : private Thread {
+class StatWriter : private themis::Thread {
 public:
   /// Initialize the singleton StatWriter
   /**

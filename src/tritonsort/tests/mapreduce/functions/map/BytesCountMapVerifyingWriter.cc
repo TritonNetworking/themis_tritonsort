@@ -1,7 +1,6 @@
-#include "googletest.h"
-
 #include "BytesCountMapVerifyingWriter.h"
 #include "mapreduce/common/KeyValuePair.h"
+#include "third-party/googletest.h"
 
 BytesCountMapVerifyingWriter::BytesCountMapVerifyingWriter(
   uint32_t _expectedKeySize, uint64_t _expectedCount)

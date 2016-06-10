@@ -520,9 +520,9 @@ void openAllSockets(
     senderSockets);
 
   // Create thread objects that wrap the functions we want to call.
-  Thread openReceiverSocketsThread(
+  themis::Thread openReceiverSocketsThread(
     "OpenReceiverSockets", &openReceiverSocketsThreaded);
-  Thread openSenderSocketsThread(
+  themis::Thread openSenderSocketsThread(
     "OpenSenderSockets", &openSenderSocketsThreaded);
 
   // Start both threads.

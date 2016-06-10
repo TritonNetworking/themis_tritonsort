@@ -19,7 +19,7 @@ BoundaryScanner::BoundaryScanner(
     jobID(0),
     bufferFactory(*this, memoryAllocator, defaultBufferSize, alignmentSize),
     writer(
-      boost::bind(&BaseWorker::emitWorkUnit, this, _1),
+      boost::bind(&BoundaryScanner::emitWorkUnit, this, _1),
       boost::bind(&BoundaryScanner::getOutputChunk, this, _1)),
     sampleMetadata(NULL),
     numPartitions(0),

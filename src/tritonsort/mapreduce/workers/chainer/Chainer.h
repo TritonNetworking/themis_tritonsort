@@ -8,6 +8,9 @@
 #include "common/buffers/BufferTable.h"
 #include "core/BatchRunnable.h"
 
+class ListableKVPairBuffer;
+class WriteTokenPool;
+
 /**
    The chainer is responsible for chaining together logical disk buffers into a
    chain per logical disk, and passing chains to the next stage when they're

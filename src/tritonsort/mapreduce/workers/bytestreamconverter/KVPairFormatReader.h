@@ -2,9 +2,9 @@
 #define MAPRED_KVPAIR_FORMAT_READER_H
 
 #include "mapreduce/common/KeyValuePair.h"
+#include "mapreduce/workers/bytestreamconverter/ByteStreamConverter.h"
 #include "mapreduce/workers/bytestreamconverter/FormatReaderInterface.h"
 
-class ByteStreamConverter;
 class KVPairBuffer;
 class StreamInfo;
 

@@ -1,6 +1,9 @@
 #ifndef TRITONSORT_DUMMY_LISTABLE_H
 #define TRITONSORT_DUMMY_LISTABLE_H
 
+#include <stdint.h>
+#include <stdlib.h>
+
 class DummyListable {
 public:
   DummyListable()

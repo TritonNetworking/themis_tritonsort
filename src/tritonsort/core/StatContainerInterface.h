@@ -1,7 +1,6 @@
 #ifndef TRITONSORT_STAT_CONTAINER_INTERFACE_H
 #define TRITONSORT_STAT_CONTAINER_INTERFACE_H
 
-#include <json/json.h>
 #include <list>
 #include <map>
 #include <set>
@@ -11,6 +10,7 @@
 #include "core/File.h"
 #include "core/LogLineDescriptor.h"
 #include "core/Timer.h"
+#include "third-party/jsoncpp.h"
 
 /**
    The interface that all statistic containers used by StatWriter must provide

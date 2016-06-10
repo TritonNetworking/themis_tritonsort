@@ -5,6 +5,7 @@
 #include "mapreduce/common/SampleMetadataKVPairBufferFactory.h"
 #include "mapreduce/common/TupleSizeHistogramLoggingStrategy.h"
 
+class CoordinatorClientInterface;
 class KVPairBuffer;
 class KVPairWriterInterface;
 class MapFunction;

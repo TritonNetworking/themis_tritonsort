@@ -3,7 +3,6 @@
 
 #include <boost/lexical_cast.hpp>
 #include <list>
-#include <json/json.h>
 #include <sched.h>
 #include <string>
 #include <vector>
@@ -11,6 +10,7 @@
 #include "core/Socket.h"
 #include "core/StatLogger.h"
 #include "core/constants.h"
+#include "third-party/jsoncpp.h"
 
 class Params;
 

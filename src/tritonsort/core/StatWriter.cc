@@ -15,7 +15,7 @@ pthread_mutex_t StatWriter::singletonWriterLock = PTHREAD_MUTEX_INITIALIZER;
 StatWriter* StatWriter::singletonWriter = NULL;
 
 StatWriter::StatWriter(Params& _params)
-  : Thread("StatWriter"),
+    : themis::Thread("StatWriter"),
     nextStatLoggerID(1),
     params(_params),
     currentPhaseName("PHASE_NAME_UNSET"),
@@ -92,7 +92,7 @@ void StatWriter::teardownThread() {
   stopWriter = true;
   pthread_mutex_unlock(&runningWriterStateLock);
 
-  Thread::stopThread();
+  themis::Thread::stopThread();
 }
 
 void StatWriter::teardown() {

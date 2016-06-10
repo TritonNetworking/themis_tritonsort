@@ -2,7 +2,8 @@
 #define TRITONSORT_BLOCKING_READ_TEST_H
 
 #include <stdint.h>
-#include "googletest.h"
+
+#include "third-party/googletest.h"
 
 class BlockingReadTest : public ::testing::Test {
 public:

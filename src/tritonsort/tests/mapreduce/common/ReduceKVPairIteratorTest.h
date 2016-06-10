@@ -3,10 +3,11 @@
 
 #include <stdint.h>
 
-#include "googletest.h"
+#include "third-party/googletest.h"
 
-class ReduceKVPairIterator;
 class KVPairBuffer;
+class KeyValuePair;
+class ReduceKVPairIterator;
 
 class ReduceKVPairIteratorTest : public ::testing::Test {
 public:

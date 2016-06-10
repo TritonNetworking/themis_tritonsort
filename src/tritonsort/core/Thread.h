@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <string>
 
+namespace themis {
+
 /**
    Thread encapsulates pthreads into a more C++-friendly interface. Threads can
    be used to run standalone functions, or can serve as the base-class for
@@ -125,5 +127,7 @@ private:
 
   bool terminated;
 };
+
+} // namespace themis
 
 #endif // THEMIS_THREAD_H

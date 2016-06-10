@@ -1,6 +1,12 @@
 #ifndef THEMIS_NOP_DEADLOCK_RESOLVER_H
 #define THEMIS_NOP_DEADLOCK_RESOLVER_H
 
+#include <stdint.h>
+#include <stdlib.h>
+
+#include "core/DeadlockResolverInterface.h"
+#include "core/TritonSortAssert.h"
+
 /**
    A deadlock resolver that resolves deadlock by giving all requesters NULL
    pointers. Useful when you want to check for deadlock detection but don't

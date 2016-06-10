@@ -2,10 +2,10 @@
 #define TRITONSORT_RESOURCE_SCHEDULER_TEST_H
 
 #include <pthread.h>
-#include "googletest.h"
 
 #include "core/FCFSPolicy.h"
 #include "core/MLFQPolicy.h"
+#include "third-party/googletest.h"
 
 class ResourceScheduler;
 

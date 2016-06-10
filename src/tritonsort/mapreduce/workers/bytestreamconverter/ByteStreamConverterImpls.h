@@ -2,6 +2,7 @@
 #define MAPRED_BYTE_STREAM_CONVERTER_IMPLS_H
 
 #include "common/workers/sink/Sink.h"
+#include "core/ImplementationList.h"
 #include "mapreduce/workers/bytestreamconverter/ByteStreamConverter.h"
 
 class ByteStreamConverterImpls : public ImplementationList {

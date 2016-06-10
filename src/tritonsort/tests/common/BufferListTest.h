@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 #include <vector>
-#include "googletest.h"
+
+#include "third-party/googletest.h"
 
 class DummyListable;
 template <typename T> class BufferList;

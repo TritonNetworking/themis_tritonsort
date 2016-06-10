@@ -2,8 +2,7 @@
 #define MIXEDIOBENCH_DEMUX_H
 
 #include "core/SingleUnitRunnable.h"
-
-class KVPairBuffer;
+#include "mapreduce/common/buffers/KVPairBuffer.h"
 
 /**
    Demux is a worker that substitutes for the normal TupleDemux worker that gets

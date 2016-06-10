@@ -1,6 +1,7 @@
 #ifndef TRITONSORT_MAPREDUCE_SORT_STRATEGY_FACTORY_H
 #define TRITONSORT_MAPREDUCE_SORT_STRATEGY_FACTORY_H
 
+#include <string>
 #include <vector>
 
 #include "common/sort_constants.h"

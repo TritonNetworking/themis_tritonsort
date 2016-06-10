@@ -1,10 +1,9 @@
 #ifndef STORAGEBENCH_TAGGER_H
 #define STORAGEBENCH_TAGGER_H
 
+#include "common/buffers/ByteStreamBuffer.h"
 #include "core/SingleUnitRunnable.h"
 #include "mapreduce/common/FilenameToStreamIDMap.h"
-
-class ByteStreamBuffer;
 
 /**
    Tagger is a worker that uses the filename information associated with a byte

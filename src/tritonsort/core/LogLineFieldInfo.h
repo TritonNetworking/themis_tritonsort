@@ -1,9 +1,10 @@
 #ifndef TRITONSORT_LOG_LINE_FIELD_INFO_H
 #define TRITONSORT_LOG_LINE_FIELD_INFO_H
 
-#include <json/json.h>
 #include <stdint.h>
 #include <string>
+
+#include "third-party/jsoncpp.h"
 
 /**
    LogLineFieldInfo stores information about a field in a log line. It is used

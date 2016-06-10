@@ -2,9 +2,10 @@
 #define MAPRED_REDIS_COORDINATOR_CLIENT_H
 
 #include <hiredis/hiredis.h>
-#include <json/json.h>
+#include <set>
 
 #include "mapreduce/common/CoordinatorClientInterface.h"
+#include "third-party/jsoncpp.h"
 
 class Params;
 

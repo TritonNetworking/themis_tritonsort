@@ -3,5 +3,6 @@
 
 #cmakedefine TRITONSORT_STATS 1
 #cmakedefine TRITONSORT_ASSERTS 1
+#cmakedefine TRITONSORT_CXX_11 1
 
 #endif //_TRITONSORT_CONFIG_H_IN

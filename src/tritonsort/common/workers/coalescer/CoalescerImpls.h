@@ -1,6 +1,7 @@
 #ifndef TRITONSORT_COMMON_COALESCER_IMPLS_H
 #define TRITONSORT_COMMON_COALESCER_IMPLS_H
 
+#include "core/ImplementationList.h"
 #include "Coalescer.h"
 #include "SinkCoalescer.h"
 

@@ -115,7 +115,7 @@ private:
   static pthread_mutex_t statusPrintMutex;
   static pthread_cond_t messageQueueNotEmpty;
 
-  static Thread thread;
+  static themis::Thread thread;
   static bool stop;
 
   static void add(const Channel& channel, const char* messageFormat, va_list& ap);
