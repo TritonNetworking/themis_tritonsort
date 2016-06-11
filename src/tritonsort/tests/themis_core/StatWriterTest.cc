@@ -10,6 +10,8 @@
 
 extern const char* TEST_WRITE_ROOT;
 
+using namespace re2;
+
 TEST_F(StatWriterTest, testNormalOperation) {
   Params params;
   params.add<bool>("ENABLE_STAT_WRITER", true);
@@ -70,64 +72,64 @@ TEST_F(StatWriterTest, testNormalOperation) {
 
   EXPECT_EQ(static_cast<uint64_t>(8), numLines);
 
-  re2::RE2 collLineRegex(
+  RE2 collLineRegex(
     "COLL\\s+test_phase\\s+0\\s+test_logger\\s+dummy_stat\\s+[0-9]+\\s+"
     "([0-9]+)");
 
   uint64_t stat;
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[0]), collLineRegex, &stat));
 
   EXPECT_EQ(static_cast<uint64_t>(42), stat);
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[1]), collLineRegex, &stat));
 
   EXPECT_EQ(static_cast<uint64_t>(64), stat);
 
-  re2::RE2 statLineRegex("SUMM\\s+test_phase\\s+0\\s+test_logger\\s+dummy_stat"
+  RE2 statLineRegex("SUMM\\s+test_phase\\s+0\\s+test_logger\\s+dummy_stat"
                          "\\s+(.*?)\\s+([0-9]+)");
 
   std::string statName;
   uint64_t statValue;
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[2]), statLineRegex, &statName,
       &statValue));
 
   EXPECT_EQ(std::string("min"), statName);
   EXPECT_EQ(static_cast<uint64_t>(42), statValue);
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[3]), statLineRegex, &statName,
       &statValue));
 
   EXPECT_EQ(std::string("max"), statName);
   EXPECT_EQ(static_cast<uint64_t>(64), statValue);
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[4]), statLineRegex, &statName,
       &statValue));
 
   EXPECT_EQ(std::string("sum"), statName);
   EXPECT_EQ(static_cast<uint64_t>(106), statValue);
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[5]), statLineRegex, &statName,
       &statValue));
 
   EXPECT_EQ(std::string("count"), statName);
   EXPECT_EQ(static_cast<uint64_t>(2), statValue);
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[6]), statLineRegex, &statName,
       &statValue));
 
   EXPECT_EQ(std::string("mean"), statName);
   EXPECT_EQ(static_cast<uint64_t>(53), statValue);
 
-  EXPECT_TRUE(re2::RE2::FullMatch(
+  EXPECT_TRUE(RE2::FullMatch(
       std::string(buffer + lineStartIndices[7]), statLineRegex, &statName,
       &statValue));
 

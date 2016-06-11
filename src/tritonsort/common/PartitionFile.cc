@@ -4,26 +4,28 @@
 #include "common/PartitionFile.h"
 #include "core/TritonSortAssert.h"
 
+using namespace re2;
+
 bool PartitionFile::matchFilename(
   const std::string& filename, uint64_t& partitionID, uint64_t& jobID,
   uint64_t& chunkID) {
 
   // Match job_JOB_whatever_PARTITIONID
   // Also match .large suffix
-  static const re2::RE2 jobAndPartitionExtractionRegex(
+  static const RE2 jobAndPartitionExtractionRegex(
     "job_(\\d+)/(\\d+).partition(.large)?$");
 
   // If not a partition file, match chunk files.
-  static const re2::RE2 jobAndPartitionAndChunkExtractionRegex(
+  static const RE2 jobAndPartitionAndChunkExtractionRegex(
     "job_(\\d+)/(\\d+).partition.chunk_(\\d+)$");
 
-  bool matchedRegex = re2::RE2::PartialMatch(
+  bool matchedRegex = RE2::PartialMatch(
     filename.c_str(), jobAndPartitionExtractionRegex,
     &jobID, &partitionID);
 
   if (!matchedRegex) {
     // Try matching a chunk file.
-    matchedRegex = re2::RE2::PartialMatch(
+    matchedRegex = RE2::PartialMatch(
       filename.c_str(), jobAndPartitionAndChunkExtractionRegex,
       &jobID, &partitionID, &chunkID);
   } else {

@@ -6,7 +6,9 @@
 #include "core/Utils.h"
 #include "core/Timer.h"
 
-typedef std::list<re2::RE2*> RegexList;
+using namespace re2;
+
+typedef std::list<RE2*> RegexList;
 
 int grepFile(std::string& filename, RegexList& regexes) {
   Timer grepTimer;
@@ -26,9 +28,9 @@ int grepFile(std::string& filename, RegexList& regexes) {
     for (RegexList::iterator regexIter = regexes.begin();
          regexIter != regexes.end(); regexIter++) {
 
-      re2::RE2* regex = *regexIter;
+      RE2* regex = *regexIter;
 
-      if (re2::RE2::FullMatch(currentLine, *regex)) {
+      if (RE2::FullMatch(currentLine, *regex)) {
         std::cout << regexNumber << '\t' << currentLine << std::endl;
       }
 
@@ -68,7 +70,7 @@ int main (int argc, char** argv) {
   std::string filename(argv[1]);
 
   for (uint64_t arg_index = 2; arg_index < argc; arg_index++) {
-    re2::RE2* regex = new re2::RE2(argv[arg_index]);
+    RE2* regex = new RE2(argv[arg_index]);
     std::cerr << regex->pattern() << std::endl;
     regexes.push_back(regex);
   }

@@ -34,6 +34,7 @@ int main(int argc, char** argv) {
 
   Params params;
   params.parseCommandLine(argc, argv);
+  argc = 1;
 
   params.add<uint64_t>("MEM_PERCENTAGE", 100);
   params.add<uint64_t>("MEM_SIZE", 500000000);
