@@ -70,6 +70,10 @@ class CoordinatorDB(object):
         return self.redis_client.smembers("dead_nodes")
 
     @property
+    def next_job_id(self):
+        return int(self.redis_client.get("next_job_id"))
+
+    @property
     def incomplete_batches(self):
         return map(int, self.redis_client.smembers("incomplete_batches"))
 
@@ -383,9 +387,20 @@ class CoordinatorDB(object):
         self.redis_client.rpush(
             read_request_queue_key, *itertools.imap(json.dumps, read_requests))
 
+    def get_live_ips(self):
+        if not hasattr(self, "live_nodes_cached"):
+            self.live_nodes_cached = set()
+            self.ips_cached = None
+        current_live_nodes = set(self.live_nodes)
+        if self.live_nodes_cached == current_live_nodes:
+            return self.ips_cached
+        else:
+            self.live_nodes_cached = current_live_nodes
+            self.ips_cached = map(lambda x: self.ipv4_address(x), current_live_nodes)
+            return self.ips_cached
+
     def begin_phase(self, batch_id, phase_name):
-        nodes = self.live_nodes
-        ips = map(lambda x: self.ipv4_address(x), nodes)
+        ips = self.get_live_ips()
         key = "running_nodes:batch_%s:%s" % (batch_id, phase_name)
         self.redis_client.sadd(key, *(ips))
         # Expire the running nodes list after 1 week in case of failure so
@@ -404,6 +419,14 @@ class CoordinatorDB(object):
         return self.redis_client.lpop(
             "%s_completed_nodes:batch_%d" % (phase_name, batch_id))
 
+    def all_completed_nodes_for_phase(self, batch_id, phase_name):
+        # Get all nodes that completed this phase, if any.
+        key = "%s_completed_nodes:batch_%d" % (phase_name, batch_id)
+        pipe = self.redis_client.pipeline()
+        pipe.lrange(key, 0, -1).delete(key)
+        completed, _ = pipe.execute()
+        return completed
+
     def query_running_nodes(self, batch_id, phase_name):
         return self.redis_client.smembers(
             "running_nodes:batch_%s:%s" % (batch_id, phase_name))
@@ -413,8 +436,7 @@ class CoordinatorDB(object):
         # nodes.
         barriers = ["phase_start", "sockets_connected"]
         phase_names = ["phase_zero", "phase_one", "phase_two", "phase_three"]
-        nodes = self.live_nodes
-        ips = map(lambda x: self.ipv4_address(x), nodes)
+        ips = self.get_live_ips()
         for barrier_name in barriers:
             for phase in phases:
                 if phase == 0 or phase == 3:

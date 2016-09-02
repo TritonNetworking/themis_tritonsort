@@ -62,7 +62,7 @@ public:
      \param x the element to push
    */
   inline void push(Resource* x) {
-    ASSERT(curSize < capacity, "Tried to push into a full pool");
+    TRITONSORT_ASSERT(curSize < capacity, "Tried to push into a full pool");
     resources[backOffset] = x;
     backOffset = (backOffset + 1) % capacity;
     curSize++;
@@ -74,7 +74,7 @@ public:
      popping.
    */
   inline void pop() {
-    ASSERT(curSize > 0, "Tried to pop from an empty pool");
+    TRITONSORT_ASSERT(curSize > 0, "Tried to pop from an empty pool");
     resources[frontOffset] = NULL;
     frontOffset = (frontOffset + 1) % capacity;
     curSize--;
@@ -123,9 +123,9 @@ public:
 
     uint64_t amtLeftToCopy = numElements;
 
-    ASSERT(numElements <= other.curSize,
+    TRITONSORT_ASSERT(numElements <= other.curSize,
       "Trying to copy more elements than the source pool has");
-    ASSERT(amtLeftToCopy + curSize <= capacity, "Not enough space left in "
+    TRITONSORT_ASSERT(amtLeftToCopy + curSize <= capacity, "Not enough space left in "
            "dest. pool (%llu) to copy %llu elements", capacity - curSize,
            amtLeftToCopy);
 
@@ -149,7 +149,7 @@ public:
       uint64_t srcCellsBeforeEnd = 0;
 
       if (other.frontOffset >= other.backOffset) {
-        ASSERT(other.curSize > 0,
+        TRITONSORT_ASSERT(other.curSize > 0,
                "Previous assertions should have caught this");
         srcCellsBeforeEnd = other.capacity - other.frontOffset;
       } else {
@@ -161,7 +161,7 @@ public:
       uint64_t cellsToCopy = std::min<uint64_t>(srcCellsBeforeEnd,
                                                 destCellsFree);
 
-      ASSERT(cellsToCopy > 0, "Somehow decided that you need to copy zero "
+      TRITONSORT_ASSERT(cellsToCopy > 0, "Somehow decided that you need to copy zero "
              "cells");
 
       memcpy(resources + backOffset, other.resources + other.frontOffset,

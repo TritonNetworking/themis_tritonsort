@@ -69,7 +69,7 @@ public:
 
       for (uint64_t j = 0; j < currentNumLogicalDisks; j++) {
         BufferList<T>* list = lists[i][j];
-        ASSERT(list->getSize() == 0, "Found a non-empty list while "
+        TRITONSORT_ASSERT(list->getSize() == 0, "Found a non-empty list while "
                "destructing");
         delete list;
         lists[i][j] = NULL;
@@ -264,9 +264,9 @@ private:
   BufferList<T>** largestLists;
 
   uint64_t adjustPhysicalDiskID(uint64_t physicalDiskID) {
-    ASSERT(physicalDiskID >= basePhysicalDiskID, "Physical disk ID too small");
+    TRITONSORT_ASSERT(physicalDiskID >= basePhysicalDiskID, "Physical disk ID too small");
     uint64_t adjustedID = physicalDiskID - basePhysicalDiskID;
-    ASSERT(adjustedID < numPhysicalDisks, "Physical disk ID too large");
+    TRITONSORT_ASSERT(adjustedID < numPhysicalDisks, "Physical disk ID too large");
     return adjustedID;
   }
 

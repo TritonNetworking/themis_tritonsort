@@ -4,7 +4,7 @@
 #include "core/Utils.h"
 
 int main(int argc, char** argv) {
-  ASSERT(argc == 2);
+  TRITONSORT_ASSERT(argc == 2);
 
   std::string interface(argv[1]);
 

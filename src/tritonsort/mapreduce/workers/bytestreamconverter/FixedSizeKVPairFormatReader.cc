@@ -28,7 +28,7 @@ FixedSizeKVPairFormatReader::FixedSizeKVPairFormatReader(
   // If the stream has a size associated with it, allocate a single buffer to
   // hold the entire stream.
   if (emitSingleBuffer) {
-    ASSERT(streamInfo.getSize() % tupleSize == 0,
+    TRITONSORT_ASSERT(streamInfo.getSize() % tupleSize == 0,
            "Stream should only contain fixed-size tuples which are %llu bytes "
            "but stream has %llu bytes (not divisible).", tupleSize,
            streamInfo.getSize());
@@ -39,14 +39,14 @@ FixedSizeKVPairFormatReader::FixedSizeKVPairFormatReader(
 
 FixedSizeKVPairFormatReader::~FixedSizeKVPairFormatReader() {
   if (emitSingleBuffer) {
-    ASSERT(outputBytes == outputBuffer->getCapacity(),
+    TRITONSORT_ASSERT(outputBytes == outputBuffer->getCapacity(),
            "Allocated a single buffer to emit of size %llu but only copied "
            "%llu bytes", outputBuffer->getCapacity(), outputBytes);
     emitFullBuffer();
   }
 
   // Sanity check
-  ASSERT(outputBuffer == NULL, "Still have an output buffer after teardown.");
+  TRITONSORT_ASSERT(outputBuffer == NULL, "Still have an output buffer after teardown.");
 
   if (partialTuple != NULL) {
     delete[] partialTuple;
@@ -100,7 +100,7 @@ void FixedSizeKVPairFormatReader::readByteStream(ByteStreamBuffer& buffer) {
 }
 
 void FixedSizeKVPairFormatReader::getNewBuffer(uint64_t inputBufferSize) {
-  ASSERT(outputBuffer == NULL,
+  TRITONSORT_ASSERT(outputBuffer == NULL,
          "Tried to get a new buffer when stream %llu already has one",
          streamInfo.getStreamID());
 

@@ -47,7 +47,7 @@ void StatusPrinter::init(Params* params) {
 
   int fp = creat(logFilePathCStr, 00644);
   if (fp == -1) {
-    ASSERT(fp != -1, "Creating log file '%s' failed with error %d: %s",
+    TRITONSORT_ASSERT(fp != -1, "Creating log file '%s' failed with error %d: %s",
            logFilePathCStr, errno, strerror(errno));
   } else {
     close(fp);

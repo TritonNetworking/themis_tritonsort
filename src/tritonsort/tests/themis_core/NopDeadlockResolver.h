@@ -19,7 +19,7 @@ public:
   }
 
   void deallocate(void* memory) {
-    ASSERT(memory == NULL, "NopDeadlockResolver expects to only deallocate "
+    TRITONSORT_ASSERT(memory == NULL, "NopDeadlockResolver expects to only deallocate "
            "NULL pointers, because that's all it ever allocates.");
   }
 };

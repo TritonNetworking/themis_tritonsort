@@ -53,7 +53,7 @@ public:
   JobInfo* getJobInfo(uint64_t jobID);
 
   /// Store all outputs in the root directory of the disk.
-  const URL& getOutputDirectory(uint64_t jobID);
+  const themis::URL& getOutputDirectory(uint64_t jobID);
 
   /// Not implemented, returns NULL.
   RecoveryInfo* getRecoveryInfo(uint64_t jobID);
@@ -90,7 +90,7 @@ private:
   StringList files;
   StringList::iterator nextFile;
 
-  URL outputDirectory;
+  themis::URL outputDirectory;
 };
 
 #endif // MAPRED_DEBUG_COORDINATOR_CLIENT_H

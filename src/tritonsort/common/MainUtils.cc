@@ -32,7 +32,7 @@ void getDiskList(StringList& diskList, const std::string& parameterName,
 
     const std::string& diskListFile = params->get<std::string>(
       fileParamName);
-    ASSERT(fileExists(diskListFile), "Can't find disk list file");
+    TRITONSORT_ASSERT(fileExists(diskListFile), "Can't find disk list file");
     parseDiskList(diskList, diskListFile);
   }
 }

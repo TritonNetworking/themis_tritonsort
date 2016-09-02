@@ -35,7 +35,7 @@ def terminate_cluster(cluster_ID, redis_client, provider=None, zone=None):
         if provider == "google":
             gcloud = plumbum.local["gcloud"]
             cmd = gcloud["compute"]["instances"]["delete"]["--zone"][zone]\
-                  ["--delete-disks"]["boot"]
+                  ["--delete-disks"]["all"]
             for instance_name in instances:
                 cmd = cmd[instance_name]
             cmd()

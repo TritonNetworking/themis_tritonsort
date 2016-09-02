@@ -31,7 +31,7 @@ ReservoirSamplingKVPairWriter::ReservoirSamplingKVPairWriter(
     bytesSeen(0),
     bytesWritten(0),
     setupWriteValue(NULL) {
-  ASSERT(writeStrategy != NULL,
+  TRITONSORT_ASSERT(writeStrategy != NULL,
          "Cannot pass NULL write strategy to reservoir sampling writer");
 
   resetPendingWriteState();
@@ -40,7 +40,7 @@ ReservoirSamplingKVPairWriter::ReservoirSamplingKVPairWriter(
 ReservoirSamplingKVPairWriter::~ReservoirSamplingKVPairWriter() {
   logWriteStatsCallback(bytesWritten, bytesSeen, tuplesWritten, tuplesSeen);
 
-  ASSERT(buffer == NULL,
+  TRITONSORT_ASSERT(buffer == NULL,
          "Should have flushed the buffer before deleting the writer");
 
   if (setupWriteValue != NULL) {
@@ -86,9 +86,9 @@ uint8_t* ReservoirSamplingKVPairWriter::setupWrite(
 }
 
 void ReservoirSamplingKVPairWriter::commitWrite(uint32_t valueLength) {
-  ASSERT(setupWriteKey != NULL, "Have to call setupWrite before you can "
+  TRITONSORT_ASSERT(setupWriteKey != NULL, "Have to call setupWrite before you can "
          "call commitWrite");
-  ASSERT(valueLength <= setupWriteMaxValueLength, "Can't write more than you "
+  TRITONSORT_ASSERT(valueLength <= setupWriteMaxValueLength, "Can't write more than you "
          "promised you would in setupWrite");
 
   if (recordFilter == NULL ||

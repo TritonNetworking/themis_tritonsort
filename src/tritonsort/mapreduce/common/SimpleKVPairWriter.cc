@@ -13,7 +13,7 @@ SimpleKVPairWriter::SimpleKVPairWriter(
 }
 
 SimpleKVPairWriter::~SimpleKVPairWriter() {
-  ASSERT(buffer == NULL,
+  TRITONSORT_ASSERT(buffer == NULL,
          "Should have flushed buffer before deleting the writer.");
 }
 

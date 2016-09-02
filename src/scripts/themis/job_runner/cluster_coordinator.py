@@ -80,9 +80,9 @@ class ClusterCoordinator(object):
 
     def check_node_liveness(self):
         node_failed = False
-
-        for host in self.coordinator_db.known_nodes:
-            presumed_alive = host in self.coordinator_db.live_nodes
+        live_nodes = set(self.coordinator_db.live_nodes)
+        for host in self.known_nodes:
+            presumed_alive = host in live_nodes
             keepalive_refreshed = self.coordinator_db.keepalive_refreshed(host)
 
             if keepalive_refreshed and not presumed_alive:
@@ -142,14 +142,15 @@ class ClusterCoordinator(object):
         for batch_id in self.coordinator_db.incomplete_batches:
             # Pull information about which phase this batch is currently in.
             if batch_id in self.batch_phase_info:
-                (current_phase, num_completed_nodes, start_time) = \
+                (current_phase, num_completed_nodes, start_time, phases) = \
                     self.batch_phase_info[batch_id]
                 # Check for nodes that completed this phase.
-                completed_node = self.coordinator_db.completed_node_for_phase(
+                completed_nodes = self.coordinator_db.all_completed_nodes_for_phase(
                     batch_id, current_phase)
+                completed_node = completed_nodes.pop() if completed_nodes else None
                 while completed_node != None:
                     num_completed_nodes += 1
-                    total_nodes = len(self.coordinator_db.known_nodes)
+                    total_nodes = self.total_nodes
                     log.info("  Node %s completed %s (%d / %d)" % (
                             completed_node, current_phase, num_completed_nodes,
                             total_nodes))
@@ -173,11 +174,15 @@ class ClusterCoordinator(object):
                                               stop_time - start_time})
 
                         # Move on to the next phase.
-                        next_phase = {"phase_zero" : "phase_one",
-                                      "phase_one" : "phase_two",
-                                      "phase_two" : "phase_three",
-                                      "phase_three" : None}
-                        current_phase = next_phase[current_phase]
+                        # Move on to the next phase.
+                        phase_dict = {0: "phase_zero",
+                                      1: "phase_one",
+                                      2: "phase_two",
+                                      3: "phase_three"}
+                        if phases:
+                            current_phase = phase_dict[phases.pop(0)]
+                        else:
+                            current_phase = None
                         self.coordinator_db.begin_phase(batch_id, current_phase)
                         if current_phase != None:
                             log.info("Running %s..." % current_phase)
@@ -188,20 +193,23 @@ class ClusterCoordinator(object):
                     # Save updated phase information
                     if current_phase != None:
                         self.batch_phase_info[batch_id] = (
-                            current_phase, num_completed_nodes, start_time)
+                            current_phase, num_completed_nodes, start_time, phases)
                     else:
                         # We're done, so delete this information from the dict
                         del self.batch_phase_info[batch_id]
 
                     # Check for another node completion.
-                    completed_node = \
-                        self.coordinator_db.completed_node_for_phase(
-                        batch_id, current_phase)
+                    if current_phase and not completed_nodes:
+                        completed_nodes = self.coordinator_db.all_completed_nodes_for_phase(
+                            batch_id, current_phase)
+                    completed_node = completed_nodes.pop() if completed_nodes else None
 
     def check_keyboard_input(self):
         if select.select([sys.stdin,],[],[],0.0)[0]:
             stdin = sys.stdin.readline()
             stdin = stdin.strip()
+            if not stdin:
+                return
 
             displayed = False
             if stdin == "running" or stdin == "r":
@@ -211,7 +219,7 @@ class ClusterCoordinator(object):
                     # Pull information about which phase this batch is
                     # currently in.
                     if batch_id in self.batch_phase_info:
-                        (current_phase, num_completed_nodes, start_time) = \
+                        (current_phase, num_completed_nodes, start_time, phases) = \
                             self.batch_phase_info[batch_id]
                         running_nodes = list(
                             self.coordinator_db.query_running_nodes(
@@ -230,7 +238,7 @@ class ClusterCoordinator(object):
                     # Pull information about which phase this batch is
                     # currently in.
                     if batch_id in self.batch_phase_info:
-                        (current_phase, num_completed_nodes, start_time) = \
+                        (current_phase, num_completed_nodes, start_time, phases) = \
                             self.batch_phase_info[batch_id]
 
                         (barrier_name, running_nodes, job_id) = \
@@ -253,7 +261,7 @@ class ClusterCoordinator(object):
                     # Pull information about which phase this batch is
                     # currently in.
                     if batch_id in self.batch_phase_info:
-                        (current_phase, num_completed_nodes, start_time) = \
+                        (current_phase, num_completed_nodes, start_time, phases) = \
                             self.batch_phase_info[batch_id]
 
                         log.info("Batch %d running %s for %.2f seconds" % (
@@ -392,6 +400,7 @@ class ClusterCoordinator(object):
         skip_phase_one = 0
         skip_phase_two = 0
         skip_phase_three = 0
+        daytona_minutesort = 0
         if "SKIP_PHASE_ZERO" in self.config and self.config["SKIP_PHASE_ZERO"]:
             skip_phase_zero = 1
         if "SKIP_PHASE_ONE" in self.config and self.config["SKIP_PHASE_ONE"]:
@@ -401,6 +410,9 @@ class ClusterCoordinator(object):
         if "SKIP_PHASE_THREE" in self.config and \
                 self.config["SKIP_PHASE_THREE"]:
             skip_phase_three = 1
+        if "DAYTONA_MINUTESORT" in self.config and self.config[
+                "DAYTONA_MINUTESORT"]:
+            daytona_minutesort = 1
 
         # The run_job.py script verifies that all jobs in the batch have the
         # same value of these skip parameters in the job specs, so we can just
@@ -415,6 +427,8 @@ class ClusterCoordinator(object):
                 skip_phase_two = value
             if key == "SKIP_PHASE_THREE":
                 skip_phase_three = value
+            if key == "DAYTONA_MINUTESORT":
+                daytona_minutesort = value
             if key == "MAP_INPUT_FIXED_KEY_LENGTH":
                 fixed_key_length = int(value)
             if key == "MAP_INPUT_FIXED_VALUE_LENGTH":
@@ -458,12 +472,32 @@ class ClusterCoordinator(object):
         # Load read requests into read request queue for each worker
         load_read_requests(self.coordinator_db, read_requests)
 
-        start_time = time.time()
-        # Mark phase zero as starting now.
-        self.coordinator_db.begin_phase(batch_id, "phase_zero")
-        self.batch_phase_info[batch_id] = ("phase_zero", 0, start_time)
-        log.info("Running phase_zero...")
+        # Add in phases that we avoided due to read requests/barriers.
+        if not skip_phase_two and 2 not in phases:
+            phases.append(2)
+        if not skip_phase_three and 3 not in phases:
+            phases.append(3)
+
+        # We have read requests, correct phases here for daytona minutesort.
+        if daytona_minutesort:
+            phases = [0]
+
+        phase_dict = {0: "phase_zero",
+                      1: "phase_one",
+                      2: "phase_two",
+                      3: "phase_three"}
+        if phases:
+            first_phase = phase_dict[phases.pop(0)]
+        else:
+            first_phase = "phase_zero"
+
+
+        log.info("Running %s..." % first_phase)
         print_keyboard_commands()
+        # Mark first phase as starting now.
+        start_time = time.time()
+        self.coordinator_db.begin_phase(batch_id, first_phase)
+        self.batch_phase_info[batch_id] = (first_phase, 0, start_time, phases)
 
         for job_id in batch_jobs:
             self.coordinator_db.update_job_status(
@@ -511,19 +545,20 @@ class ClusterCoordinator(object):
 
     def complete_existing_batches(self):
         for batch_id in self.coordinator_db.incomplete_batches:
-            remaining_nodes = self.coordinator_db.remaining_nodes_running_batch(
-                batch_id)
-
-            if remaining_nodes is not None and int(remaining_nodes) == 0:
+            remaining_nodes = None
+            if batch_id not in self.batch_phase_info:
+                while remaining_nodes is None or int(remaining_nodes) != 0:
+                    remaining_nodes = self.coordinator_db.remaining_nodes_running_batch(
+                        batch_id)
                 self.coordinator_db.mark_batch_complete(batch_id)
 
                 for job_id in self.coordinator_db.batch_jobs(batch_id):
                     # Perform a test-and-set on the job_info hash's status key,
                     # only setting it to complete if it was originally "In
                     # Progress"
+                    stop_time = time.time()
 
                     # Compute the overall data processing rate.
-                    stop_time = time.time()
                     job_info = self.coordinator_db.job_info(job_id)
                     start_time = float(job_info["start_time"])
 
@@ -552,15 +587,26 @@ class ClusterCoordinator(object):
                             job_id, runtime, MBps, MBps_per_node, TBpm))
 
                     job_info = self.coordinator_db.job_info(job_id)
-                    phase_zero_time = float(job_info["phase_zero_elapsed_time"])
-                    phase_one_time = float(job_info["phase_one_elapsed_time"])
-                    phase_two_time = float(job_info["phase_two_elapsed_time"])
-                    phase_three_time = float(
-                        job_info["phase_three_elapsed_time"])
+                    if "phase_zero_elapsed_time" in job_info:
+                        phase_zero_time = float(job_info["phase_zero_elapsed_time"])
+                    else:
+                        phase_zero_time = 0.0
+                    if "phase_one_elapsed_time" in job_info:
+                        phase_one_time = float(job_info["phase_one_elapsed_time"])
+                    else:
+                        phase_one_time = 0.0
+                    if "phase_two_elapsed_time" in job_info:
+                        phase_two_time = float(job_info["phase_two_elapsed_time"])
+                    else:
+                        phase_two_time = 0.0
+                    if "phase_three_elapsed_time" in job_info:
+                        phase_three_time = float(job_info["phase_three_elapsed_time"])
+                    else:
+                        phase_three_time = 0.0
 
                     log.info(
                         "Phase zero %.2f seconds. Phase one %.2f seconds. "
-                        "Phase two %.2f seconds. Phase three %.2f seconds" % (
+                        "Phase two %.2f seconds. Phase three %.2f seconds." % (
                             phase_zero_time, phase_one_time, phase_two_time,
                             phase_three_time))
 
@@ -769,6 +815,8 @@ class ClusterCoordinator(object):
         pass
 
     def start_node_coordinators(self):
+        # Stop any running coordinators first!
+        self.stop_node_coordinators()
         # Conditionally specify the profiler option
         profiler_option = ""
         if self.profiler is not None:
@@ -800,7 +848,9 @@ class ClusterCoordinator(object):
              ld_preload, self.interfaces, self.themis_binary, self.config_file,
              self.batch_nonce))
 
-        for host in self.coordinator_db.known_nodes:
+        self.known_nodes = self.coordinator_db.known_nodes
+        self.total_nodes = len(self.known_nodes)
+        for host in self.known_nodes:
             # Create log directory for node coordinator
 
             node_coordinator_stdout_file = os.path.join(
@@ -834,7 +884,7 @@ class ClusterCoordinator(object):
                     log.info("Killing pid %d on host %s" % (pid, host))
 
                     cmd = subprocess.Popen(
-                        "%s %s kill -s SIGUSR1 %d" %
+                        "%s %s kill -s USR1 %d" %
                         (self.ssh_command, host, pid), shell=True)
                     cmd.communicate()
 

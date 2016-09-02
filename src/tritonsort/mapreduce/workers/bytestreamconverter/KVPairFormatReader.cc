@@ -24,7 +24,7 @@ void KVPairFormatReader::readByteStream(ByteStreamBuffer& buffer) {
   // Check to see if we were in the middle of reading a header at the end of
   // the last buffer for this stream.
   if (headerBytesNeeded > 0) {
-    ASSERT(overflowBuffer == NULL,
+    TRITONSORT_ASSERT(overflowBuffer == NULL,
            "Should not have overflow buffer when reading header.");
 
     // Try to read header bytes.
@@ -84,7 +84,7 @@ void KVPairFormatReader::readByteStream(ByteStreamBuffer& buffer) {
 
   // At this point we should not have an overflow buffer, since we either filled
   // it and emitted it, or we used up the entire buffer and returned.
-  ASSERT(overflowBuffer == NULL, "Should not have an overflow buffer.");
+  TRITONSORT_ASSERT(overflowBuffer == NULL, "Should not have an overflow buffer.");
 
   // Scan to the end of the last complete tuple.
   uint8_t* rawBuffer = const_cast<uint8_t*>(buffer.getRawBuffer());

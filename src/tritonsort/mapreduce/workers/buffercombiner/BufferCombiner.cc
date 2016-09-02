@@ -27,7 +27,7 @@ void BufferCombiner::teardown() {
     if (jobID == std::numeric_limits<uint64_t>::max()) {
       const std::set<uint64_t>& jobIDs = nextBuffer->getJobIDs();
 
-      ASSERT(jobIDs.size() == 1, "Expected the first buffer entering the "
+      TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected the first buffer entering the "
              "combiner to have exactly one job ID; this one has %llu",
              jobIDs.size());
       jobID = *(jobIDs.begin());

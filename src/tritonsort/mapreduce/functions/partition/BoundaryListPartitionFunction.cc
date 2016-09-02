@@ -9,13 +9,13 @@ BoundaryListPartitionFunction::BoundaryListPartitionFunction(
 
 uint64_t BoundaryListPartitionFunction::globalPartition(
   const uint8_t* key, uint32_t keyLength) const {
-  ASSERT(keyPartitioner != NULL, "Expected key partitioner to be non-null");
+  TRITONSORT_ASSERT(keyPartitioner != NULL, "Expected key partitioner to be non-null");
   return keyPartitioner->globalPartition(key, keyLength);
 }
 
 uint64_t BoundaryListPartitionFunction::localPartition(
   const uint8_t* key, uint32_t keyLength, uint64_t partitionGroup) const {
-  ASSERT(keyPartitioner != NULL, "Expected key partitioner to be non-null");
+  TRITONSORT_ASSERT(keyPartitioner != NULL, "Expected key partitioner to be non-null");
   return keyPartitioner->localPartition(key, keyLength, partitionGroup);
 }
 

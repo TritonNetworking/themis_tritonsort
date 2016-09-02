@@ -62,7 +62,7 @@ void TimerStatCollection::writeStatsToFile(
   File& file, LogLineDescriptor& logLineDescriptor,
   const std::string& phaseName, uint64_t epoch) const {
 
-  ASSERT(startTimes.size() == stopTimes.size() &&
+  TRITONSORT_ASSERT(startTimes.size() == stopTimes.size() &&
          stopTimes.size() == elapsedTimes.size(),
          "Stop, start and elapsed time lists should be the same length");
 

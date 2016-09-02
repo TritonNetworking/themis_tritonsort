@@ -66,7 +66,7 @@ public:
      something else.
    */
   void prepare(T* buffer, uint64_t bufferNumber) {
-    ASSERT(buffer != NULL, "prepare() got NULL buffer");
+    TRITONSORT_ASSERT(buffer != NULL, "prepare() got NULL buffer");
 
     // Make sure this buffer number is tracked.
 
@@ -97,8 +97,8 @@ public:
      something else.
    */
   void finish(T* buffer, uint64_t bufferNumber) {
-    ASSERT(buffer != NULL, "finish() got NULL buffer");
-    ASSERT(misalignedBytesTable.count(bufferNumber),
+    TRITONSORT_ASSERT(buffer != NULL, "finish() got NULL buffer");
+    TRITONSORT_ASSERT(misalignedBytesTable.count(bufferNumber),
            "finish() got unknown buffer number %llu. Call prepare() first.",
            bufferNumber);
     // Compute misaligned region

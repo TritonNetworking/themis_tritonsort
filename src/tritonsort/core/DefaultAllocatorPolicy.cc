@@ -117,7 +117,7 @@ void DefaultAllocatorPolicy::addRequest(
   Request& request, const std::string& groupName) {
   // Check to make sure the group name is valid.
   PriorityQueueMap::iterator iter = priorityQueues.find(groupName);
-  ASSERT(iter != priorityQueues.end(),
+  TRITONSORT_ASSERT(iter != priorityQueues.end(),
          "Could not add a request for unknown group name %s",
          groupName.c_str());
 
@@ -161,18 +161,18 @@ void DefaultAllocatorPolicy::removeRequest(
   Request& request, const std::string& groupName) {
   // Check to make sure the group name is valid.
   PriorityQueueMap::iterator iter = priorityQueues.find(groupName);
-  ASSERT(iter != priorityQueues.end(),
+  TRITONSORT_ASSERT(iter != priorityQueues.end(),
          "Could not remove a request for unknown group name %s.",
          groupName.c_str());
 
   // Check to make sure this is a high priority queue.
   PriorityQueue* queue = iter->second;
-  ASSERT(queue->highPriority,
+  TRITONSORT_ASSERT(queue->highPriority,
          "removeRequest() (group %s) should only be called on a high priority "
          "queue.", groupName.c_str());
 
   // Check to make sure the request is the head of the queue.
-  ASSERT(queue->queue.front() == &request,
+  TRITONSORT_ASSERT(queue->queue.front() == &request,
          "removeRequest() (group %s) should only be called on the front of a "
          "queue.", groupName.c_str());
 

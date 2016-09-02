@@ -64,7 +64,7 @@ WORKER_IMPL
       aligners.insert(std::make_pair(jobID, aligner));
     }
 
-    ASSERT(aligner != NULL, "Should have constructed an aligner by now");
+    TRITONSORT_ASSERT(aligner != NULL, "Should have constructed an aligner by now");
 
     // Record this job ID and logical disk ID for teardown.
     logicalDiskIDs[jobID].insert(logicalDiskID);
@@ -82,11 +82,11 @@ WORKER_IMPL
 
     // Append the entire list onto the buffer one element at a time
     while (head != NULL) {
-      ASSERT((head->getJobIDs()).size() == 1, "Expected buffers being "
+      TRITONSORT_ASSERT((head->getJobIDs()).size() == 1, "Expected buffers being "
              "coalesced to have exactly one job ID; this one had %llu",
              (head->getJobIDs()).size());
 
-      ASSERT(*(head->getJobIDs().begin()) == jobID, "Expected all buffers "
+      TRITONSORT_ASSERT(*(head->getJobIDs().begin()) == jobID, "Expected all buffers "
              "being coalesced to have the same job ID");
 
       buffer->append(head->getRawBuffer(), head->getCurrentSize());
@@ -96,7 +96,7 @@ WORKER_IMPL
       head = list.removeHead();
     }
 
-    ASSERT(list.getSize() == 0, "List is not empty at the end of append loop");
+    TRITONSORT_ASSERT(list.getSize() == 0, "List is not empty at the end of append loop");
 
     // Store any unaligned bytes in the last buffer so that the next buffer (or
     // teardown) can write them out later.
@@ -122,7 +122,7 @@ WORKER_IMPL
 
       typename BufferAlignerMap::iterator alignerIter = aligners.find(jobID);
 
-      ASSERT(alignerIter != aligners.end(), "Can't find a buffer aligner for "
+      TRITONSORT_ASSERT(alignerIter != aligners.end(), "Can't find a buffer aligner for "
              "job %llu", jobID);
 
       BufferAligner<Out>* aligner = alignerIter->second;
@@ -137,7 +137,7 @@ WORKER_IMPL
             logicalDiskID, aligner->getRemainingBytes(logicalDiskID), aligner);
 
           // Add the most recent job ID to this buffer's list of job IDs
-          ASSERT(jobID > 0, "Job ID found to be unset during teardown");
+          TRITONSORT_ASSERT(jobID > 0, "Job ID found to be unset during teardown");
           buffer->addJobID(jobID);
 
           // Let the aligner know that we are done with this logical disk

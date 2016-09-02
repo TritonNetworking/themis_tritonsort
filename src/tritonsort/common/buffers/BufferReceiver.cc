@@ -49,7 +49,7 @@ uint64_t BufferReceiver::networkReceive(BaseBuffer* buffer, int socket,
   }
 
   uint64_t amtActuallyRead = (uint64_t) ret;
-  ASSERT(amtActuallyRead <= amtToBeRead, "read more than we wanted");
+  TRITONSORT_ASSERT(amtActuallyRead <= amtToBeRead, "read more than we wanted");
 
   buffer->commitAppend(appendBuf, amtActuallyRead);
 

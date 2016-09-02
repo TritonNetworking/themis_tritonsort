@@ -61,7 +61,7 @@ void Reducer::run(KVPairBuffer* buffer) {
   if (jobID == 0) {
     jobID = bufferJobID;
   } else {
-    ASSERT(jobID == bufferJobID, "Expected all buffers entering this reducer "
+    TRITONSORT_ASSERT(jobID == bufferJobID, "Expected all buffers entering this reducer "
            "to have the same job ID");
   }
 
@@ -133,12 +133,12 @@ void Reducer::emitBuffer(KVPairBuffer* buffer, uint64_t unused) {
 
   /// \TODO - Why is this cast here???
   KVPairBuffer* kvPairBuffer = dynamic_cast<KVPairBuffer*>(buffer);
-  ASSERT(kvPairBuffer != NULL, "Should only be emitting KVPairBuffers, since "
+  TRITONSORT_ASSERT(kvPairBuffer != NULL, "Should only be emitting KVPairBuffers, since "
          "that's what newBuffer is creating; something strange is going on");
 
   bytesOut += kvPairBuffer->getCurrentSize();
 
-  ASSERT(jobID > 0, "Encountered unset job ID when emitting a buffer from the "
+  TRITONSORT_ASSERT(jobID > 0, "Encountered unset job ID when emitting a buffer from the "
          "reducer");
   kvPairBuffer->addJobID(jobID);
 

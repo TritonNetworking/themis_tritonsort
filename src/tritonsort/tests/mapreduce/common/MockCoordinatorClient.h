@@ -30,7 +30,7 @@ public:
 
   JobInfo* getJobInfo(uint64_t jobID);
 
-  const URL& getOutputDirectory(uint64_t jobID);
+  const themis::URL& getOutputDirectory(uint64_t jobID);
 
   /// Associate the JobInfo object jobInfo with job jobID
   void setJobInfo(uint64_t jobID, JobInfo* jobInfo);
@@ -69,7 +69,7 @@ private:
   JobInfoMap jobInfos;
   RecoveryInfoMap recoveryInfos;
   ReadRequestList readRequests;
-  URL outputURL;
+  themis::URL outputURL;
 };
 
 

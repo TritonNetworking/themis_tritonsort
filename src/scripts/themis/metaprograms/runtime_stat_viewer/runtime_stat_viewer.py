@@ -17,7 +17,7 @@ from descriptions.descriptionutils import Description
 import common.unitconversion as uc
 
 jinja_env = jinja2.Environment(
-    loader = jinja2.FileSystemLoader('templates'),
+    loader = jinja2.FileSystemLoader(os.path.join(SCRIPT_DIR, 'templates')),
     trim_blocks = True)
 
 runtime_infos = {}
@@ -32,37 +32,55 @@ def get_runtime_info(dirname):
         try:
             runtime_info = gather_runtime_info(
                 os.path.join(log_directory, dirname), verbose)
-        except:
+        except Exception as e:
+            print e
             runtime_info = None
 
         runtime_infos[dirname] = runtime_info
 
     return runtime_info
 
-@bottle.route('/')
-def directory_listing():
-    directory_contents = os.listdir(log_directory)
+def get_directory_contents(directory, prefix=""):
+  try:
+    directory_contents = os.listdir(directory)
     directory_contents = [x for x in directory_contents
-                          if os.path.isdir(os.path.join(log_directory, x))]
-    directory_contents.sort(key=lambda x: os.path.getmtime(
-            os.path.join(log_directory, x)), reverse=True)
+                          if os.path.isdir(os.path.join(directory, x))]
+    directory_contents.sort(
+        key=lambda x: os.path.getmtime(os.path.join(directory, x)),
+        reverse=True)
+    directory_contents = [os.path.join(prefix, x) for x in directory_contents]
+    return directory_contents
+  except OSError:
+    return None
 
-    template = jinja_env.get_template("directory_listing.jinja2")
-    return template.render(directory_contents = directory_contents)
 
-@bottle.route('/<dirname>')
+@bottle.route("/")
+def directory_listing():
+  directory_contents = get_directory_contents(log_directory)
+  template = jinja_env.get_template("directory_listing.jinja2")
+  return template.render(directory_contents=directory_contents)
+
+
+@bottle.route("/<dirname:path>/")
 def global_stats(dirname):
-    runtime_info = get_runtime_info(dirname)
-    if runtime_info == None:
-        template = jinja_env.get_template("no_runtime_info.jinja2")
-        return template.render(dirname = dirname)
+  runtime_info = get_runtime_info(dirname)
+  if runtime_info == None:
+    directory_contents = get_directory_contents(
+        os.path.join(log_directory, dirname),
+        prefix=dirname)
+    if directory_contents:
+      template = jinja_env.get_template("directory_listing.jinja2")
+      return template.render(directory_contents=directory_contents)
+    else:
+      template = jinja_env.get_template("no_runtime_info.jinja2")
+      return template.render(dirname=dirname)
 
-    template = jinja_env.get_template("overall_stats.jinja2")
-    return template.render(dirname = dirname,
-                           runtime_info = runtime_info,
-                           log_path=os.path.join(log_directory, dirname))
+  template = jinja_env.get_template("overall_stats.jinja2")
+  return template.render(dirname=dirname,
+                         runtime_info=runtime_info,
+                         log_path=os.path.join(log_directory, dirname))
 
-@bottle.route('/<dirname>/by_hostname')
+@bottle.route("/<dirname:path>/by_hostname")
 def stats_by_hostname(dirname):
     runtime_info = get_runtime_info(dirname)
     if runtime_info == None:
@@ -80,7 +98,7 @@ def stats_by_hostname(dirname):
         runtime_info = runtime_info,
         log_path=os.path.join(log_directory, dirname))
 
-@bottle.route('/<dirname>/by_worker')
+@bottle.route("/<dirname:path>/by_worker")
 def stats_by_worker(dirname):
     runtime_info = get_runtime_info(dirname)
     if runtime_info == None:

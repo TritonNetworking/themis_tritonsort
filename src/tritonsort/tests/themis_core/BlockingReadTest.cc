@@ -51,7 +51,9 @@ TEST_F(BlockingReadTest, testReadWithNonAlignedSize) {
   }
 
   uint64_t maxReadSize = 100 * alignment;
-  uint8_t* readBuffer = new uint8_t[fileSize];
+  uint8_t* readBufferUnaligned = new uint8_t[fileSize + alignment];
+  uint8_t* readBuffer = align(readBufferUnaligned, alignment);
+
   memset(readBuffer, 0, fileSize);
   ASSERT_NO_THROW(
     blockingRead(
@@ -123,6 +125,6 @@ TEST_F(BlockingReadTest, testReadWithNonAlignedSize) {
   }
 
   close(fp);
-  delete[] readBuffer;
+  delete[] readBufferUnaligned;
   delete[] writeBuffer;
 }

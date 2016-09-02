@@ -60,7 +60,7 @@ public:
      the container's write token
    */
   inline uint64_t getDiskID() const {
-    ASSERT(token != NULL, "Can't call getDiskID without setting token first");
+    TRITONSORT_ASSERT(token != NULL, "Can't call getDiskID without setting token first");
     return token->getDiskID();
   }
 

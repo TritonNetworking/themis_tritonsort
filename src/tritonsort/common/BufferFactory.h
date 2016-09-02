@@ -139,7 +139,7 @@ private:
     uint8_t* memoryRegion = static_cast<uint8_t*>(memoryAllocator.allocate(
                                                     context));
 
-    ASSERT(memoryRegion != NULL, "Memory allocator returned NULL from a "
+    TRITONSORT_ASSERT(memoryRegion != NULL, "Memory allocator returned NULL from a "
            "blocking request");
 
     return createNewBuffer(

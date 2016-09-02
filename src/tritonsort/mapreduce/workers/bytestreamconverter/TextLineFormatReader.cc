@@ -31,7 +31,7 @@ void TextLineFormatReader::readByteStream(ByteStreamBuffer& buffer) {
     if (rawBuffer[i] == '\n' ) {
       // We hit a newline.
       // Support Windows-style line delimiters by stripping a previous '\r'.
-      if (lineBuffer.back() == '\r') {
+      if (!lineBuffer.empty() && lineBuffer.back() == '\r') {
         lineBuffer.pop_back();
       }
 

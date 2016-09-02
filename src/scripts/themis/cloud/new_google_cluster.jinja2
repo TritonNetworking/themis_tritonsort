@@ -31,6 +31,12 @@
         <option>{{ i }}</option>
         {% endfor %}
       </select></br>
+      <label>Persistent SSDs</label>
+      <select name="persistent_ssds">
+        {% for i in range(5) %}
+        <option>{{ i }}</option>
+        {% endfor %}
+      </select></br>
       <label>Master Instance Type</label>
       <select name="master_instance_type">
         {% for instance in instances %}

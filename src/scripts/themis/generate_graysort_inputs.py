@@ -32,7 +32,10 @@ def generate_data_assignment(io_disk_map, data_size, multiple):
     # Compute offset, data size pairs
     pairs = []
     offset = 0
-    for host, disks in io_disk_map.iteritems():
+    hosts = io_disk_map.keys()
+    hosts.sort()
+    for host in hosts:
+        disks = io_disk_map[host]
         if data_per_disk == 0:
             # Small data: Round robin data across nodes.
             disks_to_assign = data_per_node
@@ -60,7 +63,7 @@ def generate_data_assignment(io_disk_map, data_size, multiple):
     round_number = 0
     index = 0
     while index < len(pairs):
-        for host in io_disk_map:
+        for host in hosts:
             if len(io_disk_map[host]) > round_number:
                 if round_number == 0:
                     assignments[host] = []
@@ -108,7 +111,6 @@ def generate_graysort_inputs(
 
     local_fqdn = socket.getfqdn()
     if replica_number > 1:
-        hosts = io_disk_map.keys()
         host_index = hosts.index(local_fqdn)
         # Act as if we are a different host for the purposes of generating
         # replica files
@@ -194,8 +196,8 @@ def generate_graysort_inputs(
             command_args.append("-m")
 
         command_args.extend([
-                "-b%d" % (disk_data_offset), str(disk_Data_Size),
-                Destination_Filename])
+                "-b%d" % (disk_data_offset), str(disk_data_size),
+                destination_filename])
 
         options_str = ' '.join(('%s %s' % (k, v)
                                 for k, v in command_options.items()))

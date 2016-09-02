@@ -30,7 +30,7 @@ uint64_t MergerWorkQueueingPolicy::getEnqueueID(Resource* workUnit) {
   // Compute queueID from chunk and offset.
   uint64_t queueID = offsetMap.at(partitionID) + chunkID;
 
-  ASSERT(queueID < totalNumChunks,
+  TRITONSORT_ASSERT(queueID < totalNumChunks,
          "Computed queue %llu from partition ID %llu and chunk ID %llu, "
          "but number of queues is %llu", queueID, partitionID, chunkID,
          totalNumChunks);

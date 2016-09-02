@@ -3,7 +3,7 @@
 
 #include "core/SingleUnitRunnable.h"
 #include "mapreduce/common/KVPairBufferFactory.h"
-#include "mapreduce/common/SimpleKVPairWriter.h"
+#include "mapreduce/common/FastKVPairWriter.h"
 #include "mapreduce/common/buffers/KVPairBuffer.h"
 #include "mapreduce/common/PhaseZeroSampleMetadata.h"
 
@@ -19,6 +19,11 @@
    handle its input or output split across multiple buffers. However, the first
    input buffer must include sample metadata. Additionally, input and output
    buffers must contain whole tuples.
+
+   BoundaryScanner also emits boundary tuples into buffers that are tagged with
+   a node ID via the KVPairWriter. These buffers are intended to be sent to the
+   tagged node so that the BoundaryDecider can be distributed across the
+   cluster.
  */
 class BoundaryScanner : public SingleUnitRunnable<KVPairBuffer> {
 WORKER_IMPL
@@ -63,6 +68,10 @@ public:
   /// Emit leftover chunk buffer
   void teardown();
 
+  void emitBufferFromWriter(KVPairBuffer* buffer, uint64_t bufferNumber);
+
+  void putBufferFromWriter(KVPairBuffer* buffer);
+
 private:
   /// Used internally to get output chunks for partition buffers
   /**
@@ -81,7 +90,7 @@ private:
   uint64_t jobID;
 
   KVPairBufferFactory bufferFactory;
-  SimpleKVPairWriter writer;
+  KVPairWriterInterface* writer;
 
   PhaseZeroSampleMetadata* sampleMetadata;
   uint64_t numPartitions;

@@ -38,7 +38,7 @@ FastKVPairWriter::~FastKVPairWriter() {
   }
 
   for (uint64_t i = 0; i < buffers.size(); i++) {
-    ASSERT(buffers[i] == NULL,
+    TRITONSORT_ASSERT(buffers[i] == NULL,
            "Should have flushed all buffers before deleting the writer");
   }
   buffers.clear();
@@ -87,7 +87,7 @@ void FastKVPairWriter::write(KeyValuePair& kvPair) {
 
 uint8_t* FastKVPairWriter::setupWrite(
   const uint8_t* key, uint32_t keyLength, uint32_t maxValueLength) {
-  ASSERT(appendKeyPointer == NULL,
+  TRITONSORT_ASSERT(appendKeyPointer == NULL,
          "Uncommited write is already in progress; can't start another one");
 
   // Compute partition and grab the associated buffer
@@ -124,7 +124,7 @@ uint8_t* FastKVPairWriter::setupWrite(
 }
 
 void FastKVPairWriter::commitWrite(uint32_t valueLength) {
-  ASSERT(appendKeyPointer != NULL,
+  TRITONSORT_ASSERT(appendKeyPointer != NULL,
          "Must have previously set up a tuple to append with setupWrite()");
 
   // Commit the append.

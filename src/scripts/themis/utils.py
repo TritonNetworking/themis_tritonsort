@@ -83,7 +83,7 @@ def ssh_options():
     themisrc = get_themisrc()
 
     if "ssh" in themisrc and "key" in themisrc["ssh"]:
-        options += ' -i "%s"' % (themisrc["ssh"]["key"])
+        options += ' -i %s' % (themisrc["ssh"]["key"])
 
     return options
 

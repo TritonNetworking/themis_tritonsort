@@ -1,5 +1,6 @@
 import os,sys,json
-from networkx import DiGraph,  NetworkXError, NetworkXUnfeasible, to_agraph
+from networkx import DiGraph,  NetworkXError, NetworkXUnfeasible
+from networkx.drawing.nx_agraph import to_agraph
 from networkx.algorithms.dag import topological_sort
 import validateDescription
 import consts

@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>Stats for Stage '{{ stage }}' by Hostname</h1>
-    <h2><a href="/{{dirname}}">Back to Global Stats</a></h2>
+    <h2><a href="/{{dirname}}/">Back to Global Stats</a></h2>
     {% for epoch_info in runtime_info %}
     {% if epoch_info["job"] == job and epoch_info["phase"] == phase and epoch_info["epoch"] == epoch|int %}
     {{ tables.render_host_epoch_table(dirname, epoch_info, stage) }}

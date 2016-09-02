@@ -29,7 +29,7 @@ PartialKVPairWriter::~PartialKVPairWriter() {
   for (std::vector<AppendInfo*>::iterator iter = appendInfos.begin();
        iter != appendInfos.end(); iter++) {
     // We should have flushed all buffers.
-    ASSERT((*iter)->buffer == NULL,
+    TRITONSORT_ASSERT((*iter)->buffer == NULL,
            "Should have flushed all buffers before deleting the writer.");
     delete *iter;
   }
@@ -110,7 +110,7 @@ void PartialKVPairWriter::write(KeyValuePair& kvPair) {
     // Get a new default sized buffer.
     getBuffer(partition);
 
-    ASSERT(appendLength + tupleSize <= buffer->getCapacity(),
+    TRITONSORT_ASSERT(appendLength + tupleSize <= buffer->getCapacity(),
            "New buffer is only %llu bytes but need %llu",
            buffer->getCapacity(), tupleSize);
 
@@ -125,7 +125,7 @@ void PartialKVPairWriter::write(KeyValuePair& kvPair) {
 uint8_t* PartialKVPairWriter::setupWrite(
   const uint8_t* key, uint32_t keyLength, uint32_t maxValueLength) {
 
-  ASSERT(temporaryBuffer == NULL,
+  TRITONSORT_ASSERT(temporaryBuffer == NULL,
          "We should not have allocated a temporary buffer before setupWrite()");
 
   // Compute the key's partition.
@@ -189,8 +189,8 @@ uint8_t* PartialKVPairWriter::setupWrite(
 
 void PartialKVPairWriter::commitWrite(uint32_t valueLength) {
   // Sanity checks
-  ASSERT(setupTuple != NULL, "Cannot call commitWrite before setupWrite()");
-  ASSERT(valueLength <= setupMaxValueLength,
+  TRITONSORT_ASSERT(setupTuple != NULL, "Cannot call commitWrite before setupWrite()");
+  TRITONSORT_ASSERT(valueLength <= setupMaxValueLength,
          "Got value length %llu but max value length is %llu",
          valueLength, setupMaxValueLength);
 

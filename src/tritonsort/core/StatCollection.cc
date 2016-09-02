@@ -67,7 +67,7 @@ void StatCollection::writeStatsToFile(
   File& file, LogLineDescriptor& logLineDescriptor,
   const std::string& phaseName, uint64_t epoch) const {
 
-  ASSERT(statQueue.size() == timestampQueue.size(), "There needs to be a "
+  TRITONSORT_ASSERT(statQueue.size() == timestampQueue.size(), "There needs to be a "
          "timestamp for every statistic logged by a StatCollection");
 
   int fileDescriptor = file.getFileDescriptor();

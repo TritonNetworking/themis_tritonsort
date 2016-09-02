@@ -80,7 +80,7 @@ WriteToken* WriteTokenPool::attemptGetToken(
   for (std::set<uint64_t>::iterator iter = diskIDSet.begin();
        !successfulPop && iter != diskIDSet.end(); iter++) {
     uint64_t diskID = *iter;
-    ASSERT(diskID < numDisks, "Disk ID out of bounds (%llu [received] > "
+    TRITONSORT_ASSERT(diskID < numDisks, "Disk ID out of bounds (%llu [received] > "
            "%llu [numDisks])", diskID, numDisks);
     successfulPop = tokenQueues[diskID].pop(token);
   }

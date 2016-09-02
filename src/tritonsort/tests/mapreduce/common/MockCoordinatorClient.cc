@@ -49,7 +49,7 @@ JobInfo* MockCoordinatorClient::getJobInfo(uint64_t jobID) {
   }
 }
 
-const URL& MockCoordinatorClient::getOutputDirectory(uint64_t jobID) {
+const themis::URL& MockCoordinatorClient::getOutputDirectory(uint64_t jobID) {
   return outputURL;
 }
 

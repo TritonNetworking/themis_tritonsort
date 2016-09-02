@@ -312,7 +312,7 @@ TEST_F(KVPairFormatReaderTest, testTupleStraddlesInputBuffers) {
 
 void KVPairFormatReaderTest::appendTuple(BaseBuffer* buffer, uint32_t keyLength,
                                          uint32_t valueLength) {
-  ASSERT(keyLength + valueLength <= 250,
+  TRITONSORT_ASSERT(keyLength + valueLength <= 250,
          "Test tuples can only be 250 (plus header) bytes.");
 
   KeyValuePair kvPair;
@@ -328,7 +328,7 @@ void KVPairFormatReaderTest::appendTuple(BaseBuffer* buffer, uint32_t keyLength,
 void KVPairFormatReaderTest::verifyBufferContainsTuple(uint8_t* buffer,
                                                        uint32_t keyLength,
                                                        uint32_t valueLength) {
-  ASSERT(keyLength + valueLength <= 250,
+  TRITONSORT_ASSERT(keyLength + valueLength <= 250,
          "Test tuples can only be 250 (plus header) bytes.");
   EXPECT_EQ(keyLength, KeyValuePair::keyLength(buffer));
   EXPECT_EQ(valueLength,

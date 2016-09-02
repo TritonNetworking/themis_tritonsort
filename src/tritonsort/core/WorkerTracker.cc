@@ -119,7 +119,7 @@ void WorkerTracker::addWorkUnit(Resource* workUnit) {
 
     completedPrevTrackers++;
 
-    ASSERT(source || completedPrevTrackers <= prevTrackers,
+    TRITONSORT_ASSERT(source || completedPrevTrackers <= prevTrackers,
            "%s: Got more than one \"no more work\" signal from a "
            "previous tracker (%llu trackers, %llu complete trackers)",
            stageName.c_str(), prevTrackers, completedPrevTrackers);

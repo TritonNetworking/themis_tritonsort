@@ -71,9 +71,9 @@ KeyList::~KeyList() {
 }
 
 void KeyList::addKey(const uint8_t* key, uint32_t keyLength) {
-  ASSERT(nextKeyOffset < numKeys,
+  TRITONSORT_ASSERT(nextKeyOffset < numKeys,
          "Added more keys than the KeyList can accept (%llu)", numKeys);
-  ASSERT(nextByteOffset + keyLength <= numBytes,
+  TRITONSORT_ASSERT(nextByteOffset + keyLength <= numBytes,
          "Tried to add %llu bytes to KeyList at capacity (%llu / %llu)",
          keyLength, nextByteOffset, numBytes);
 
@@ -90,7 +90,7 @@ void KeyList::addKey(const uint8_t* key, uint32_t keyLength) {
 }
 
 uint64_t KeyList::findLowerBound(const uint8_t* key, uint32_t keyLength) const {
-  ASSERT(nextKeyOffset == numKeys,
+  TRITONSORT_ASSERT(nextKeyOffset == numKeys,
          "Tried to search partially-empty KeyList (%llu / %llu)",
          nextKeyOffset, numKeys);
 

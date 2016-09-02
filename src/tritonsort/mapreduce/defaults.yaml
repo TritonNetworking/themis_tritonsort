@@ -133,10 +133,10 @@ WORKER_IMPLS:
     mapper: "KeysOnlySingleBufferMapper"
     sorter: "PhaseZeroSampleMetadataAwareSorter"
     boundary_scanner: "BoundaryScanner"
-    broadcast_sender: "Sender"
-    coordinator_sender: "Sender"
-    broadcast_receiver: "Receiver"
-    coordinator_receiver: "Receiver"
+    scanner_sender: "Sender"
+    decider_sender: "Sender"
+    scanner_receiver: "Receiver"
+    decider_receiver: "Receiver"
     boundary_decider: "BoundaryDecider"
     boundary_deserializer: "BoundaryDeserializer"
     phase_zero_output_data_holder: "ItemHolder"
@@ -183,7 +183,8 @@ WORK_QUEUEING_POLICY:
     reader_converter: "ByteStreamWorkQueueingPolicy"
     shuffle_sender: "NetworkDestinationWorkQueueingPolicy"
     boundary_decider: "NetworkDestinationWorkQueueingPolicy"
-    broadcast_sender: "NetworkDestinationWorkQueueingPolicy"
+    scanner_sender: "NetworkDestinationWorkQueueingPolicy"
+    decider_sender: "NetworkDestinationWorkQueueingPolicy"
   phase_one:
     reader: "ReadRequestWorkQueueingPolicy"
     reader_converter: "ByteStreamWorkQueueingPolicy"
@@ -239,8 +240,8 @@ USE_SECONDARY_KEYS: 0
 # By default, only use one TCP socket per peer
 SOCKETS_PER_PEER:
   phase_zero:
-    broadcast_sender: 1
-    coordinator_sender: 1
+    scanner_sender: 1
+    decider_sender: 1
     shuffle_sender: 1
   phase_one:
     sender: 1
@@ -277,8 +278,8 @@ ALIGNMENT:
     mapper: 0
     sorter: 0
     boundary_scanner: 0
-    broadcast_receiver: 0
-    coordinator_receiver: 0
+    scanner_receiver: 0
+    decider_receiver: 0
     boundary_decider: 0
     boundary_deserializer: 0
   phase_one:
@@ -380,9 +381,10 @@ CONNECT_MAX_RETRIES: 100
 # Wait 100ms before checking redis again
 REDIS_POLL_INTERVAL: 100000
 
-RECEIVER_PORT: 9000
-COORDINATOR_PORT: 9001
-REPLICA_RECEIVER_PORT: 9002
-SHUFFLE_PORT: 9003
+DECIDER_PORT: 8100
+RECEIVER_PORT: 8101
+SCANNER_PORT: 8102
+REPLICA_RECEIVER_PORT: 8103
+SHUFFLE_PORT: 8104
 
 OUTPUT_REPLICATION_LEVEL: 1

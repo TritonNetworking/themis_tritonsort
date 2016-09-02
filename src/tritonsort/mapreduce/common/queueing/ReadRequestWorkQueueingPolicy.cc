@@ -11,7 +11,7 @@ uint64_t ReadRequestWorkQueueingPolicy::getEnqueueID(Resource* workUnit) {
   // Read the diskID from the request and put it in the corresponding reader's
   // queue.
   ReadRequest* readRequest = dynamic_cast<ReadRequest*>(workUnit);
-  ASSERT(readRequest != NULL,
+  TRITONSORT_ASSERT(readRequest != NULL,
          "Expected ReadRequest but got some other kind of work unit.");
 
   return readRequest->diskID % numQueues;

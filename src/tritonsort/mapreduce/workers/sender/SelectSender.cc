@@ -56,8 +56,9 @@ void SelectSender::run() {
         // Some sockets can send data.
         for (ConnectionList::iterator iter = connections.begin();
              iter != connections.end(); iter++) {
-          if (!(*iter)->socket.closed() &&
-              FD_ISSET((*iter)->socket.getFD(), &writeDescriptors)) {
+          if (FD_ISSET((*iter)->socket.getFD(), &writeDescriptors) &&
+              !(*iter)->socket.closed() &&
+              (*iter)->buffer != NULL) {
             send(*iter);
           }
         }
@@ -68,7 +69,7 @@ void SelectSender::run() {
 
 void SelectSender::handleNewBuffer(Connection* connection) {
   // Add this connection to the fd set.
-  ASSERT(connection->socket.getFD() != -1, "Tried to add -1 fd to set.");
+  TRITONSORT_ASSERT(connection->socket.getFD() != -1, "Tried to add -1 fd to set.");
   FD_SET(connection->socket.getFD(), &socketsWithData);
   numSocketsWithData++;
 
@@ -77,7 +78,7 @@ void SelectSender::handleNewBuffer(Connection* connection) {
 
 void SelectSender::handleEmptyBuffer(Connection* connection) {
   // Remove this connection from the fd set.
-  ASSERT(connection->socket.getFD() != -1, "Tried to remove -1 fd from set.");
+  TRITONSORT_ASSERT(connection->socket.getFD() != -1, "Tried to remove -1 fd from set.");
   FD_CLR(connection->socket.getFD(), &socketsWithData);
   numSocketsWithData--;
 

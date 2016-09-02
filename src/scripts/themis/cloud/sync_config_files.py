@@ -40,20 +40,15 @@ def sync_config_files():
             ["gs://%s/cluster_%s" % (bucket, cluster_ID)]()
 
         # Then download config files to all nodes
-
-        # gsutil appears to be buggy and can fail randomly so keep trying until
-        # you succeed. Try 5 times even if it succeeds to make sure all files
-        # get synced.
-        for i in xrange(5):
-            done = False
-            while not done:
-                try:
-                    parallel_ssh["-m"]["gsutil -m rsync -r -c gs://%s/cluster_%s/" \
-                                       "themis_config %s" % (
-                                           bucket, cluster_ID, config_directory)]()
-                    done = True
-                except ProcessExecutionError as e:
-                    pass
+        done = False
+        while not done:
+            try:
+                parallel_ssh["-m"]["gsutil -m rsync -r -c gs://%s/cluster_%s/" \
+                                   "themis_config %s" % (
+                                       bucket, cluster_ID, config_directory)]()
+                done = True
+            except ProcessExecutionError as e:
+                pass
 
     else:
         print >>sys.stderr, "Unknown provider %s" % provider

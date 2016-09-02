@@ -52,7 +52,7 @@ uint64_t KeyValuePair::serializeHeader(uint8_t* destination) const {
 }
 
 void KeyValuePair::serialize(uint8_t* destination) const {
-  ASSERT(destination != NULL,
+  TRITONSORT_ASSERT(destination != NULL,
          "Cannot serialize() KeyValuePair to a NULL destination");
 
   if (tupleStart != NULL &&
@@ -70,7 +70,7 @@ void KeyValuePair::serialize(uint8_t* destination) const {
     uint64_t offset = serializeHeader(destination);
 
     // Now write the key and value together.
-    memcpy(destination + offset, _key, getWriteSize());
+    memcpy(destination + offset, _key, getReadSize());
   } else {
     // The tuple doesn't exist in contiguous memory, so the header, key, and
     // value need to be written separately.
@@ -88,12 +88,12 @@ void KeyValuePair::serialize(uint8_t* destination) const {
 }
 void KeyValuePair::partialSerialize(
   uint8_t* destination, uint64_t offset, uint64_t length) const {
-  ASSERT(destination != NULL,
+  TRITONSORT_ASSERT(destination != NULL,
          "Cannot partiallSerialize() KeyValuePair to a NULL destination");
-  ASSERT(offset < getWriteSize(),
+  TRITONSORT_ASSERT(offset < getWriteSize(),
          "Cannot partialSerialize() at offset %llu beyond tuple length %llu.",
          offset, getWriteSize());
-  ASSERT(offset + length <= getWriteSize(),
+  TRITONSORT_ASSERT(offset + length <= getWriteSize(),
          "Cannot partialSerialize() at offset %llu for %llu bytes because "
          "tuple only has %llu bytes", offset, length, getWriteSize());
 

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/poll.h>
 
 #include "core/Socket.h"
 #include "core/StatusPrinter.h"
@@ -57,8 +58,8 @@ void Socket::listen(const std::string& port, int backlogSize) {
   }
 
   // Set up the FD set for accept calls.
-  FD_ZERO(&acceptFDSet);
-  FD_SET(fd, &acceptFDSet);
+  acceptFDSet.fd = fd;
+  acceptFDSet.events = POLLIN;
 }
 
 Socket* Socket::accept(uint64_t timeoutInMicros, uint64_t socketBufferSize) {
@@ -66,25 +67,22 @@ Socket* Socket::accept(uint64_t timeoutInMicros, uint64_t socketBufferSize) {
            "Cannot call accept() until after calling listen()");
 
   if (timeoutInMicros > 0) {
-    // Issue a select() on the listening socket.
-    fd_set readFDSet;
-    int fdMax = fd;
+    // Issue a poll() on the listening socket.
+    pollfd readFDSet;
     int status;
-    struct timeval timeout;
+    int timeout;
 
     readFDSet = acceptFDSet;
 
-    timeout.tv_sec = timeoutInMicros / 1000000;
-    timeout.tv_usec = timeoutInMicros % 1000000;
+    timeout = timeoutInMicros / 1000;
 
-    status = select(fdMax + 1, &readFDSet, NULL, NULL, &timeout);
+    status = poll(&readFDSet, 1, timeout);
     ABORT_IF(status == -1,
-             "select() failed with status %d: %s", errno, strerror(errno));
+             "poll() failed with status %d: %s", errno, strerror(errno));
 
-    // If the select() call timed out, return NULL.
-    if (!FD_ISSET(fd, &readFDSet)) {
+    // If the poll() call timed out, return NULL.
+    if (status == 0)
       return NULL;
-    }
   }
 
   // Issue a blocking accept() call on the listening socket.
@@ -186,6 +184,7 @@ void Socket::connect(
 void Socket::close() {
   ABORT_IF(mode == NONE, "Cannot call close() on an uninitialized socket.");
   ABORT_IF(fd < 0, "Cannot call close() on a closed socket.");
+  ::shutdown(fd, SHUT_RDWR);
   int status = ::close(fd);
   ABORT_IF(status == -1,
            "close() failed with error %d: %s", errno, strerror(errno));

@@ -29,12 +29,24 @@ fi
 
 # Set up some convenience symlinks
 echo "Setting symlinks..."
-ln -s ~/themis/src/scripts/themis/script_runner ~/script_runner
-ln -s ~/themis/src/scripts/themis/job_runner ~/job_runner
-ln -s ~/themis/src/scripts/valsort ~/valsort
-ln -s ~/themis/src/tritonsort/benchmarks/networkbench ~/networkbench
-ln -s ~/themis/src/tritonsort/benchmarks/storagebench ~/storagebench
-ln -s ~/themis/src/tritonsort/benchmarks/mixediobench ~/mixediobench
+if [ ! -L ~/script_runner ]; then
+  ln -s ~/themis/src/scripts/themis/script_runner ~/script_runner
+fi
+if [ ! -L ~/job_runner ]; then
+  ln -s ~/themis/src/scripts/themis/job_runner ~/job_runner
+fi
+if [ ! -L ~/valsort ]; then
+  ln -s ~/themis/src/scripts/valsort ~/valsort
+fi
+if [ ! -L ~/networkbench ]; then
+  ln -s ~/themis/src/tritonsort/benchmarks/networkbench ~/networkbench
+fi
+if [ ! -L ~/storagebench ]; then
+  ln -s ~/themis/src/tritonsort/benchmarks/storagebench ~/storagebench
+fi
+if [ ! -L ~/mixediobench ]; then
+  ln -s ~/themis/src/tritonsort/benchmarks/mixediobench ~/mixediobench
+fi
 
 # Change file limit to 4096
 echo -e "$USER hard nofile 4096\n$USER soft nofile 4096" | sudo tee -a /etc/security/limits.conf

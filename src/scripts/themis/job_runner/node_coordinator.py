@@ -548,6 +548,7 @@ class NodeCoordinator(object):
         cmd_log_file = os.path.join(log_dir, "%s.cmd" % (socket.getfqdn()))
         with open(cmd_log_file, 'w') as fp:
             fp.write(command)
+            fp.flush()
 
         core_path = None
 
@@ -598,6 +599,7 @@ class NodeCoordinator(object):
         monitor_utils.stop_monitors(*monitors)
 
         if cmd_obj.returncode != 0:
+            log.error("Themis exited with status %d", cmd_obj.returncode)
             if dump_core:
                 assert core_path is not None
 

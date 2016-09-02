@@ -101,7 +101,7 @@ private:
      \param[out] outputStr the string to which client output will be written
    */
   static void queryAllClients(std::string& outputStr);
-  static void handleNewConnection(int socket);
+  static void handleNewConnection(Socket* socket);
 }; // ResourceMonitor
 
 #endif // _TRITONSORT_RESOURCEMONITOR_H

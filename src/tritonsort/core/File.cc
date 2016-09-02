@@ -104,7 +104,7 @@ int File::getFileDescriptor() const {
 
 void File::preallocate(uint64_t size) {
   ABORT_IF(fileDescriptor == -1, "File must be open to preallocate space");
-  ASSERT(currentMode == WRITE || currentMode == READ_WRITE ||
+  TRITONSORT_ASSERT(currentMode == WRITE || currentMode == READ_WRITE ||
          currentMode == WRITE_POSIXAIO || currentMode == WRITE_LIBAIO,
          "File must be open for writing to be preallocated");
 
@@ -147,7 +147,7 @@ void File::read(
   uint64_t alignmentSize) {
   ABORT_IF(fileDescriptor == -1, "Can't read from the file "
            "(%s) if it hasn't been opened yet", filename.c_str());
-  ASSERT(currentMode == READ || currentMode == READ_WRITE,
+  TRITONSORT_ASSERT(currentMode == READ || currentMode == READ_WRITE,
          "File not open for reading.");
 
   if (directIO && alignmentSize > 0 && size % alignmentSize != 0) {
@@ -189,14 +189,14 @@ void File::read(
 
 void File::preparePosixAIORead(
   uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
-  ASSERT(currentMode == READ_POSIXAIO,
+  TRITONSORT_ASSERT(currentMode == READ_POSIXAIO,
          "File not open for reading with Posix AIO.");
   prepareAIO(buffer, size, maxIOSize);
 }
 
 void File::prepareLibAIORead(
   uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
-  ASSERT(currentMode == READ_LIBAIO,
+  TRITONSORT_ASSERT(currentMode == READ_LIBAIO,
          "File not open for reading with libaio.");
   prepareAIO(buffer, size, maxIOSize);
 }
@@ -204,7 +204,7 @@ void File::prepareLibAIORead(
 bool File::submitNextPosixAIORead(
   uint8_t* buffer, uint64_t alignmentSize, struct aiocb*& controlBlock,
   bool& disableDirectIORequired) {
-  ASSERT(currentMode == READ_POSIXAIO,
+  TRITONSORT_ASSERT(currentMode == READ_POSIXAIO,
          "File not open for reading with Posix AIO.");
   return submitNextPosixAIO(
     buffer, alignmentSize, controlBlock, disableDirectIORequired);
@@ -213,7 +213,7 @@ bool File::submitNextPosixAIORead(
 bool File::submitNextLibAIORead(
   uint8_t* buffer, uint64_t alignmentSize, io_context_t* context,
   struct iocb*& controlBlock, bool& disableDirectIORequired) {
-  ASSERT(currentMode == READ_LIBAIO,
+  TRITONSORT_ASSERT(currentMode == READ_LIBAIO,
          "File not open for reading with libaio.");
   return submitNextLibAIO(
     buffer, alignmentSize, context, controlBlock, disableDirectIORequired);
@@ -224,7 +224,7 @@ void File::write(
   uint64_t alignmentSize) {
   ABORT_IF(fileDescriptor == -1, "Can't write to the file (%s) if it hasn't "
            "been opened yet", filename.c_str());
-  ASSERT(currentMode == WRITE || currentMode == READ_WRITE,
+  TRITONSORT_ASSERT(currentMode == WRITE || currentMode == READ_WRITE,
          "File not open for writing.");
 
   if (directIO && alignmentSize > 0 && size % alignmentSize != 0) {
@@ -261,14 +261,14 @@ void File::write(const std::string& str) {
 
 void File::preparePosixAIOWrite(
   uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
-  ASSERT(currentMode == WRITE_POSIXAIO,
+  TRITONSORT_ASSERT(currentMode == WRITE_POSIXAIO,
          "File not open for writing with Posix AIO.");
   prepareAIO(buffer, size, maxIOSize);
 }
 
 void File::prepareLibAIOWrite(
   uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
-  ASSERT(currentMode == WRITE_LIBAIO,
+  TRITONSORT_ASSERT(currentMode == WRITE_LIBAIO,
          "File not open for writing with libaio.");
   prepareAIO(buffer, size, maxIOSize);
 }
@@ -276,7 +276,7 @@ void File::prepareLibAIOWrite(
 bool File::submitNextPosixAIOWrite(
   uint8_t* buffer, uint64_t alignmentSize, struct aiocb*& controlBlock,
   bool& disableDirectIORequired) {
-  ASSERT(currentMode == WRITE_POSIXAIO,
+  TRITONSORT_ASSERT(currentMode == WRITE_POSIXAIO,
          "File not open for writing with Posix AIO.");
   return submitNextPosixAIO(
     buffer, alignmentSize, controlBlock, disableDirectIORequired);
@@ -285,7 +285,7 @@ bool File::submitNextPosixAIOWrite(
 bool File::submitNextLibAIOWrite(
   uint8_t* buffer, uint64_t alignmentSize, io_context_t* context,
   struct iocb*& controlBlock, bool& disableDirectIORequired) {
-  ASSERT(currentMode == WRITE_LIBAIO,
+  TRITONSORT_ASSERT(currentMode == WRITE_LIBAIO,
          "File not open for writing with libaio.");
   return submitNextLibAIO(
     buffer, alignmentSize, context, controlBlock, disableDirectIORequired);
@@ -403,7 +403,7 @@ void File::rename(const std::string& newName) {
 void File::prepareAIO(uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
   ABORT_IF(fileDescriptor == -1, "Can't perform AIO on file (%s) if it hasn't "
            "been opened yet", filename.c_str());
-  ASSERT(currentMode == READ_POSIXAIO || currentMode == READ_LIBAIO ||
+  TRITONSORT_ASSERT(currentMode == READ_POSIXAIO || currentMode == READ_LIBAIO ||
          currentMode == WRITE_POSIXAIO || currentMode == WRITE_LIBAIO,
          "File not open for asynchronous I/O.");
 
@@ -462,7 +462,7 @@ void File::prepareAIO(uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
   }
 
   // Sanity check:
-  ASSERT(remainingBytes == 0, "Somehow we still have %llu bytes left after "
+  TRITONSORT_ASSERT(remainingBytes == 0, "Somehow we still have %llu bytes left after "
          "preparing all AIO control blocks", remainingBytes);
 
   // Update file position marker.
@@ -472,7 +472,7 @@ void File::prepareAIO(uint8_t* buffer, uint64_t size, uint64_t maxIOSize) {
 bool File::submitNextPosixAIO(
   uint8_t* buffer, uint64_t alignmentSize, struct aiocb*& controlBlock,
   bool& disableDirectIORequired) {
-  ASSERT(currentMode == READ_POSIXAIO || currentMode == WRITE_POSIXAIO,
+  TRITONSORT_ASSERT(currentMode == READ_POSIXAIO || currentMode == WRITE_POSIXAIO,
          "File not open with posix AIO.");
 
   PosixAIOControlBlockMap::iterator iter = posixAIOControlBlockMap.find(buffer);
@@ -521,7 +521,7 @@ bool File::submitNextPosixAIO(
 bool File::submitNextLibAIO(
   uint8_t* buffer, uint64_t alignmentSize, io_context_t* context,
   struct iocb*& controlBlock, bool& disableDirectIORequired) {
-  ASSERT(currentMode == READ_LIBAIO || currentMode == WRITE_LIBAIO,
+  TRITONSORT_ASSERT(currentMode == READ_LIBAIO || currentMode == WRITE_LIBAIO,
          "File not open with libaio.");
 
   LibAIOControlBlockMap::iterator iter = libAIOControlBlockMap.find(buffer);

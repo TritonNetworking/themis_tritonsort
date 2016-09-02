@@ -8,11 +8,11 @@ MLFQPolicy::MLFQPolicy()
 
 MLFQPolicy::~MLFQPolicy() {
   // Both queues should be empty.
-  ASSERT(lowPriorityQueue.empty(),
+  TRITONSORT_ASSERT(lowPriorityQueue.empty(),
          "lowPriorityQueue should be empty when the MFLQ policy is destroyed, "
          "but there are still %llu outstanding requests",
          lowPriorityQueue.size());
-  ASSERT(highPriorityQueue.empty(),
+  TRITONSORT_ASSERT(highPriorityQueue.empty(),
          "highPriorityQueue should be empty when the MFLQ policy is destroyed, "
          "but there are still %llu outstanding requests",
          highPriorityQueue.size());
@@ -30,7 +30,7 @@ void MLFQPolicy::removeRequest(Request& request, bool force) {
   } else {
     // Remove the request from whichever queue it belongs to.
     if (!highPriorityQueue.empty()) {
-      ASSERT(highPriorityQueue.front() == &request,
+      TRITONSORT_ASSERT(highPriorityQueue.front() == &request,
              "MLFQ tried to delete a request in the high priority queue, but "
              "the request isn't at the front of the queue.");
       highPriorityQueue.remove(&request);

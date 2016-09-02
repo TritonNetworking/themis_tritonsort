@@ -72,7 +72,7 @@ def run_remote_command(command, paramiko_ssh_client, streaming=False):
 
 def install_themis(
         config, provider, remote_address, version, github_URL, github_key,
-        skip_dependencies, skip_configuration):
+        scp_themis, skip_dependencies, skip_configuration):
     provider_info = authenticate(provider, config)
     private_key = provider_info["private_key"]
     remote_user = provider_info["remote_username"]
@@ -105,7 +105,7 @@ def install_themis(
             "~/install/motd-banner %s %s" % (version, github_URL), ssh_client,
             streaming=True)
 
-    if github_key != None:
+    if not scp_themis and github_key != None:
         # User wants to pre-install Themis.
         # Upload key
         scp["-i"][private_key][github_key]\
@@ -115,6 +115,16 @@ def install_themis(
         # Preinstall themis using this key
         run_remote_command(
             "~/install/preinstall_themis.sh ~/install/%s" % key_basename,
+            ssh_client, streaming=True)
+
+    if scp_themis != None:
+        run_remote_command("mkdir -p ~/themis/src", ssh_client, streaming=True)
+        scp["-i"][private_key]["-r"]["%s/." % os.path.join(scp_themis, "src")]\
+            ["%s@%s:~/themis/src" % (remote_user, remote_address)]()
+
+        # Preinstall themis without using the github key
+        run_remote_command(
+            "~/install/preinstall_themis.sh",
             ssh_client, streaming=True)
 
     ssh_client.close()
@@ -136,6 +146,8 @@ def main():
     parser.add_argument(
         "--github_key", help="Private key file used to pre-install Themis from "
         "github")
+    parser.add_argument("--scp_themis", type=str, default=None,
+        help="Copy Themis from the local disk using scp")
 
     parser.add_argument(
         "--skip_dependencies", action="store_true", help="Don't install "

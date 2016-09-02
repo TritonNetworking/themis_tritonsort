@@ -140,7 +140,7 @@ void BaseReceiver::run() {
       metadataBuffers.push_back(metadata);
 
       // Additionally sanity check sockets
-      ASSERT(sockets.at(i)->getFD() >= 0,
+      TRITONSORT_ASSERT(sockets.at(i)->getFD() >= 0,
              "Got bad socket descriptor %d for connection %llu",
              sockets.at(i)->getFD(), i);
     }
@@ -168,7 +168,7 @@ void BaseReceiver::receive(uint64_t connectionID) {
   // Try to receive metadata if we need more metadata.
   if (numMetadataBytesReceived < metadataSize) {
     // We have more metadata to receive, make sure we don't have a buffer.
-    ASSERT(buffer == NULL, "Need metadata from connection %llu but a buffer "
+    TRITONSORT_ASSERT(buffer == NULL, "Need metadata from connection %llu but a buffer "
            "exists.", connectionID);
 
     // Issue a nonblocking receive into the metadata buffer for this connection.
@@ -192,7 +192,7 @@ void BaseReceiver::receive(uint64_t connectionID) {
   }
 
   // Reaching this point means we have complete metaata.
-  ASSERT(numMetadataBytesReceived == metadataSize, "Should have complete "
+  TRITONSORT_ASSERT(numMetadataBytesReceived == metadataSize, "Should have complete "
          "metadata for connection %d but only have %llu/%llu bytes.",
          numMetadataBytesReceived, metadataSize);
 
@@ -237,10 +237,10 @@ uint64_t BaseReceiver::nonBlockingRecv(
   uint64_t connectionID, uint8_t* buffer, uint64_t size) {
   Socket*& socket = sockets.at(connectionID);
 
-  ASSERT(!socket->closed(),
+  TRITONSORT_ASSERT(!socket->closed(),
          "Tried to receive from a closed connection %llu", connectionID);
 
-  ASSERT(size > 0, "Tried to receive 0 bytes.");
+  TRITONSORT_ASSERT(size > 0, "Tried to receive 0 bytes.");
 
   // Only recv() up to maxRecvSize even if we can receive more.
   size = std::min(size, maxRecvSize);
@@ -303,7 +303,7 @@ uint64_t BaseReceiver::nonBlockingRecv(
   }
 
   // recv() completed normally. Return the number of bytes received.
-  ASSERT(bytesReceived <= static_cast<int64_t>(size), "Read more bytes than we "
+  TRITONSORT_ASSERT(bytesReceived <= static_cast<int64_t>(size), "Read more bytes than we "
          "wanted (%d > %llu)", bytesReceived, size);
   return bytesReceived;
 }

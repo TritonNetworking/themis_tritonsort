@@ -75,7 +75,7 @@ bool PosixAIOWriter::issueNextWrite(KVPairBuffer* buffer) {
         break;
       }
     }
-    ASSERT(i < asynchronousIODepth,
+    TRITONSORT_ASSERT(i < asynchronousIODepth,
            "Could not find a free slot in the aiocb list.");
     return true;
   }
@@ -85,7 +85,7 @@ bool PosixAIOWriter::issueNextWrite(KVPairBuffer* buffer) {
 }
 
 void PosixAIOWriter::waitForWritesToComplete(uint64_t numWrites) {
-  ASSERT(numWrites <= numWritesInProgress(),
+  TRITONSORT_ASSERT(numWrites <= numWritesInProgress(),
          "Blocking until %llu IOs complete but there are only %llu IOs",
          numWrites, numWritesInProgress());
   uint64_t completedWrites = 0;
@@ -126,7 +126,7 @@ void PosixAIOWriter::waitForWritesToComplete(uint64_t numWrites) {
             break;
           }
         }
-        ASSERT(i < asynchronousIODepth, "Could not find the control block "
+        TRITONSORT_ASSERT(i < asynchronousIODepth, "Could not find the control block "
                "associated with a completed write in the aiocb list.");
 
         delete controlBlock;

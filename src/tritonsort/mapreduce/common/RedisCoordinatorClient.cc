@@ -204,7 +204,7 @@ JobInfo* RedisCoordinatorClient::getJobInfo(uint64_t jobID) {
 
     if(strcmp(replyKeyElement->str, "job_id") == 0) {
       try {
-        ASSERT(boost::lexical_cast<uint64_t>(replyValueElement->str) == jobID,
+        TRITONSORT_ASSERT(boost::lexical_cast<uint64_t>(replyValueElement->str) == jobID,
                "Job ID %x returned from command '%s' "
                "does not match expected job ID %x",
                boost::lexical_cast<uint64_t>(replyValueElement->str),
@@ -239,17 +239,17 @@ JobInfo* RedisCoordinatorClient::getJobInfo(uint64_t jobID) {
     }
   }
 
-  ASSERT(inputDirectory.length() > 0, "Input directory read from job info "
+  TRITONSORT_ASSERT(inputDirectory.length() > 0, "Input directory read from job info "
          "should have non-zero length");
-  ASSERT(intermediateDirectory.length() > 0, "Intermediate directory read from "
+  TRITONSORT_ASSERT(intermediateDirectory.length() > 0, "Intermediate directory read from "
          "job info should have non-zero length");
-  ASSERT(outputDirectory.length() > 0, "Output directory read from job info "
+  TRITONSORT_ASSERT(outputDirectory.length() > 0, "Output directory read from job info "
          "should have non-zero length");
-  ASSERT(mapFunction.length() > 0, "Map function read from job info "
+  TRITONSORT_ASSERT(mapFunction.length() > 0, "Map function read from job info "
          "should have non-zero length");
-  ASSERT(reduceFunction.length() > 0, "Reduce function read from job info "
+  TRITONSORT_ASSERT(reduceFunction.length() > 0, "Reduce function read from job info "
          "should have non-zero length");
-  ASSERT(partitionFunction.length() > 0, "Partition function read from job "
+  TRITONSORT_ASSERT(partitionFunction.length() > 0, "Partition function read from job "
          "info should have non-zero length");
 
   jobInfo = new JobInfo(
@@ -259,7 +259,7 @@ JobInfo* RedisCoordinatorClient::getJobInfo(uint64_t jobID) {
   return jobInfo;
 }
 
-const URL& RedisCoordinatorClient::getOutputDirectory(
+const themis::URL& RedisCoordinatorClient::getOutputDirectory(
   uint64_t jobID) {
   // Cache the output directories since this function will be called multiple
   // times.
@@ -285,7 +285,7 @@ const URL& RedisCoordinatorClient::getOutputDirectory(
     delete jobInfo;
 
     outputDirectories.insert(
-      std::pair<uint64_t, URL>(jobID, URL(outputDirectory)));
+      std::pair<uint64_t, themis::URL>(jobID, themis::URL(outputDirectory)));
 
     // Now grab the URL from the map.
     return outputDirectories.at(jobID);
@@ -448,7 +448,7 @@ void RedisCoordinatorClient::waitOnBarrier(const std::string& barrierName) {
   if (phaseName.compare("phase_zero") == 0 ||
       phaseName.compare("phase_three") == 0) {
     // Phase zero and three requires a barrier per job.
-    ASSERT(currentBatchJobIDs.size() == 1,
+    TRITONSORT_ASSERT(currentBatchJobIDs.size() == 1,
            "Somehow got a weird number of jobs in phase zero or three. "
            "Expected 1, got %llu", currentBatchJobIDs.size());
     jobID = *(currentBatchJobIDs.begin());
@@ -462,7 +462,7 @@ void RedisCoordinatorClient::waitOnBarrier(const std::string& barrierName) {
   redisReply& reachBarrierReply = reachBarrier.reply();
   RedisCommand::assertReplyType(reachBarrierReply, REDIS_REPLY_INTEGER);
 
-  ASSERT(reachBarrierReply.integer == 1, "Command failed with error %llu: %s",
+  TRITONSORT_ASSERT(reachBarrierReply.integer == 1, "Command failed with error %llu: %s",
          reachBarrierReply.integer, reachBarrier.command());
 
   while (true) {

@@ -66,13 +66,13 @@ uint64_t setNumPartitions(
     boost::math::lcm(numIntermediateDisks, partitionGroupsPerNode);
   partitionMultiple = boost::math::lcm(numOutputDisks, partitionMultiple);
   partitionsPerNode = roundUp(partitionsPerNode, partitionMultiple);
-  ASSERT(partitionsPerNode % numIntermediateDisks == 0,
+  TRITONSORT_ASSERT(partitionsPerNode % numIntermediateDisks == 0,
          "Partitions per node %llu should be divisible by the number of "
          "intermediate disks %llu", partitionsPerNode, numIntermediateDisks);
-  ASSERT(partitionsPerNode % numOutputDisks == 0,
+  TRITONSORT_ASSERT(partitionsPerNode % numOutputDisks == 0,
          "Partitions per node %llu should be divisible by the number of "
          "output disks %llu", partitionsPerNode, numOutputDisks);
-  ASSERT(partitionsPerNode % partitionGroupsPerNode == 0,
+  TRITONSORT_ASSERT(partitionsPerNode % partitionGroupsPerNode == 0,
          "Partitions per node %llu should be divisible by the number of "
          "partition groups %llu", partitionsPerNode, partitionGroupsPerNode);
 

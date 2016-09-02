@@ -39,7 +39,7 @@ public:
      Get the directory that writers should use to write output files for a
      particular job.
    */
-  virtual const URL& getOutputDirectory(uint64_t jobID) = 0;
+  virtual const themis::URL& getOutputDirectory(uint64_t jobID) = 0;
 
   /**
      Get information about the recovery operation that a job is performing

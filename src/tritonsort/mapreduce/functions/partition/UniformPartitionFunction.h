@@ -54,7 +54,7 @@ private:
      \return a raw hash value on the key that varies from 0 to MAX_PARTITIONS
   */
   inline uint64_t hash(const uint8_t* key, uint32_t keyLength) const {
-    ASSERT(keyLength >= 3, "UniformPartitionFunction requires keys to be at "
+    TRITONSORT_ASSERT(keyLength >= 3, "UniformPartitionFunction requires keys to be at "
            "least 3 bytes long. Got %llu", keyLength);
     uint64_t hashedKey = 0;
     for (uint32_t i = 0; i < 3; i++) {

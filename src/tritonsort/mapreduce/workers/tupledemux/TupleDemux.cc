@@ -46,18 +46,18 @@ void TupleDemux::run(KVPairBuffer* buffer) {
 
   // Check that this buffer should be handled by this demux.
   partitionGroup = buffer->getPartitionGroup() % numDemuxes;
-  ASSERT(partitionGroup == getID(),
+  TRITONSORT_ASSERT(partitionGroup == getID(),
          "Demux %llu should only be servicing local partition group %llu but "
          "got a buffer for group %llu.", getID(), getID(), partitionGroup);
 
   // Extract job ID
   const std::set<uint64_t>& jobIDs = buffer->getJobIDs();
-  ASSERT(jobIDs.size() == 1, "Expected buffers entering tuple demux to have "
+  TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected buffers entering tuple demux to have "
          "exactly one job ID; this one has %llu", jobIDs.size());
   uint64_t currentJobID = *(jobIDs.begin());
 
   if (jobID != 0) {
-    ASSERT(currentJobID == jobID, "Expect all buffers encountered by a "
+    TRITONSORT_ASSERT(currentJobID == jobID, "Expect all buffers encountered by a "
            "TupleDemux to have the same job ID");
   } else {
     jobID = currentJobID;
@@ -143,7 +143,7 @@ KVPairBuffer* TupleDemux::newBuffer() {
   buffer->clear();
 
   // Set job ID.
-  ASSERT(jobID > 0, "Expected job ID to be set before getting a buffer.");
+  TRITONSORT_ASSERT(jobID > 0, "Expected job ID to be set before getting a buffer.");
   buffer->addJobID(jobID);
 
   return buffer;

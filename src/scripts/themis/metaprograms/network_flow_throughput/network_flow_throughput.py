@@ -2,9 +2,8 @@
 
 import sys, argparse, re
 
-connection_time_regex = re.compile(r"^DATM\t.*sender\t(\d+)\tconnection_time_(\d+)\t\d+\t\d+\t(\d+)")
-bytes_sent_regex = re.compile(r"^DATM\t.*sender\t(\d+)\ttotal_bytes_sent_(\d+)\t(\d+)")
-num_peers_regex = re.compile(r"^DATM\t.*sender\t(\d+)\tnum_peers\t(\d+)")
+connection_time_regex = re.compile(r"^DATM\t.*sender\t(\d+)\tconnection_time_(\d+)_(\d+)\t\d+\t\d+\t(\d+)")
+bytes_sent_regex = re.compile(r"^DATM\t.*sender\t(\d+)\ttotal_bytes_sent_(\d+)_(\d+)\t(\d+)")
 
 def build_nested_dict(data_dict, sender, flow):
     if sender not in data_dict:
@@ -16,52 +15,53 @@ def build_nested_dict(data_dict, sender, flow):
 
 def get_peer_data(log_file):
     flow_data = {}
-    num_peers_data = {}
+    peer_flow_data = {}
 
     with open(log_file, "r") as fp:
         for line in fp:
             line = line.strip()
-            if num_peers_regex.match(line) is not None:
-                matched_groups = num_peers_regex.match(line)
-                sender = int(matched_groups.group(1))
-                num_peers = int(matched_groups.group(2))
-
-                num_peers_data[sender] = num_peers
 
             if connection_time_regex.match(line) is not None:
                 matched_groups = connection_time_regex.match(line)
                 sender = int(matched_groups.group(1))
+
+                if sender not in peer_flow_data:
+                    peer_flow_data[sender] = {}
+
                 flow = int(matched_groups.group(2))
-                connection_time = int(matched_groups.group(3))
+                peer = int(matched_groups.group(3))
+
+                if peer not in peer_flow_data[sender]:
+                    peer_flow_data[sender][peer] = {}
+
+                connection_time = int(matched_groups.group(4))
                 # Convert to seconds
                 connection_time /= 1000000.0
 
-                flow_data = build_nested_dict(flow_data, sender, flow)
-                flow_data[sender][flow]["sec"] = connection_time
+                if flow not in peer_flow_data[sender][peer]:
+                    peer_flow_data[sender][peer][flow] = {}
+                peer_flow_data[sender][peer][flow]["sec"] = connection_time
 
             elif bytes_sent_regex.match(line) is not None:
                 matched_groups = bytes_sent_regex.match(line)
                 sender = int(matched_groups.group(1))
+
+                if sender not in peer_flow_data:
+                    peer_flow_data[sender] = {}
+
                 flow = int(matched_groups.group(2))
-                bytes_sent = int(matched_groups.group(3))
+                peer = int(matched_groups.group(3))
+
+                if peer not in peer_flow_data[sender]:
+                    peer_flow_data[sender][peer] = {}
+
+                bytes_sent = int(matched_groups.group(4))
                 # Convert to MB
                 MB_sent = bytes_sent / 1000000.0
 
-                flow_data = build_nested_dict(flow_data, sender, flow)
-                flow_data[sender][flow]["MB"] = MB_sent
-
-    peer_flow_data = {}
-
-    # Break data out into per-peer flows
-    for sender in flow_data:
-        peer_flow_data[sender] = {}
-        num_peers = num_peers_data[sender]
-        for peer in xrange(num_peers):
-            peer_flow_data[sender][peer] = {}
-
-        for flow in flow_data[sender]:
-            peer = flow % num_peers
-            peer_flow_data[sender][peer][flow] = flow_data[sender][flow]
+                if flow not in peer_flow_data[sender][peer]:
+                    peer_flow_data[sender][peer][flow] = {}
+                peer_flow_data[sender][peer][flow]["MB"] = MB_sent
 
     # Compute peer throughput totals
     peer_total_bytes = {}

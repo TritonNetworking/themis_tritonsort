@@ -55,8 +55,8 @@ public:
   static void _ABORT_IF(const char* file, int line, bool condition,
                         const char* format, ...);
 
-  static void _ASSERT(const char* file, int line, bool condition);
-  static void _ASSERT(const char* file, int line, bool condition,
+  static void _TRITONSORT_ASSERT(const char* file, int line, bool condition);
+  static void _TRITONSORT_ASSERT(const char* file, int line, bool condition,
                       const char* format ...);
 
   static void useTestModeAssertions();
@@ -70,9 +70,9 @@ private:
 #define ABORT_IF(...)   TritonSortAssertions::_ABORT_IF(__FILE__, __LINE__, __VA_ARGS__)
 
 #ifdef TRITONSORT_ASSERTS
-# define ASSERT(...) TritonSortAssertions::_ASSERT(__FILE__, __LINE__, __VA_ARGS__)
+# define TRITONSORT_ASSERT(...) TritonSortAssertions::_TRITONSORT_ASSERT(__FILE__, __LINE__, __VA_ARGS__)
 #else
-# define ASSERT(...)
+# define TRITONSORT_ASSERT(...)
 #endif
 
 

@@ -30,10 +30,10 @@ PhaseZeroSampleMetadata::PhaseZeroSampleMetadata(
 }
 
 PhaseZeroSampleMetadata::PhaseZeroSampleMetadata(const KeyValuePair& kvPair) {
-  ASSERT(kvPair.getKeyLength() == PhaseZeroSampleMetadata::TUPLE_KEY_SIZE,
+  TRITONSORT_ASSERT(kvPair.getKeyLength() == PhaseZeroSampleMetadata::TUPLE_KEY_SIZE,
          "Expected zero-length key when demarshalling metadata; got length %lu",
          kvPair.getKeyLength());
-  ASSERT(kvPair.getValueLength() == sizeof(Metadata),
+  TRITONSORT_ASSERT(kvPair.getValueLength() == sizeof(Metadata),
          "Unexpected value size %lu when demarshalling metadata",
          kvPair.getValueLength());
 
@@ -63,7 +63,7 @@ void PhaseZeroSampleMetadata::write(KeyValuePair& kvPair) {
 
 void PhaseZeroSampleMetadata::merge(
   const PhaseZeroSampleMetadata& otherMetadata) {
-  ASSERT(otherMetadata.metadata.jobID == metadata.jobID,
+  TRITONSORT_ASSERT(otherMetadata.metadata.jobID == metadata.jobID,
          "Can't merge metadata from two different jobs (other %llu, this %llu)",
          otherMetadata.metadata.jobID, metadata.jobID);
   metadata.tuplesIn += otherMetadata.metadata.tuplesIn;

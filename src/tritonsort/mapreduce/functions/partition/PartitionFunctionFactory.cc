@@ -48,7 +48,7 @@ PartitionFunctionFactory::newPartitionFunctionInstance(
   }
 
   // Sanity check
-  ASSERT(partitionFunction != NULL, "Expected a partition function to be "
+  TRITONSORT_ASSERT(partitionFunction != NULL, "Expected a partition function to be "
          "created at this point, but partitionFunction is NULL");
 
   return partitionFunction;

@@ -3,6 +3,7 @@
 #include "mapreduce/common/CoordinatorClientFactory.h"
 #include "mapreduce/common/CoordinatorClientInterface.h"
 #include "mapreduce/common/Utils.h"
+#include "mapreduce/functions/partition/BoundaryScannerPartitionFunction.h"
 #include "mapreduce/workers/boundaryscanner/BoundaryScanner.h"
 
 BoundaryScanner::BoundaryScanner(
@@ -18,9 +19,6 @@ BoundaryScanner::BoundaryScanner(
     numNodes(_numNodes),
     jobID(0),
     bufferFactory(*this, memoryAllocator, defaultBufferSize, alignmentSize),
-    writer(
-      boost::bind(&BoundaryScanner::emitWorkUnit, this, _1),
-      boost::bind(&BoundaryScanner::getOutputChunk, this, _1)),
     sampleMetadata(NULL),
     numPartitions(0),
     bytesPerPartition(0),
@@ -69,6 +67,14 @@ void BoundaryScanner::run(KVPairBuffer* buffer) {
       numPartitions = coordinatorClient->getNumPartitions(jobID);
     }
 
+    writer = new FastKVPairWriter(
+      new BoundaryScannerPartitionFunction(numPartitions / numNodes, numNodes),
+      0,
+      boost::bind(&BoundaryScanner::emitWorkUnit, this, _1),
+      boost::bind(&BoundaryScanner::getOutputChunk, this, _1),
+      boost::bind(&BoundaryScanner::putBufferFromWriter, this, _1),
+      NULL, NULL, true, false);
+
     delete coordinatorClient;
 
     // Get the sample metadata from the first tuple.
@@ -91,7 +97,7 @@ void BoundaryScanner::run(KVPairBuffer* buffer) {
       // This is a boundary key, so write it to the output buffer, but with a 0
       // value.
       kvPair.setValue(NULL, 0);
-      writer.write(kvPair);
+      writer->write(kvPair);
 
       // Update next partition boundary.
       nextPartitionBytes += bytesPerPartition;
@@ -109,17 +115,27 @@ void BoundaryScanner::run(KVPairBuffer* buffer) {
 }
 
 void BoundaryScanner::teardown() {
-  writer.flushBuffers();
+  writer->flushBuffers();
 
-  ASSERT(bytesScanned == sampleMetadata->getBytesOut(),
+  TRITONSORT_ASSERT(bytesScanned == sampleMetadata->getBytesOut(),
          "We were supposed to scan %llu bytes but only scanned %llu",
          sampleMetadata->getBytesOut(), bytesScanned);
-  ASSERT(tuplesScanned == sampleMetadata->getTuplesOut(),
+  TRITONSORT_ASSERT(tuplesScanned == sampleMetadata->getTuplesOut(),
          "We were supposed to scan %llu tuples but only scanned %llu",
          sampleMetadata->getTuplesOut(), tuplesScanned);
-  ASSERT(numPartitionsPicked == numPartitions,
+  TRITONSORT_ASSERT(numPartitionsPicked == numPartitions,
          "We were supposed to pick %llu partitions but picked %llu",
          numPartitions, numPartitionsPicked);
+}
+
+void BoundaryScanner::emitBufferFromWriter(
+  KVPairBuffer* buffer, uint64_t bufferNumber) {
+  buffer->setNode(bufferNumber);
+  emitWorkUnit(buffer);
+}
+
+void BoundaryScanner::putBufferFromWriter(KVPairBuffer* buffer) {
+  delete buffer;
 }
 
 KVPairBuffer* BoundaryScanner::getOutputChunk(uint64_t tupleSize) {

@@ -50,7 +50,7 @@ bool Params::containsv(const char* format, ...) const {
 }
 
 void Params::parseFile(const char* filename) {
-  ASSERT(fileExists(filename), "Can't find params file '%s'", filename);
+  TRITONSORT_ASSERT(fileExists(filename), "Can't find params file '%s'", filename);
 
   YAML::Node doc = YAML::LoadFile(filename);
 
@@ -63,7 +63,7 @@ void Params::parseYAMLNode(const YAML::Node& node) {
   std::list<std::string> keyStack;
   parseYAMLNode(node, keyStack);
 
-  ASSERT(keyStack.empty());
+  TRITONSORT_ASSERT(keyStack.empty());
 }
 
 void Params::parseYAMLNode(

@@ -44,7 +44,7 @@ void* CachingMemoryAllocator::allocate(
 
   caller->startMemoryAllocationTimer();
 
-  ASSERT(context.getSizes().size() == 1 &&
+  TRITONSORT_ASSERT(context.getSizes().size() == 1 &&
          context.getSizes().front() == cachedRegionSize,
          "CachingMemoryAllocator expects caller to only ask for memory regions "
          "whose size is the size being cached");

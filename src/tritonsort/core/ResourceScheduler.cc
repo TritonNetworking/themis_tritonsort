@@ -26,11 +26,11 @@ ResourceScheduler::~ResourceScheduler() {
   }
 
   // All resources and cookies should be returned.
-  ASSERT(availability == capacity,
+  TRITONSORT_ASSERT(availability == capacity,
          "All resources should be available when the resource scheduler is "
          "destroyed, but only %llu of %llu are available.",
          availability, capacity);
-  ASSERT(cookies.empty(),
+  TRITONSORT_ASSERT(cookies.empty(),
          "All cookies should be returned when the resource scheduler is "
          "destroyed, but there are still %llu outstanding.", cookies.size());
 }
@@ -76,14 +76,14 @@ void ResourceScheduler::_schedule(uint64_t size, const void* caller) {
 }
 
 void ResourceScheduler::schedule(uint64_t size, const void* caller) {
-  ASSERT(!useTrackingCookies,
+  TRITONSORT_ASSERT(!useTrackingCookies,
          "Cannot call schedule() when using tracking cookies.");
   _schedule(size, caller);
 }
 
 const void* ResourceScheduler::scheduleWithCookie(uint64_t size,
                                                   const void* caller) {
-  ASSERT(useTrackingCookies, "Cannot call scheduleWithCookie() unless tracking "
+  TRITONSORT_ASSERT(useTrackingCookies, "Cannot call scheduleWithCookie() unless tracking "
          "cookies are enabled.");
   // Schedule the resource request. This call will only return after the request
   // is scheduled.
@@ -101,7 +101,7 @@ const void* ResourceScheduler::scheduleWithCookie(uint64_t size,
 void ResourceScheduler::_release(uint64_t size) {
   // Update availability.
   availability += size;
-  ASSERT(availability <= capacity,
+  TRITONSORT_ASSERT(availability <= capacity,
          "Somehow completing a scheduled resource request, resulted in an "
          "availability of %llu, but capacity is only %llu.", availability,
          capacity);
@@ -111,13 +111,13 @@ void ResourceScheduler::_release(uint64_t size) {
 }
 
 void ResourceScheduler::release(uint64_t size) {
-  ASSERT(!useTrackingCookies,
+  TRITONSORT_ASSERT(!useTrackingCookies,
          "Cannot call release() when using tracking cookies.");
   _release(size);
 }
 
 void ResourceScheduler::releaseWithCookie(const void* cookie) {
-  ASSERT(useTrackingCookies, "Cannot call releaseWithCookie() unless tracking "
+  TRITONSORT_ASSERT(useTrackingCookies, "Cannot call releaseWithCookie() unless tracking "
          "cookies are enabled.");
   // Although this cast is technically unsafe, the subsequent ABORT will detect
   // a bogus pointer, so it should be OK.

@@ -24,20 +24,16 @@ def download_logs():
     elif provider == "google":
         bucket = read_conf_file("google.conf", "google", "bucket")
 
-        # gsutil appears to be buggy and can fail randomly so keep trying until
-        # you succeed. In fact it appears that even if the command succeeds it
-        # might not download all files, so run the command 3 times.
-        for i in xrange(3):
-            done = False
-            gsutil = plumbum.local["gsutil"]
-            while not done:
-                try:
-                    gsutil["-m"]["rsync"]["-r"]\
-                        ["gs://%s/cluster_%s/themis_logs" % (bucket, cluster_ID)]\
-                        [log_directory]()
-                    done = True
-                except ProcessExecutionError as e:
-                    pass
+        done = False
+        gsutil = plumbum.local["gsutil"]
+        while not done:
+            try:
+                gsutil["-m"]["rsync"]["-r"]\
+                    ["gs://%s/cluster_%s/themis_logs" % (bucket, cluster_ID)]\
+                    [log_directory]()
+                done = True
+            except ProcessExecutionError as e:
+                pass
 
     else:
         print >>sys.stderr, "Unknown provider %s" % provider

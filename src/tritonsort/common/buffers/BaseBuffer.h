@@ -119,7 +119,7 @@ public:
      \param length the length of the data in bytes
    */
   inline virtual void append(const uint8_t* data, uint64_t length) {
-    ASSERT(currentSize + length <= capacity,
+    TRITONSORT_ASSERT(currentSize + length <= capacity,
            "Appending off the end of a buffer (wanted to append %llu bytes to "
            "a buffer with capacity of %llu bytes that currently has %llu bytes "
            "in it)", length, capacity, currentSize);

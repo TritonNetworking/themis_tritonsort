@@ -106,12 +106,16 @@ def run_benchmark_iterations(
             True, False)
 
         # Copy description files and create phase directory.
+        if not os.path.exists(batch_directory):
+            os.makedirs(batch_directory)
         shutil.copy(
             os.path.join(description_directory, "stages.json"),
             batch_directory)
         shutil.copy(
             os.path.join(description_directory, "structure.json"),
             batch_directory)
+        os.chmod(os.path.join(batch_directory, "stages.json"), 0777)
+        os.chmod(os.path.join(batch_directory, "structure.json"), 0777)
 
         # Copy config file
         shutil.copyfile(config, os.path.join(batch_directory, "config.yaml"))
@@ -299,9 +303,9 @@ def run_benchmark(
         for process, ip in processes:
             process.poll()
             if process.returncode != None:
+                elapsed_time = time.time() - start_time
                 process.communicate()
                 processes.remove((process, ip))
-                elapsed_time = time.time() - start_time
                 elapsed_times.append(elapsed_time)
                 completed_ips.append(ip)
                 print "Node %s completed in %.2f seconds (%d / %d)" % (

@@ -128,12 +128,11 @@ def parallel_ssh(
 
     return True
 
-def validate(
-    job_specification_file, job, parallel, cleanup,
-    intermediates, verbose, yes, redis_host, redis_port, redis_db, replica,
-    input_on_intermediate_disks):
+def validate(job_specification_file, job, parallel, cleanup, intermediates,
+             verbose, delete_files, redis_host, redis_port, redis_db, replica,
+             auto_jobid, input_on_intermediate_disks):
 
-    if intermediates and not job:
+    if intermediates and not job and not auto_jobid:
         sys.exit("Must specify job ID for intermediate data validation")
 
 
@@ -173,6 +172,9 @@ def validate(
     input_dir = input_dir[9:]
     intermediate_dir = intermediate_dir[9:]
     output_dir = output_dir[9:]
+
+    if auto_jobid:
+        job = redis.next_job_id
 
     # Determine whether we're validating input, intermediate, or output files
     data_dir = None
@@ -272,7 +274,7 @@ def validate(
         # STEP 2
         # Run the actual validation scripts themselves
         script = RUN_VALIDATION_SCRIPTS
-        parallel_ssh(host_list, script, valsort_output_dir, verbose)
+        success = parallel_ssh(host_list, script, valsort_output_dir, verbose)
         if not success:
             sys.exit("%s failed" % script)
 
@@ -283,7 +285,7 @@ def validate(
             script = GATHER_SUMFILES
             host_list_string = " ".join(host_list)
             script_options = "%s %s" % (valsort_output_dir, host_list_string)
-            parallel_ssh(head_node, script, script_options, verbose)
+            success = parallel_ssh(head_node, script, script_options, verbose)
             if not success:
                 sys.exit("%s failed" % script)
 
@@ -291,14 +293,14 @@ def validate(
             # Cat sumfiles on the head node
             script = CAT_SUMFILES
             head_node = [host_list[0]]
-            parallel_ssh(head_node, script, valsort_output_dir, verbose)
+            success = parallel_ssh(head_node, script, valsort_output_dir, verbose)
             if not success:
                 sys.exit("%s failed" % script)
         else:
             # STEP 3
             # Cat sumfiles locally
             script = CAT_SUMFILES
-            parallel_ssh(host_list, script, valsort_output_dir, verbose)
+            success = parallel_ssh(host_list, script, valsort_output_dir, verbose)
             if not success:
                 sys.exit("%s failed" % script)
 
@@ -308,14 +310,14 @@ def validate(
             script = GATHER_CATFILES
             host_list_string = " ".join(host_list)
             script_options = "%s %s" % (valsort_output_dir, host_list_string)
-            parallel_ssh(head_node, script, script_options, verbose)
+            success = parallel_ssh(head_node, script, script_options, verbose)
             if not success:
                 sys.exit("%s failed" % script)
 
         # STEP 5
         # Cat all catfiles on the head node
         script = CAT_CATFILES
-        parallel_ssh(head_node, script, valsort_output_dir, verbose)
+        success = parallel_ssh(head_node, script, valsort_output_dir, verbose)
         if not success:
             sys.exit("%s failed" % script)
 
@@ -323,18 +325,11 @@ def validate(
         # Run valsort summary on the final catfile and print the results
         script = FINAL_VALSORT_SUMMARY
         script_options = "%s '%s'" % (valsort_output_dir, valsort_binary)
-        parallel_ssh(
+        success = parallel_ssh(
             head_node, script, script_options, verbose, print_stdout=True)
-        if not success:
-            sys.exit("%s failed" % script)
 
     # Ask user to delete files
-    if yes:
-        delete_files = "yes"
-    else:
-        delete_files = raw_input(
-            "Delete all files? <rm -rf %s> (yes/no)? " % valsort_output_dir)
-    if delete_files == "yes":
+    if delete_files:
         # Paranoia check:
         if valsort_output_dir == "/":
             sys.exit("Can't delete /")
@@ -367,9 +362,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true",
         help="Print detailed parallel ssh information")
-    parser.add_argument(
-        "-y", "--yes", default=False, action="store_true",
-        help="Answer yes to all questions (automatically clean up valsort output)")
+    parser.add_argument("-d", "--delete_files", default=False,
+        action="store_true", help="Clean up valsort output (delete files)")
+    parser.add_argument("-a", "--auto_jobid", default=False,
+        action="store_true", help="If given, get the job ID to use automatically.")
     parser.add_argument(
         "-r", "--replica", default=False, action="store_true",
         help="Validate replica files instead of output files")

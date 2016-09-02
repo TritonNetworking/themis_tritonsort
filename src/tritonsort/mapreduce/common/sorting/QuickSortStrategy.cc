@@ -43,7 +43,7 @@ void QuickSortStrategy::sort(KVPairBuffer* inputBuffer,
   ABORT_IF(inputBuffer == NULL, "Must set non-NULL input buffer.");
   ABORT_IF(outputBuffer == NULL, "Must set non-NULL output buffer.");
 
-  ASSERT(inputBuffer->getCurrentSize() <= outputBuffer->getCapacity(), "Output "
+  TRITONSORT_ASSERT(inputBuffer->getCurrentSize() <= outputBuffer->getCapacity(), "Output "
          "buffer (capacity %llu) must be at least as large as input buffer "
          "(size %llu) to sort.", outputBuffer->getCapacity(),
          inputBuffer->getCurrentSize());

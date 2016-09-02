@@ -131,7 +131,7 @@ void BaseSender::teardown() {
     }
 
     // Sanity check
-    ASSERT((*iter)->buffer == NULL, "Somehow we still have a buffer at "
+    TRITONSORT_ASSERT((*iter)->buffer == NULL, "Somehow we still have a buffer at "
            "teardown for peer %llu", (*iter)->socket.getPeerID());
   }
 
@@ -216,7 +216,7 @@ void BaseSender::send(Connection* connection) {
     // remaining number of metadata bytes.
     uint64_t bytesRemaining = sizeof(KVPairBuffer::NetworkMetadata) -
       connection->metadataBytesSent;
-    ASSERT(bytesRemaining != 0,
+    TRITONSORT_ASSERT(bytesRemaining != 0,
            "No metadata bytes to send but metadata not NULL");
 
     ssize_t bytesSent = sendData(
@@ -249,7 +249,7 @@ void BaseSender::send(Connection* connection) {
   // Now send the buffer.
   uint64_t bytesRemaining = connection->buffer->getCurrentSize() -
     connection->bufferBytesSent;
-  ASSERT(bytesRemaining != 0, "No buffer bytes to send.");
+  TRITONSORT_ASSERT(bytesRemaining != 0, "No buffer bytes to send.");
 
   // Only send() up to maxSendSize even if we can send more.
   bytesRemaining = std::min(bytesRemaining, maxSendSize);
