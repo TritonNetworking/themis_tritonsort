@@ -11,7 +11,7 @@ uint64_t PartitionGroupWorkQueueingPolicy::getEnqueueID(Resource* workUnit) {
   // Interpret the work unit as a KVPairBuffer and compute the partition group
   // the buffer belongs to.
   KVPairBuffer* buffer = dynamic_cast<KVPairBuffer*>(workUnit);
-  ASSERT(buffer != NULL,
+  TRITONSORT_ASSERT(buffer != NULL,
          "Expected KVPairBuffer but got some other kind of work unit.");
 
   return buffer->getPartitionGroup() % partitionGroupsPerNode;

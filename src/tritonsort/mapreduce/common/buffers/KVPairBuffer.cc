@@ -72,7 +72,7 @@ bool KVPairBuffer::getNextKVPair(KeyValuePair& kvPair) {
     kvPair.deserialize(recordPtr);
     recordSize = kvPair.getReadSize();
 
-    ASSERT(offset + recordSize <= currentSize, "Deserialized a tuple ("
+    TRITONSORT_ASSERT(offset + recordSize <= currentSize, "Deserialized a tuple ("
            "%llu bytes) that is too large to be where it is in the buffer ("
            "started at offset %llu with max size %llu).", kvPair.getReadSize(),
            offset, currentSize);
@@ -98,7 +98,7 @@ void KVPairBuffer::setupAppendKVPair(
   uint32_t keyLength, uint32_t maxValueLength, uint8_t*& key, uint8_t*& value,
   bool writeWithoutHeader) {
 
-  ASSERT(pendingAppendPtr == NULL, "More than one setupAppendKVPair cannot be "
+  TRITONSORT_ASSERT(pendingAppendPtr == NULL, "More than one setupAppendKVPair cannot be "
          "called without a corresponding commitAppendKVPair");
 
   uint64_t tupleSize = KeyValuePair::tupleSize(
@@ -117,13 +117,13 @@ void KVPairBuffer::commitAppendKVPair(
   bool writeWithoutHeader) {
 
   // Sanity check that the key and value are the same as before.
-  ASSERT((writeWithoutHeader && key == KeyValuePair::keyWithoutHeader(
+  TRITONSORT_ASSERT((writeWithoutHeader && key == KeyValuePair::keyWithoutHeader(
             pendingAppendPtr)) ||
          (!writeWithoutHeader && key == KeyValuePair::key(pendingAppendPtr)),
          "Can't alter the address of the key between setupAppendKVPair and "
          "commitAppendKVPair");
 
-  ASSERT((writeWithoutHeader && value == KeyValuePair::valueWithoutHeader(
+  TRITONSORT_ASSERT((writeWithoutHeader && value == KeyValuePair::valueWithoutHeader(
             pendingAppendPtr, pendingKeyLength)) ||
          (!writeWithoutHeader && value == KeyValuePair::value(
            pendingAppendPtr)),
@@ -131,7 +131,7 @@ void KVPairBuffer::commitAppendKVPair(
          "commitAppendKVPair");
 
   // Sanity check that the value didn't increase beyond the max.
-  ASSERT(valueLength <= pendingMaxValueLength,
+  TRITONSORT_ASSERT(valueLength <= pendingMaxValueLength,
          "Value length %llu cannot be larger than max value length %llu",
          valueLength, pendingMaxValueLength);
 
@@ -163,13 +163,13 @@ void KVPairBuffer::commitAppendKVPair(
 void KVPairBuffer::abortAppendKVPair(
   const uint8_t* key, const uint8_t* value, bool writeWithoutHeader) {
   // Sanity check that the key and value are the same as before.
-  ASSERT((writeWithoutHeader && key == KeyValuePair::keyWithoutHeader(
+  TRITONSORT_ASSERT((writeWithoutHeader && key == KeyValuePair::keyWithoutHeader(
             pendingAppendPtr)) ||
          (!writeWithoutHeader && key == KeyValuePair::key(pendingAppendPtr)),
          "Can't alter the address of the key between setupAppendKVPair and "
          "commitAppendKVPair");
 
-  ASSERT((writeWithoutHeader && value == KeyValuePair::valueWithoutHeader(
+  TRITONSORT_ASSERT((writeWithoutHeader && value == KeyValuePair::valueWithoutHeader(
             pendingAppendPtr, pendingKeyLength)) ||
          (!writeWithoutHeader && value == KeyValuePair::value(
            pendingAppendPtr)),
@@ -198,7 +198,7 @@ uint64_t KVPairBuffer::getNumTuples() {
   if (!cached) {
     calculateTupleMetadata();
   }
-  ASSERT(cached);
+  TRITONSORT_ASSERT(cached);
   return numTuples;
 }
 
@@ -206,7 +206,7 @@ uint32_t KVPairBuffer::getMinKeyLength() {
   if (!cached) {
     calculateTupleMetadata();
   }
-  ASSERT(cached);
+  TRITONSORT_ASSERT(cached);
   return minKeyLength;
 }
 
@@ -214,7 +214,7 @@ uint32_t KVPairBuffer::getMaxKeyLength() {
   if (!cached) {
     calculateTupleMetadata();
   }
-  ASSERT(cached);
+  TRITONSORT_ASSERT(cached);
   return maxKeyLength;
 }
 
@@ -235,7 +235,7 @@ void KVPairBuffer::calculateTupleMetadata() {
     iterator = KeyValuePair::nextTuple(iterator);
   }
 
-  ASSERT(iterator == endOfBuffer,
+  TRITONSORT_ASSERT(iterator == endOfBuffer,
          "KVPairBuffer must end on clean tuple boundary, but found %llu extra "
          "bytes", iterator - endOfBuffer);
 

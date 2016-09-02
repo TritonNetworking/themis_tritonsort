@@ -3,7 +3,7 @@
 
 FCFSPolicy::~FCFSPolicy() {
   // The queue should be empty.
-  ASSERT(queue.empty(),
+  TRITONSORT_ASSERT(queue.empty(),
          "queue should be empty when the FCFS policy is destroyed, but there "
          "are still %llu outstanding requests", queue.size());
 }
@@ -14,7 +14,7 @@ void FCFSPolicy::addRequest(Request& request) {
 }
 
 void FCFSPolicy::removeRequest(Request& request, bool force) {
-  ASSERT(!force && queue.front() == &request,
+  TRITONSORT_ASSERT(!force && queue.front() == &request,
          "FCFS tried to delete a request that isn't at the head of the queue.");
   queue.remove(&request);
 }

@@ -144,7 +144,7 @@ void LogLineDescriptor::finalize() {
 }
 
 void LogLineDescriptor::writeLogLineToFile(int fileDescriptor ...) const {
-  ASSERT(finalized, "Can't write log lines for an unfinalized "
+  TRITONSORT_ASSERT(finalized, "Can't write log lines for an unfinalized "
          "LogLineDescriptor");
 
   const char* format = formatString.c_str();
@@ -160,13 +160,13 @@ void LogLineDescriptor::writeLogLineToFile(int fileDescriptor ...) const {
 }
 
 const Json::Value& LogLineDescriptor::getDescriptionJson() const {
-  ASSERT(finalized, "Descriptor must be finalized before returning "
+  TRITONSORT_ASSERT(finalized, "Descriptor must be finalized before returning "
          "description string");
   return description;
 }
 
 const std::string& LogLineDescriptor::getLogLineFormatString() const {
-  ASSERT(finalized, "Descriptor must be finalized before returning "
+  TRITONSORT_ASSERT(finalized, "Descriptor must be finalized before returning "
          "log line format string");
   return formatString;
 }

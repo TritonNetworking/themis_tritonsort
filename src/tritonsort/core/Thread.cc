@@ -24,8 +24,8 @@ Thread::Thread(const std::string& _threadName)
 
 Thread::~Thread() {
   // Make sure we've stopped and terminated.
-  ASSERT(stop, "We should have called stopThread() before destruction time.");
-  ASSERT(terminated, "Thread should have terminated before destruction time.");
+  TRITONSORT_ASSERT(stop, "We should have called stopThread() before destruction time.");
+  TRITONSORT_ASSERT(terminated, "Thread should have terminated before destruction time.");
 }
 
 void Thread::startThread(void* args) {

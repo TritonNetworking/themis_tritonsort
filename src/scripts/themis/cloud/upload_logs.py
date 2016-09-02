@@ -27,19 +27,15 @@ def upload_logs():
     elif provider == "google":
         bucket = read_conf_file("google.conf", "google", "bucket")
 
-        # gsutil appears to be buggy and can fail randomly so keep trying until
-        # you succeed. Try 3 times even if it succeeds to make sure all files
-        # get uploaded.
-        for i in xrange(3):
-            done = False
-            while not done:
-                try:
-                    parallel_ssh["-m"]["gsutil -m rsync -r %s gs://%s/cluster_%s/" \
-                                       "themis_logs" % (
-                                           log_directory, bucket, cluster_ID)]()
-                    done = True
-                except ProcessExecutionError as e:
-                    pass
+        done = False
+        while not done:
+            try:
+                parallel_ssh["-m"]["gsutil -m rsync -r %s gs://%s/cluster_%s/" \
+                                   "themis_logs" % (
+                                       log_directory, bucket, cluster_ID)]()
+                done = True
+            except ProcessExecutionError as e:
+                pass
     else:
         print >>sys.stderr, "Unknown provider %s" % provider
         return 1

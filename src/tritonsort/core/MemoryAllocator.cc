@@ -47,11 +47,11 @@ MemoryAllocator::~MemoryAllocator() {
   }
 
   // All memory pointers should be returned.
-  ASSERT(availability == capacity,
+  TRITONSORT_ASSERT(availability == capacity,
          "All memory should be available when the memory allocator is "
          "destroyed, but only %llu of %llu bytes are available.",
          availability, capacity);
-  ASSERT(allocationMetadataMap.empty(),
+  TRITONSORT_ASSERT(allocationMetadataMap.empty(),
          "All outstanding allocations should be deallocated before the "
          "allocator is destroyed, but %llu remain.",
          allocationMetadataMap.size());
@@ -274,7 +274,7 @@ void MemoryAllocator::deallocate(void* memory) {
     // Note that we now have more memory available (which is only true if we
     // allocated this memory normally rather than as a result of deadlock
     availability += metadata->size;
-    ASSERT(availability <= capacity,
+    TRITONSORT_ASSERT(availability <= capacity,
            "Somehow deallocating memory pointer %p, size %llu, resulted in an "
            "availability of %llu, but capacity is only %llu.",
            memory, metadata->size, availability, capacity);
@@ -389,7 +389,7 @@ void MemoryAllocator::deadlockCheckerThread() {
 
 void MemoryAllocator::stopDeadlockChecker() {
   ScopedLock scopedLock(&deadlockCheckerThreadLock);
-  ASSERT(deadlockCheckerThreadRunning,
+  TRITONSORT_ASSERT(deadlockCheckerThreadRunning,
          "Should not be calling stopDeadlockChecker() if the deadlock checker "
          "thread is not running.");
   deadlockCheckerThreadRunning = false;

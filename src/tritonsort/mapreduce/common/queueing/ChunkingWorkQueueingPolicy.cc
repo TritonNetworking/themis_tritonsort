@@ -22,7 +22,7 @@ uint64_t ChunkingWorkQueueingPolicy::getEnqueueID(Resource* workUnit) {
   uint64_t diskID = chunkMap.getDiskID(partitionID, chunkID);
   uint64_t queueID = diskID / numDisksPerWorker;
 
-  ASSERT(queueID < numQueues,
+  TRITONSORT_ASSERT(queueID < numQueues,
          "Computed queue %llu from disk %llu and num disks per worker %llu, "
          "but number of queues is %llu", queueID,
          diskID, numDisksPerWorker, numQueues);

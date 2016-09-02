@@ -79,7 +79,7 @@ void Mapper::map(KVPairBuffer* buffer, uint64_t bufferJobID) {
   if (jobID == 0) {
     jobID = bufferJobID;
   } else {
-    ASSERT(jobID == bufferJobID, "Expected all buffers entering this mapper to "
+    TRITONSORT_ASSERT(jobID == bufferJobID, "Expected all buffers entering this mapper to "
            "have the same job ID");
   }
 
@@ -97,7 +97,7 @@ void Mapper::map(KVPairBuffer* buffer, uint64_t bufferJobID) {
 
     const PartitionFunctionInterface* partitionFunction =
       partitionFunctionMap.get(jobID);
-    ASSERT(partitionFunction != NULL, "Expected partition function map to "
+    TRITONSORT_ASSERT(partitionFunction != NULL, "Expected partition function map to "
            "contain a partition function for job %llu but it didn't", jobID);
 
     const RecordFilter* recordFilter = recordFilterMap.get(jobID);

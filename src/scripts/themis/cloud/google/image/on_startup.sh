@@ -45,7 +45,7 @@ echo "Instance type $INSTANCE_TYPE"
 echo "Zone $ZONE"
 
 # Set up tags
-gcloud compute instances add-metadata $INSTANCE_NAME --metadata CLUSTER_ID=${CLUSTER_ID} CLUSTER_NAME=${CLUSTER_NAME} NODE_TYPE=${NODE_TYPE} STATUS=Booting --zone $ZONE
+gcloud compute instances add-metadata $INSTANCE_NAME --metadata ^:^CLUSTER_ID=${CLUSTER_ID}:CLUSTER_NAME=${CLUSTER_NAME}:NODE_TYPE=${NODE_TYPE}:STATUS=Booting --zone $ZONE
 
 echo "Fetching configuration information from Storage..."
 # Fetch the remaining configuration information from Storage
@@ -93,6 +93,10 @@ sleep 2
 ssh-add ~/.ssh/${PRIVATE_KEY}
 
 cat ~/.ssh/${PUBLIC_KEY} >> ~/.ssh/authorized_keys
+
+if ! grep ssh-agent /home/$USER/.bashrc > /dev/null; then
+    echo -e "\neval \`ssh-agent -s\`\nssh-add ~/.ssh/${PRIVATE_KEY}" | sudo tee -a /home/$USER/.bashrc
+fi
 
 echo "Configuring local environment"
 # Start netserver if not already running

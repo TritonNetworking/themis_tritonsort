@@ -66,7 +66,7 @@ BaseWriter* BaseWriter::newBaseWriter(
     }
   }
 
-  ASSERT(outputDisks.size() == disksPerWriter,
+  TRITONSORT_ASSERT(outputDisks.size() == disksPerWriter,
          "Writer %llu should have %llu disks but has %llu", id, disksPerWriter,
          outputDisks.size());
 
@@ -142,7 +142,7 @@ BaseWriter::~BaseWriter() {
 File* BaseWriter::getFile(KVPairBuffer* writeBuffer) {
   // Get the job ID for this write.
   const std::set<uint64_t>& jobIDs = writeBuffer->getJobIDs();
-  ASSERT(jobIDs.size() == 1, "Expected buffer being passed to writer to "
+  TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected buffer being passed to writer to "
          "have exactly one job ID; this one has %llu", jobIDs.size());
   uint64_t jobID = *(jobIDs.begin());
 
@@ -156,7 +156,7 @@ File* BaseWriter::getFile(KVPairBuffer* writeBuffer) {
   uint64_t diskID = 0;
   if (chunkID < std::numeric_limits<uint64_t>::max()) {
     // This is a chunk buffer for a large partition in phase three.
-    ASSERT(chunkMap != NULL, "Require chunk map for phase three.");
+    TRITONSORT_ASSERT(chunkMap != NULL, "Require chunk map for phase three.");
     diskID = chunkMap->getDiskID(partitionID, chunkID);
   } else {
     // This is a regular partition file.
@@ -179,7 +179,7 @@ File* BaseWriter::getFile(KVPairBuffer* writeBuffer) {
 
   // Verify that this writer handles the disk.
   OutputDiskMap::const_iterator outputDiskIter = outputDisks.find(diskID);
-  ASSERT(outputDiskIter != outputDisks.end(),
+  TRITONSORT_ASSERT(outputDiskIter != outputDisks.end(),
          "Writer %llu got buffer for logical disk %llu, physical disk %llu, "
          "but is not responsible for this physical disk.", id, partitionID,
          diskID);
@@ -315,7 +315,7 @@ File* BaseWriter::newFile(
   uint64_t logicalDiskUID, uint64_t jobID, const std::string& outputDisk,
   uint64_t chunkID, bool replica) {
 
-  const URL& outputDirectory = coordinatorClient.getOutputDirectory(jobID);
+  const themis::URL& outputDirectory = coordinatorClient.getOutputDirectory(jobID);
 
   std::ostringstream oss;
   oss << outputDisk << outputDirectory.path();
@@ -340,7 +340,7 @@ File* BaseWriter::newFile(
 
   // Create the file and open it for writing
   File* logicalDiskFile = new (themis::memcheck) File(oss.str());
-  ASSERT(fileMode == File::WRITE || fileMode == File::WRITE_POSIXAIO ||
+  TRITONSORT_ASSERT(fileMode == File::WRITE || fileMode == File::WRITE_POSIXAIO ||
          fileMode == File::WRITE_LIBAIO, "Unsupported write mode, must be "
          "WRITE, WRITE_POSIXAIO, or WRITE_LIBAIO");
   logicalDiskFile->open(fileMode, true);

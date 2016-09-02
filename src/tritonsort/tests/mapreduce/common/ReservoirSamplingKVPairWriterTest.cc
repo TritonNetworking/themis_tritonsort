@@ -62,7 +62,6 @@ TEST_F(ReservoirSamplingKVPairWriterTest,
   EXPECT_EQ(true, buffer->getNextKVPair(kvPair));
   EXPECT_TRUE(buffer != NULL);
 
-  delete buffer;
 
   uint64_t expectedKey = Hash::hash(key, keyLength);
   uint64_t expectedValue = KeyValuePair::tupleSize(keyLength, actualValueSize);
@@ -71,4 +70,5 @@ TEST_F(ReservoirSamplingKVPairWriterTest,
 
   EXPECT_EQ(expectedValue,
             *(reinterpret_cast<const uint64_t*>(kvPair.getValue())));
+  delete buffer;
 }

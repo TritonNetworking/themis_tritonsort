@@ -117,7 +117,7 @@ void AsynchronousReader::run() {
 }
 
 void AsynchronousReader::teardown() {
-  ASSERT(numReadsInProgress() == 0,
+  TRITONSORT_ASSERT(numReadsInProgress() == 0,
          "Should have finished all writes before tearing down.");
   logger.logDatum("direct_io_bytes_read", alignedBytesRead);
 }
@@ -139,7 +139,7 @@ bool AsynchronousReader::processNewReadRequest(
     // Update data structures.
     bytesRead[readRequest] = 0;
     if (useByteStreamBuffers) {
-      ASSERT(readRequest->jobIDs.size() > 0, "Expected read request to have "
+      TRITONSORT_ASSERT(readRequest->jobIDs.size() > 0, "Expected read request to have "
              "at least one job ID");
 
       if (setStreamSize) {
@@ -257,7 +257,7 @@ void AsynchronousReader::emitFullBuffers() {
     totalBytesRead += readInfo->size;
 
     // Sanity check to make sure we read to the right place.
-    ASSERT(readInfo->file->seek(0, File::FROM_CURRENT) ==
+    TRITONSORT_ASSERT(readInfo->file->seek(0, File::FROM_CURRENT) ==
            readInfo->request->offset + totalBytesRead,
            "We've read %llu bytes starting at offset %llu but somehow we ended "
            "up at file position %llu", totalBytesRead,

@@ -74,7 +74,7 @@ void AsynchronousWriter::run() {
 }
 
 void AsynchronousWriter::teardown() {
-  ASSERT(numWritesInProgress() == 0,
+  TRITONSORT_ASSERT(numWritesInProgress() == 0,
          "Should have finished all writes before tearing down.");
 
   // Teardown the BaseWriter which will fsync and close files.

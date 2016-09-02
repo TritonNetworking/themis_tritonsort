@@ -125,9 +125,9 @@ void Sorter::run(KVPairBuffer* inputBuffer) {
   uint64_t bytesOut = outputBuffer->getCurrentSize();
 
   // Sorter should produce the same number of output tuples/bytes
-  ASSERT(bytesOut == bytesIn, "Sorter output buffer size is not equal to input "
+  TRITONSORT_ASSERT(bytesOut == bytesIn, "Sorter output buffer size is not equal to input "
          "buffer size (%llu bytes != %llu bytes)", bytesOut, bytesIn);
-  ASSERT(tuplesOut == tuplesIn, "Sorter output buffer tuple count is not equal "
+  TRITONSORT_ASSERT(tuplesOut == tuplesIn, "Sorter output buffer tuple count is not equal "
          "input buffer tuple count (%llu tuples != %llu tuples)", tuplesOut,
          tuplesIn);
 

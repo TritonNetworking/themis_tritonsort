@@ -112,6 +112,7 @@ def modify_clusters():
         cluster_size = int(bottle.request.POST.cluster_size)
         instance_type = bottle.request.POST.instance_type
         local_ssds = bottle.request.POST.local_ssds
+        persistent_ssds = bottle.request.POST.persistent_ssds
         image = bottle.request.POST.image
         master_instance_type = bottle.request.POST.master_instance_type
         zone = bottle.request.POST.zone
@@ -123,8 +124,8 @@ def modify_clusters():
 
         try:
             launch_google_cluster(
-                cluster_name, cluster_size, instance_type, local_ssds, image,
-                master_instance_type, network, zone, bucket, private_key,
+                cluster_name, cluster_size, instance_type, local_ssds, persistent_ssds,
+                image, master_instance_type, network, zone, bucket, private_key,
                 public_key, themis_config_directory, provider_info["google"],
                 redis_client)
         except ProcessExecutionError as e:
@@ -174,6 +175,8 @@ def modify_clusters():
             device_map = {}
             device_map[instance_type] = int(redis_client.hget(
                 "cluster:%d" % cluster_ID, "local_ssds"))
+            device_map[instance_type + "_persist"] = int(redis_client.hget(
+                "cluster:%d" % cluster_ID, "persistent_ssds"))
 
         # Configure the master with cluster information
         command = "%s add" % os.path.join(
@@ -182,17 +185,21 @@ def modify_clusters():
             command = "%s %s" % (command, node)
 
         channel = ssh_client.get_transport().open_session()
+        channel.request_forward_agent(paramiko.agent.AgentClientProxy)
         channel.get_pty()
         channel.exec_command(command)
         return_code = channel.recv_exit_status()
         if return_code != 0:
+            while channel.recv_ready():
+                stdout = channel.recv(1024)
+                sys.stdout.write(stdout)
             while channel.recv_stderr_ready():
                 stderr = channel.recv_stderr(1024)
                 sys.stderr.write(stderr)
             sys.exit(return_code)
 
         # Format disks
-        print "Formatting disks..."
+        print "Formatting disks, setting master info, and building themis rc..."
         devices_are_partitions = ""
         # NVME devices on GCE show up as partitions rather than devices that
         # need to be partitioned with fdisk, so if using NVME,
@@ -200,64 +207,88 @@ def modify_clusters():
         # option. However, since the nvme debian image appears to be buggy,
         # we'll launch in SCSI mode, which does require the fdisk, so leave
         # this option string blank for both providers.
-        command = "%s \"%s %s --format_disks\"" % (
+        command_1 = "%s %s --format_disks" % (os.path.join(
+                themis_directory,
+                "src/scripts/themis/cluster/mount_disks.py"),
+                devices_are_partitions)
+        command_2 = "%s" % os.path.join(
+                themis_directory,
+                "src/scripts/themis/cloud/set_master_hostname.py")
+        command_3 = "%s" % os.path.join(
+                themis_directory,
+                "src/scripts/themis/cluster/build_themis_rc.py")
+        full_command = "%s \"%s; %s; %s\"; %s" % (
             os.path.join(
                 themis_directory,
                 "src/scripts/themis/cluster/parallel_ssh.py"),
-            os.path.join(
-                themis_directory,
-                "src/scripts/themis/cluster/mount_disks.py"),
-            devices_are_partitions)
+            command_1,
+            command_2,
+            command_3,
+            command_3)
 
+        # command = "%s \"%s %s --format_disks\"" % (
+        #     os.path.join(
+        #         themis_directory,
+        #         "src/scripts/themis/cluster/parallel_ssh.py"),
+        #     os.path.join(
+        #         themis_directory,
+        #         "src/scripts/themis/cluster/mount_disks.py"),
+        #     devices_are_partitions)
         channel = ssh_client.get_transport().open_session()
+        channel.request_forward_agent(paramiko.agent.AgentClientProxy)
         channel.get_pty()
-        channel.exec_command(command)
+        channel.exec_command(full_command)
         return_code = channel.recv_exit_status()
         if return_code != 0:
+            while channel.recv_ready():
+                stdout = channel.recv(1024)
+                sys.stdout.write(stdout)
             while channel.recv_stderr_ready():
                 stderr = channel.recv_stderr(1024)
                 sys.stderr.write(stderr)
             sys.exit(return_code)
 
         # Set master hostname for slave nodes
-        print "Setting master information on slaves..."
-        command = "%s \"%s\"" % (
-                      os.path.join(
-                          themis_directory,
-                          "src/scripts/themis/cluster/parallel_ssh.py"),
-                      os.path.join(
-                          themis_directory,
-                          "src/scripts/themis/cloud/set_master_hostname.py"))
+        # print "Setting master information on slaves..."
+        # command = "%s \"%s\"" % (
+        #               os.path.join(
+        #                   themis_directory,
+        #                   "src/scripts/themis/cluster/parallel_ssh.py"),
+        #               os.path.join(
+        #                   themis_directory,
+        #                   "src/scripts/themis/cloud/set_master_hostname.py"))
 
-        channel = ssh_client.get_transport().open_session()
-        channel.get_pty()
-        channel.exec_command(command)
-        return_code = channel.recv_exit_status()
-        if return_code != 0:
-            while channel.recv_stderr_ready():
-                stderr = channel.recv_stderr(1024)
-                sys.stderr.write(stderr)
-            sys.exit(return_code)
+        # channel = ssh_client.get_transport().open_session()
+        # channel.request_forward_agent(paramiko.agent.AgentClientProxy)
+        # channel.get_pty()
+        # channel.exec_command(command)
+        # return_code = channel.recv_exit_status()
+        # if return_code != 0:
+        #     while channel.recv_stderr_ready():
+        #         stderr = channel.recv_stderr(1024)
+        #         sys.stderr.write(stderr)
+        #     sys.exit(return_code)
 
-        # Build themis rc file so nodes can see master redis
-        print "Building .themisrc files"
-        command = "%s -m \"%s\"" % (
-                      os.path.join(
-                          themis_directory,
-                          "src/scripts/themis/cluster/parallel_ssh.py"),
-                      os.path.join(
-                          themis_directory,
-                          "src/scripts/themis/cluster/build_themis_rc.py"))
+        # # Build themis rc file so nodes can see master redis
+        # print "Building .themisrc files"
+        # command = "%s -m \"%s\"" % (
+        #               os.path.join(
+        #                   themis_directory,
+        #                   "src/scripts/themis/cluster/parallel_ssh.py"),
+        #               os.path.join(
+        #                   themis_directory,
+        #                   "src/scripts/themis/cluster/build_themis_rc.py"))
 
-        channel = ssh_client.get_transport().open_session()
-        channel.get_pty()
-        channel.exec_command(command)
-        return_code = channel.recv_exit_status()
-        if return_code != 0:
-            while channel.recv_stderr_ready():
-                stderr = channel.recv_stderr(1024)
-                sys.stderr.write(stderr)
-            sys.exit(return_code)
+        # channel = ssh_client.get_transport().open_session()
+        # channel.request_forward_agent(paramiko.agent.AgentClientProxy)
+        # channel.get_pty()
+        # channel.exec_command(command)
+        # return_code = channel.recv_exit_status()
+        # if return_code != 0:
+        #     while channel.recv_stderr_ready():
+        #         stderr = channel.recv_stderr(1024)
+        #         sys.stderr.write(stderr)
+        #     sys.exit(return_code)
 
         # By default, populate with eth0 and all devices - half I/O and half
         # intermediate. If there are extra devices give them to the I/O
@@ -277,6 +308,13 @@ def modify_clusters():
             io_disks = disk_list[0:io_devices]
             intermediate_disks = disk_list[io_devices:]
 
+        # If there's persistent disks, use those as the sole I/O disks.
+        num_persist = device_map[instance_type + "_persist"]
+        if num_persist:
+            persist_disk_list = ["/mnt/disks/disk_persist_%d" % x for x in xrange(num_persist)]
+            io_disks = persist_disk_list
+            intermediate_disks = disk_list
+
         # Configure the cluster
         command = "%s interfaces %s" % (
             os.path.join(
@@ -285,10 +323,14 @@ def modify_clusters():
             interface)
 
         channel = ssh_client.get_transport().open_session()
+        channel.request_forward_agent(paramiko.agent.AgentClientProxy)
         channel.get_pty()
         channel.exec_command(command)
         return_code = channel.recv_exit_status()
         if return_code != 0:
+            while channel.recv_ready():
+                stdout = channel.recv(1024)
+                sys.stdout.write(stdout)
             while channel.recv_stderr_ready():
                 stderr = channel.recv_stderr(1024)
                 sys.stderr.write(stderr)
@@ -301,10 +343,14 @@ def modify_clusters():
                 command = "%s %s" % (command, disk)
 
             channel = ssh_client.get_transport().open_session()
+            channel.request_forward_agent(paramiko.agent.AgentClientProxy)
             channel.get_pty()
             channel.exec_command(command)
             return_code = channel.recv_exit_status()
             if return_code != 0:
+                while channel.recv_ready():
+                    stdout = channel.recv(1024)
+                    sys.stdout.write(stdout)
                 while channel.recv_stderr_ready():
                     stderr = channel.recv_stderr(1024)
                     sys.stderr.write(stderr)
@@ -317,10 +363,14 @@ def modify_clusters():
                 command = "%s %s" % (command, disk)
 
             channel = ssh_client.get_transport().open_session()
+            channel.request_forward_agent(paramiko.agent.AgentClientProxy)
             channel.get_pty()
             channel.exec_command(command)
             return_code = channel.recv_exit_status()
             if return_code != 0:
+                while channel.recv_ready():
+                    stdout = channel.recv(1024)
+                    sys.stdout.write(stdout)
                 while channel.recv_stderr_ready():
                     stderr = channel.recv_stderr(1024)
                     sys.stderr.write(stderr)
@@ -354,6 +404,7 @@ def modify_clusters():
             themis_directory, "src/scripts/themis/cloud/upload_logs.py")
 
         channel = ssh_client.get_transport().open_session()
+        channel.request_forward_agent(paramiko.agent.AgentClientProxy)
         channel.get_pty()
         channel.exec_command(command)
         return_code = channel.recv_exit_status()

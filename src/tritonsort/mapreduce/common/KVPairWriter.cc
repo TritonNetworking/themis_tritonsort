@@ -27,7 +27,7 @@ KVPairWriter::KVPairWriter(
     tuplesWritten(0),
     bytesWritten(0) {
 
-  ASSERT(numBuffers > 0, "KVPairWriter must write to at least one buffer");
+  TRITONSORT_ASSERT(numBuffers > 0, "KVPairWriter must write to at least one buffer");
 
   if (writeStrategy == NULL) {
     this->writeStrategy = new DefaultKVPairWriteStrategy();
@@ -45,7 +45,7 @@ KVPairWriter::~KVPairWriter() {
   logWriteStatsCallback(bytesWritten, tuplesWritten);
 
   for (uint64_t i = 0; i < numBuffers; i++) {
-    ASSERT(buffers[i] == NULL, "Should have flushed all buffers before "
+    TRITONSORT_ASSERT(buffers[i] == NULL, "Should have flushed all buffers before "
            "deleting the writer");
   }
   buffers.clear();
@@ -66,7 +66,7 @@ KVPairBuffer* KVPairWriter::getBufferForKey(
 
   // In the case of the mapper, use the global partition to pick the buffer.
   bufferNumber = partitionFunction.globalPartition(key, keyLength);
-  ASSERT(bufferNumber < numBuffers, "Invalid buffer number provided by "
+  TRITONSORT_ASSERT(bufferNumber < numBuffers, "Invalid buffer number provided by "
          "partition function");
 
   KVPairBuffer* buffer = buffers[bufferNumber];
@@ -149,7 +149,7 @@ void KVPairWriter::write(KeyValuePair& kvPair) {
 
 uint8_t* KVPairWriter::setupWrite(const uint8_t* key, uint32_t keyLength,
                     uint32_t maxValueLength) {
-  ASSERT(tupleAppendBuffer == NULL, "Uncommited write is already in progress; "
+  TRITONSORT_ASSERT(tupleAppendBuffer == NULL, "Uncommited write is already in progress; "
          "can't start another one");
 
   // If the transformed version of the value will be bigger than the maximum
@@ -192,7 +192,7 @@ uint8_t* KVPairWriter::setupWrite(const uint8_t* key, uint32_t keyLength,
 }
 
 void KVPairWriter::commitWrite(uint32_t valueLength) {
-  ASSERT(tupleAppendBuffer != NULL, "Must have previously set up a tuple to "
+  TRITONSORT_ASSERT(tupleAppendBuffer != NULL, "Must have previously set up a tuple to "
          "append with setupWrite()");
 
   if (recordFilter != NULL &&

@@ -23,7 +23,7 @@ public:
      \param bucket the bucket to increment
    */
   inline void increment(uint32_t bucket) {
-    ASSERT(bucket < NUM_BUCKETS,
+    TRITONSORT_ASSERT(bucket < NUM_BUCKETS,
            "Tried to increment bucket %llu but there are only %llu buckets",
            bucket, NUM_BUCKETS);
     ++frequency[bucket];
@@ -37,7 +37,7 @@ public:
      \return the bucket's frequency count
    */
   inline uint32_t get(uint32_t bucket) {
-    ASSERT(bucket < NUM_BUCKETS,
+    TRITONSORT_ASSERT(bucket < NUM_BUCKETS,
            "Tried to get bucket %llu but there are only %llu buckets",
            bucket, NUM_BUCKETS);
     return frequency[bucket];

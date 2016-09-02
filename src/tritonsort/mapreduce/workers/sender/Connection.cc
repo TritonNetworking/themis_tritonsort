@@ -35,13 +35,13 @@ Connection::Connection(
 
 Connection::~Connection() {
   // Sanity check: make sure the socket is actually closed.
-  ASSERT(socket.closed(), "On destruction, flow %llu to peer %llu still open.",
+  TRITONSORT_ASSERT(socket.closed(), "On destruction, flow %llu to peer %llu still open.",
          socket.getFlowID(), socket.getPeerID());
 
   // Sanity check: we shouldn't have any more data to send to this peer.
-  ASSERT(buffer == NULL, "Found non-NULL buffer for peer %llu, flow %llu "
+  TRITONSORT_ASSERT(buffer == NULL, "Found non-NULL buffer for peer %llu, flow %llu "
          "during teardown", socket.getPeerID(), socket.getFlowID());
-  ASSERT(metadata == NULL, "Found non-NULL metadata for peer %llu, flow %llu "
+  TRITONSORT_ASSERT(metadata == NULL, "Found non-NULL metadata for peer %llu, flow %llu "
          "during teardown", socket.getPeerID(), socket.getFlowID());
 }
 

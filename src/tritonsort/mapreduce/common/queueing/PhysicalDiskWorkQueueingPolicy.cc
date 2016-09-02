@@ -20,7 +20,7 @@ uint64_t PhysicalDiskWorkQueueingPolicy::computeDisk(
   if (buffer != NULL) {
     // As expected this is a KVPairBuffer.
     const std::set<uint64_t>& jobIDs = buffer->getJobIDs();
-    ASSERT(jobIDs.size() == 1, "Expected one job ID, but got %llu",
+    TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected one job ID, but got %llu",
            jobIDs.size());
     uint64_t jobID = *(jobIDs.begin());
 
@@ -32,7 +32,7 @@ uint64_t PhysicalDiskWorkQueueingPolicy::computeDisk(
     // This might be a list of buffers passed by the chainer.
     BufferListContainer<ListableKVPairBuffer>* container =
       dynamic_cast<BufferListContainer<ListableKVPairBuffer>*>(workUnit);
-    ASSERT(container != NULL,
+    TRITONSORT_ASSERT(container != NULL,
            "Expected KVPairBuffer or BufferListContainer<KVPairBuffer> but got "
            "some other kind of work unit.");
 
@@ -46,7 +46,7 @@ uint64_t PhysicalDiskWorkQueueingPolicy::getEnqueueID(Resource* workUnit) {
   uint64_t physicalDisk = computeDisk(workUnit, partitionMap, numDisksPerNode);
 
   // Determine the worker responsible for this disk.
-  ASSERT(physicalDisk / numDisksPerWorker < numQueues,
+  TRITONSORT_ASSERT(physicalDisk / numDisksPerWorker < numQueues,
          "Computed queue %llu from disk %llu and num disks per worker %llu, "
          "but number of queues is %llu", physicalDisk / numDisksPerWorker,
          physicalDisk, numDisksPerWorker, numQueues);

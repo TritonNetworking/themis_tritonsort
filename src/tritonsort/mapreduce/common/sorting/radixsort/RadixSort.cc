@@ -30,7 +30,7 @@ void RadixSort::setScratchBuffer(uint8_t* scratchBuffer) {
 }
 
 uint64_t RadixSort::getRequiredScratchBufferSize(KVPairBuffer* buffer) const {
-  return getScratchBufferEntrySize(buffer) * buffer->getNumTuples() * 2;
+  return getScratchBufferEntrySize(buffer) * buffer->getNumTuples() * 4;
 }
 
 void RadixSort::sort(KVPairBuffer* inputBuffer, KVPairBuffer* outputBuffer) {
@@ -62,7 +62,7 @@ void RadixSort::setup() {
   ABORT_IF(inputBuffer == NULL, "Must set non-NULL input buffer");
   ABORT_IF(outputBuffer == NULL, "Must set non-NULL output buffer");
 
-  ASSERT(inputBuffer->getCurrentSize() <= outputBuffer->getCapacity(), "Output "
+  TRITONSORT_ASSERT(inputBuffer->getCurrentSize() <= outputBuffer->getCapacity(), "Output "
          "buffer (capacity %llu) must be at least as large as input buffer "
          "(size %llu) to sort.", outputBuffer->getCapacity(),
          inputBuffer->getCurrentSize());
@@ -94,7 +94,7 @@ void RadixSort::setup() {
   // table 1.
   uint64_t entrySize = getScratchBufferEntrySize(inputBuffer);
   bucketTables[0].setBuffer(scratchBuffer);
-  bucketTables[1].setBuffer(scratchBuffer + (numTuples * entrySize));
+  bucketTables[1].setBuffer(scratchBuffer + (numTuples * entrySize * 2));
 }
 
 void RadixSort::teardown() {

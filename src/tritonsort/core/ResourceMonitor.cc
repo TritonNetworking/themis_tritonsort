@@ -156,20 +156,18 @@ void ResourceMonitor::queryAllClients(std::string& outputStr) {
   outputStr.assign(writer.write(root));
 }
 
-void ResourceMonitor::handleNewConnection(int clientSock) {
+void ResourceMonitor::handleNewConnection(Socket* clientSock) {
   // Return resource availability information.
   // Note: queryAllClients() is threadsafe
   std::string response;
   queryAllClients(response);
   unsigned int msgLen = strlen(response.c_str());
 
-  blockingWrite(
-    clientSock, reinterpret_cast<const uint8_t*>(response.c_str()), msgLen, 0,
-    0, "resource monitor");
+  blockingWrite(clientSock->getFD(),
+                reinterpret_cast<const uint8_t*>(response.c_str()), msgLen, 0,
+                0, "resource monitor");
 
-  if (close(clientSock) == -1) {
-    ABORT("close() failed with status %d: %s", errno, strerror(errno));
-  }
+  clientSock->close();
 }
 
 void* ResourceMonitor::run(void* arg) {
@@ -178,11 +176,10 @@ void* ResourceMonitor::run(void* arg) {
     Socket* clientSocket = serverSocket->accept(500000, socketBufferSize);
     if (clientSocket != NULL) {
       // handler function should ensure thread safety!
-      handleNewConnection(clientSocket->getFD());
+      handleNewConnection(clientSocket);
+      // Clean up client socket.
+      delete clientSocket;
     }
-
-    // Clean up client socket.
-    delete clientSocket;
   }
   return NULL;
 }

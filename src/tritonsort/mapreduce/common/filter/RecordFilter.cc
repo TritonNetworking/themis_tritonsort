@@ -21,7 +21,7 @@ void RecordFilter::addPartitionBoundaries(
 }
 
 bool RecordFilter::pass(const uint8_t* key, uint32_t keyLength) const {
-  ASSERT(boundaries.size() > 0, "Shouldn't be using a record filter with no "
+  TRITONSORT_ASSERT(boundaries.size() > 0, "Shouldn't be using a record filter with no "
          "partition boundaries");
 
   for (PartitionBoundaryVector::const_iterator iter = boundaries.begin();

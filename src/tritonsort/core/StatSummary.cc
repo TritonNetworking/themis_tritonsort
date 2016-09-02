@@ -59,7 +59,15 @@ void StatSummary::writeStatsToFile(
   int fileDescriptor = file.getFileDescriptor();
 
   uint64_t mean = std::floor(streaming_mean);
-  uint64_t variance = sum_of_squares_of_mean_differences / count;
+  uint64_t variance;
+  // Avoid division by 0.
+  if (count == 0)
+    variance = 0;
+  else if (sum_of_squares_of_mean_differences >=
+           std::numeric_limits<uint64_t>::max())
+    variance = std::numeric_limits<uint64_t>::max() / count;
+  else
+    variance = sum_of_squares_of_mean_differences / count;
 
   logLineDescriptor.writeLogLineToFile(
     fileDescriptor, phaseNameCStr, epoch, "min", min);

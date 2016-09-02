@@ -37,7 +37,7 @@ void GenPowerLawRandomNetworkReduceFunction::reduce(
   uint64_t j = 1;
 
   while (iterator.next(kvPair)) {
-    ASSERT(kvPair.getValueLength() == sizeof(uint64_t), "Invalid vertex value");
+    TRITONSORT_ASSERT(kvPair.getValueLength() == sizeof(uint64_t), "Invalid vertex value");
     const uint64_t *pNeighborID = reinterpret_cast<const uint64_t *>(
       kvPair.getValue());
 

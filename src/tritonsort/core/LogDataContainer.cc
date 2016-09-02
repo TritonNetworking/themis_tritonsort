@@ -59,7 +59,7 @@ void LogDataContainer::write(int fileDescriptor, const std::string& phaseName,
     const std::string& statName = iter->first;
 
     LogLineDescriptor* descriptor = descriptors[statName];
-    ASSERT(descriptor != NULL, "Descriptor not created during stat insertion; "
+    TRITONSORT_ASSERT(descriptor != NULL, "Descriptor not created during stat insertion; "
            "something has gone horribly wrong.");
 
     LoggableDatumList& list = iter->second;

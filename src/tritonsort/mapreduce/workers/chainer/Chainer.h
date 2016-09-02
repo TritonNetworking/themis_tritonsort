@@ -78,7 +78,7 @@ public:
       logger.add(emitWorkTimestampStatID, Timer::posixTimeInMicros());
     }
 
-    ASSERT(container->getList().getTotalDataSize() > 0,
+    TRITONSORT_ASSERT(container->getList().getTotalDataSize() > 0,
            "Chainer should not emit empty lists.");
 
     internalStateSize -= container->getCurrentSize();

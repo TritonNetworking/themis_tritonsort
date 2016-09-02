@@ -411,9 +411,15 @@ void openReceiverSockets(
       peerID++;
     }
 
-    ABORT_IF(iter == peerIPs.end(),
-             "Could not find connecting address %s in list of peers.",
-             connectingAddress.c_str());
+    // If we don't know the IP, close the connection.
+    if (iter == peerIPs.end()) {
+      fprintf(stderr, "Could not find connecting address %s in list of peers.\n",
+        connectingAddress.c_str());
+      socket->close();
+      delete socket;
+      i--;
+      continue;
+    }
 
     socket->setPeerID(peerID);
 

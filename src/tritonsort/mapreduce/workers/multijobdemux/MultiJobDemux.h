@@ -56,7 +56,7 @@ public:
   void run(KVPairBuffer* buffer) {
     const std::set<uint64_t>& jobIDs = buffer->getJobIDs();
 
-    ASSERT(jobIDs.size() == 1, "Expected each buffer to have exactly one "
+    TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected each buffer to have exactly one "
            "job ID at this point in the pipeline");
 
     uint64_t jobID = *(jobIDs.begin());

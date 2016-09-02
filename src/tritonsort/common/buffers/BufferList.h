@@ -94,7 +94,7 @@ public:
     } else {
       while (size > 0 && bytesMoved < maxBytesToMove) {
         // Check to see if the head is small enough to append.
-        ASSERT(head != NULL, "About to append NULL to a list.");
+        TRITONSORT_ASSERT(head != NULL, "About to append NULL to a list.");
         uint64_t headSize = head->getCurrentSize();
         // The only buffer that is allowed to exceed the maximum list size is
         // the first buffer. This allows large records to pass through the
@@ -160,7 +160,7 @@ public:
      \param buf a pointer to the buffer to append to the list
    */
   void append(T* buf) {
-    ASSERT(buf->getPrev() == NULL && buf->getNext() == NULL, "Buffer can't be "
+    TRITONSORT_ASSERT(buf->getPrev() == NULL && buf->getNext() == NULL, "Buffer can't be "
            "appended because it is already part of a list");
 
     if (head == NULL) {

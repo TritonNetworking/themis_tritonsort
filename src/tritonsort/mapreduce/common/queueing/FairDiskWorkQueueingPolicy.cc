@@ -21,12 +21,12 @@ FairDiskWorkQueueingPolicy::~FairDiskWorkQueueingPolicy() {
   uint64_t queueID = 0;
   for (WorkQueueVector::iterator iter = workQueues.begin();
        iter != workQueues.end(); iter++, queueID++) {
-    ASSERT(iter->empty(), "At tracker destruction time, queue %llu still has "
+    TRITONSORT_ASSERT(iter->empty(), "At tracker destruction time, queue %llu still has "
            "%llu work units.", queueID, iter->size());
   }
 
   // Sanity check that we've call teardown()
-  ASSERT(done,
+  TRITONSORT_ASSERT(done,
          "At destruction time teardown() must have been previously called");
 
   pthread_mutex_destroy(&lock);
@@ -35,9 +35,9 @@ FairDiskWorkQueueingPolicy::~FairDiskWorkQueueingPolicy() {
 
 void FairDiskWorkQueueingPolicy::enqueue(Resource* workUnit) {
   ScopedLock scopedLock(&lock);
-  ASSERT(workUnit != NULL, "Cannot enqueue NULL work unit. If you're trying to "
+  TRITONSORT_ASSERT(workUnit != NULL, "Cannot enqueue NULL work unit. If you're trying to "
          "tear down a queue, call teardown() instead");
-  ASSERT(!done, "Cannot enqueue more work units after teardown.");
+  TRITONSORT_ASSERT(!done, "Cannot enqueue more work units after teardown.");
 
   // Use the PhysicalDiskWorkQueueingPolicy to determine the queue ID.
   uint64_t queueID = PhysicalDiskWorkQueueingPolicy::computeDisk(
@@ -110,7 +110,7 @@ void FairDiskWorkQueueingPolicy::teardown() {
 }
 
 Resource* FairDiskWorkQueueingPolicy::getNextRoundRobinWorkUnit() {
-  ASSERT(numWorkUnits > 0, "Must have at least one work unit.");
+  TRITONSORT_ASSERT(numWorkUnits > 0, "Must have at least one work unit.");
 
   // Find the next non-empty round-robin queue.
   uint64_t attempt = 0;
@@ -120,7 +120,7 @@ Resource* FairDiskWorkQueueingPolicy::getNextRoundRobinWorkUnit() {
        attempt++) {
   }
 
-  ASSERT(attempt < numDisks,
+  TRITONSORT_ASSERT(attempt < numDisks,
          "Could not find a non-empty queue (%llu disks).", numDisks);
 
   uint64_t queueID = (nextQueueID + attempt) % numDisks;

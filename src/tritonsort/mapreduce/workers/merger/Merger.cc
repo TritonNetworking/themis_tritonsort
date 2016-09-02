@@ -67,7 +67,7 @@ void Merger::run() {
       if (token != NULL) {
         tokenPool.putToken(token);
       }
-      ASSERT(inputBuffer->getChunkID() == chunkID,
+      TRITONSORT_ASSERT(inputBuffer->getChunkID() == chunkID,
              "Merger fetched buffer with chunk ID %llu from queue %llu, "
              "offset %llu. Expected chunk ID %llu.",
              inputBuffer->getChunkID(), queueID, queueOffset, chunkID);
@@ -75,7 +75,7 @@ void Merger::run() {
       // Set job ID.
       if (jobID == 0) {
         const std::set<uint64_t>& jobIDs = inputBuffer->getJobIDs();
-        ASSERT(jobIDs.size() == 1, "Expected buffers entering merger to have "
+        TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected buffers entering merger to have "
                "exactly one job ID; this one has %llu", jobIDs.size());
         jobID = *(jobIDs.begin());
       }
@@ -199,7 +199,7 @@ void Merger::run() {
 
 void Merger::teardown() {
   // Verify data structures are empty.
-  ASSERT(partitions.size() == 0, "Still merging %llu partitions at teardown.",
+  TRITONSORT_ASSERT(partitions.size() == 0, "Still merging %llu partitions at teardown.",
          partitions.size());
 
   for (std::list<uint64_t>::iterator iter = partitions.begin();

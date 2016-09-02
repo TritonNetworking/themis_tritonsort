@@ -7,7 +7,7 @@ from plumbum import BG, local
 
 from conf_utils import read_conf_file
 
-mkfsxfs = local["mkfs.xfs"]
+mkfsext4 = local["mkfs.ext4"]
 
 def mount_disks(format_disks, mountpoint, partitions):
     # Get comma delimited list of devices
@@ -40,7 +40,7 @@ def mount_disks(format_disks, mountpoint, partitions):
 
         # Format device
         if format_disks:
-            if not partitions:
+            if not partitions and "by-id" not in device:
                 print "Creating new partition for %s" % device
                 (sudo[fdisk[device]] << "d\nn\np\n1\n\n\nw")()
 
@@ -48,15 +48,20 @@ def mount_disks(format_disks, mountpoint, partitions):
                 # usable...
                 time.sleep(2)
 
-            print "Creating xfs file system"
-            if not partitions:
+            print "Creating ext4 file system"
+            if not partitions and "by-id" not in device:
                 # Use partition 1 on the device
                 partition = "%s1" % device
             else:
                 # The device itself is a partition
                 partition = device
 
-            mkfs_commands.append(sudo[mkfsxfs]["-f"][partition] & BG)
+            # Persistent devices can use fast formatting
+            if "persist" in device:
+                extra_opt = "lazy_itable_init=0,lazy_journal_init=0,discard"
+                mkfs_commands.append(sudo[mkfsext4]["-F"]["-E"][extra_opt][partition] & BG)
+            else:
+                mkfs_commands.append(sudo[mkfsext4]["-F"][partition] & BG)
 
     for command in mkfs_commands:
         command.wait()
@@ -66,24 +71,29 @@ def mount_disks(format_disks, mountpoint, partitions):
 
     # Now mount all devices
     disk_index = 0
+    persist_disk_index = 0
     for device in devices:
         # Setup mount point
-        disk_mountpoint = os.path.join(mountpoint, "disk_%d" % disk_index)
+        disk_basename = "disk_persist_%d" % persist_disk_index if "persist" in device else "disk_%d" % disk_index
+        disk_mountpoint = os.path.join(mountpoint, disk_basename)
         print "Mounting %s at %s" % (device, disk_mountpoint)
         mkdir["-p"][disk_mountpoint]()
         sudo[chown]["%s:%s" % (username, username)][disk_mountpoint]()
 
         # Mount disk
-        if not partitions:
+        if not partitions and "by-id" not in device:
             # Use partition 1 on the device
             partition = "%s1" % device
         else:
             # The device itself is a partition
             partition = device
-        sudo[mount["-o"]["noatime,discard"][partition][disk_mountpoint]]()
+        sudo[mount["-o"]["discard,defaults,dioread_nolock,noatime"][partition][disk_mountpoint]]()
         sudo[chown]["%s:%s" % (username, username)][disk_mountpoint]()
 
-        disk_index += 1
+        if "persist" in device:
+            persist_disk_index += 1
+        else:
+            disk_index += 1
 
 def main():
     parser = argparse.ArgumentParser(
@@ -96,7 +106,7 @@ def main():
         "--mountpoint", default=disk_mountpoint,
         help="Mount point for disks. Default %(default)s")
     parser.add_argument(
-        "--format_disks", action="store_true", help="Format disks with XFS")
+        "--format_disks", action="store_true", help="Format disks")
     parser.add_argument(
         "--partitions", action="store_true", help="If true, assume that the "
         "devices listed in node.conf are partitions and don't run fdisk.")

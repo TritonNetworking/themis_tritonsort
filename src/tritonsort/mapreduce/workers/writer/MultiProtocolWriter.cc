@@ -30,7 +30,7 @@ MultiProtocolWriter::~MultiProtocolWriter() {
 void MultiProtocolWriter::run(KVPairBuffer* buffer) {
   const std::set<uint64_t>& jobIDs = buffer->getJobIDs();
 
-  ASSERT(jobIDs.size() == 1, "Expected a KVPairBuffer arriving at a writer to "
+  TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected a KVPairBuffer arriving at a writer to "
          "only have one job ID; this one had %llu", jobIDs.size());
 
   uint64_t jobID = *(jobIDs.begin());
@@ -42,7 +42,7 @@ void MultiProtocolWriter::run(KVPairBuffer* buffer) {
   if (iter != writerMap.end()) {
     writer = iter->second;
   } else {
-    const URL& outputURL = coordinatorClient->getOutputDirectory(jobID);
+    const themis::URL& outputURL = coordinatorClient->getOutputDirectory(jobID);
 
     const std::string& scheme = outputURL.scheme();
 

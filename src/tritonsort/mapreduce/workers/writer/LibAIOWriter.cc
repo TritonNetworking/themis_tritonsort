@@ -80,7 +80,7 @@ bool LibAIOWriter::issueNextWrite(KVPairBuffer* buffer) {
 
 void LibAIOWriter::waitForWritesToComplete(uint64_t numWrites) {
   uint64_t inFlightIOs = numWritesInProgress();
-  ASSERT(numWrites <= inFlightIOs,
+  TRITONSORT_ASSERT(numWrites <= inFlightIOs,
          "Blocking until %llu IOs complete but there are only %llu IOs",
          numWrites, inFlightIOs);
 
@@ -103,7 +103,7 @@ void LibAIOWriter::waitForWritesToComplete(uint64_t numWrites) {
 
     // Look up the buffer corresponding to this write.
     WriteMap::iterator iter = outstandingWriteBuffers.find(controlBlock);
-    ASSERT(iter != outstandingWriteBuffers.end(), "Missing write map entry.");
+    TRITONSORT_ASSERT(iter != outstandingWriteBuffers.end(), "Missing write map entry.");
     KVPairBuffer* buffer = iter->second;
 
     // Make sure the number of bytes written matches the size of write call.

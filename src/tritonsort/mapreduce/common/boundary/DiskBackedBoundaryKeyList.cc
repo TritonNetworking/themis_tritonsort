@@ -28,6 +28,7 @@ DiskBackedBoundaryKeyList* DiskBackedBoundaryKeyList::newBoundaryKeyList(
   File partitionFile(filename);
 
   BoundaryKeyInfo invalidInfo;
+  memset(&invalidInfo, 0, sizeof(BoundaryKeyInfo));
   invalidInfo.valid = false;
   invalidInfo.offset = 0;
   invalidInfo.length = 0;
@@ -157,7 +158,7 @@ void DiskBackedBoundaryKeyList::addBoundaryKey(
     BoundaryKeyInfo& previousPartitionKeyInfo =
       partitionBoundaryKeys[partitionNumber - 1];
 
-    ASSERT(previousPartitionKeyInfo.valid,"Expected partition %llu to be "
+    TRITONSORT_ASSERT(previousPartitionKeyInfo.valid,"Expected partition %llu to be "
            "valid, but it wasn't", partitionNumber - 1);
 
     fileOffset = previousPartitionKeyInfo.offset +

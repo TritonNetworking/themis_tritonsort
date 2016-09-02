@@ -27,7 +27,7 @@ ByteStreamReader::ByteStreamReader(
 void ByteStreamReader::run(ReadRequest* readRequest) {
   File file(readRequest->path);
   const std::string& filename = file.getFilename();
-  ASSERT(readRequest->jobIDs.size() > 0, "Expected read request to have at "
+  TRITONSORT_ASSERT(readRequest->jobIDs.size() > 0, "Expected read request to have at "
          "least one job ID");
 
   if (setStreamSize) {
@@ -52,7 +52,7 @@ void ByteStreamReader::run(ReadRequest* readRequest) {
 
     // Seek to the appropriate offset.
     if (readRequest->offset != 0) {
-      ASSERT(readRequest->offset <= static_cast<uint64_t>(
+      TRITONSORT_ASSERT(readRequest->offset <= static_cast<uint64_t>(
                std::numeric_limits<int64_t>::max()),
              "Can't seek more than %lld bytes into the file (wanted to seek "
              "%llu bytes)", std::numeric_limits<int64_t>::max(),

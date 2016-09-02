@@ -37,7 +37,7 @@ ReadRequest* ReadRequest::fromURL(
   uint64_t length, uint64_t diskID) {
   // URL scheme is <protocol>://<hostname>(:<port>)/<path>
 
-  URL url(urlStr);
+  themis::URL url(urlStr);
 
   const std::string& scheme = url.scheme();
 

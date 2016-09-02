@@ -4,7 +4,7 @@
 #include "core/TritonSortAssert.h"
 
 GrepMapFunction::GrepMapFunction(double grepSelectivity) {
-  ASSERT(grepSelectivity >= 0.0 && grepSelectivity <= 1.0, "grep selectivity "
+  TRITONSORT_ASSERT(grepSelectivity >= 0.0 && grepSelectivity <= 1.0, "grep selectivity "
          "must be between 0.0 and 1.0 inclusive");
 
   uint8_t maxByteValue = std::numeric_limits<uint8_t>::max();

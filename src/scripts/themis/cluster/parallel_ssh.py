@@ -11,7 +11,7 @@ import utils as themis_utils
 
 def parallel_ssh(
         redis_client, command, username, hosts, ignore_bad_hosts, master,
-        verbose=True):
+        verbose=False):
 
     pending_commands = []
     stdout_dict = {}
@@ -96,6 +96,7 @@ def parallel_ssh(
             stderr_dict[host] = ""
 
         while len(pending_commands) > 0:
+            completed_commands = []
             for host, ssh_client, channel in pending_commands:
                 # Loop until we find a command that finished.
                 if channel.exit_status_ready():
@@ -131,9 +132,10 @@ def parallel_ssh(
                                 sys.stderr.write(stderr)
 
                     ssh_client.close()
-                    pending_commands.remove((host, ssh_client, channel))
-                    break
-            time.sleep(0.1)
+                    completed_commands.append((host, ssh_client, channel))
+            for completed in completed_commands:
+                pending_commands.remove(completed)
+            time.sleep(1)
 
         pending_commands = []
 

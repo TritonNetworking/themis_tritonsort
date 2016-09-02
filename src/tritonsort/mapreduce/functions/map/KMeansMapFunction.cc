@@ -19,14 +19,14 @@ void KMeansMapFunction::init(const Params& params) {
   std::string line;
   uint64_t lineno = 0;
   while(getline(ifs, line)){
-    ASSERT(lineno < k, "Invalid k-centers param file");
+    TRITONSORT_ASSERT(lineno < k, "Invalid k-centers param file");
     std::istringstream iss(line);
     std::vector<std::string> tokens;
     copy(std::istream_iterator<std::string>(iss),
         std::istream_iterator<std::string>(),
         std::back_inserter<std::vector<std::string> > (tokens));
 
-    ASSERT(dimension == tokens.size() - 2, "Mismatch in k-centers param file");
+    TRITONSORT_ASSERT(dimension == tokens.size() - 2, "Mismatch in k-centers param file");
     kCenters[lineno][0] = atol(tokens.at(1).c_str());
     for(uint64_t i = 0; i < dimension; i++){
       kCenters[lineno][i + 1] = atol(tokens.at(i + 2).c_str());

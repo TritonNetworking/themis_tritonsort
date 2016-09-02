@@ -72,7 +72,7 @@ void TritonSortAssertions::_ABORT_IF(const char* file, int line,
   }
 }
 
-void TritonSortAssertions::_ASSERT(
+void TritonSortAssertions::_TRITONSORT_ASSERT(
   const char* file, int line, bool condition) {
 
   if (!condition) {
@@ -89,7 +89,7 @@ void TritonSortAssertions::_ASSERT(
   }
 }
 
-void TritonSortAssertions::_ASSERT(
+void TritonSortAssertions::_TRITONSORT_ASSERT(
   const char* file, int line, bool condition, const char* format ...) {
 
   va_list ap;

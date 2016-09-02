@@ -14,7 +14,7 @@ uint64_t RandomNodePartitionFunction::globalPartition(
 
 uint64_t RandomNodePartitionFunction::localPartition(
   const uint8_t* key, uint32_t keyLength, uint64_t partitionGroup) const {
-  ASSERT(partitionGroup == 0, "Somehow ended up with non-zero partition group "
+  TRITONSORT_ASSERT(partitionGroup == 0, "Somehow ended up with non-zero partition group "
          "%llu, for random node", partitionGroup);
   return 0;
 }

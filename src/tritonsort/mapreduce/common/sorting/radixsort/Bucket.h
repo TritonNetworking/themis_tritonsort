@@ -43,8 +43,8 @@ public:
      \param entry the memory location of the entry to write
    */
   inline void writeEntry(uint8_t* entry) {
-    ASSERT(entry != NULL, "Cannot write NULL entry to bucket");
-    ASSERT(writePointer + entrySize <= endPointer,
+    TRITONSORT_ASSERT(entry != NULL, "Cannot write NULL entry to bucket");
+    TRITONSORT_ASSERT(writePointer + entrySize <= endPointer,
            "Cannot write to full bucket");
     // Copy the entry to this bucket's buffer and advance the write pointer
     writePointer = reinterpret_cast<uint8_t*>(
@@ -65,9 +65,9 @@ public:
    */
   inline void writeEntryFromBuffer(uint8_t* keyPointer, uint32_t keyLength,
                                    uint64_t offset) {
-    ASSERT(writePointer + entrySize <= endPointer,
+    TRITONSORT_ASSERT(writePointer + entrySize <= endPointer,
            "Cannot write to full bucket");
-    ASSERT(keyLength <= maxKeySize, "Cannot write entry with key size %llu "
+    TRITONSORT_ASSERT(keyLength <= maxKeySize, "Cannot write entry with key size %llu "
            "larger than max key size %llu", keyLength, maxKeySize);
 
     // Write the key

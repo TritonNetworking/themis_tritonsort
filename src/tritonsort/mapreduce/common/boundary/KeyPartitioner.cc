@@ -43,7 +43,7 @@ KeyPartitioner::KeyPartitioner(
   }
 
   // Verify we have the correct number of partitions in the buffer.
-  ASSERT(partition == numPartitions,
+  TRITONSORT_ASSERT(partition == numPartitions,
          "Partition Boundary buffer has %llu partitions, but we are expecting "
          "%llu partitions", partition, numPartitions);
 
@@ -119,7 +119,7 @@ uint64_t KeyPartitioner::globalPartition(
 
 uint64_t KeyPartitioner::localPartition(
   const uint8_t* key, uint32_t keyLength, uint64_t partitionGroup) const {
-  ASSERT(partitionGroup < localKeyLists.size(),
+  TRITONSORT_ASSERT(partitionGroup < localKeyLists.size(),
          "Tried to compute local partition for group %llu, but only %llu "
          "groups (demuxes) per node.", partitionGroup, localKeyLists.size());
 

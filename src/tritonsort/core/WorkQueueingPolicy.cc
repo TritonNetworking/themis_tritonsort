@@ -12,14 +12,14 @@ WorkQueueingPolicy::~WorkQueueingPolicy() {
   uint64_t queueID = 0;
   for (WorkQueueVector::iterator iter = workQueues.begin();
        iter != workQueues.end(); iter++, queueID++) {
-    ASSERT(iter->empty(), "At tracker destruction time, queue %llu still has "
+    TRITONSORT_ASSERT(iter->empty(), "At tracker destruction time, queue %llu still has "
            "%llu work units.", queueID, iter->size());
   }
   workQueues.endThreadSafeIterate();
 }
 
 void WorkQueueingPolicy::enqueue(Resource* workUnit) {
-  ASSERT(workUnit != NULL, "Cannot enqueue NULL work unit. If you're trying to "
+  TRITONSORT_ASSERT(workUnit != NULL, "Cannot enqueue NULL work unit. If you're trying to "
          "tear down a queue, call teardown() instead");
   uint64_t queueID = getEnqueueID(workUnit);
   workQueues[queueID].push(workUnit);

@@ -98,7 +98,7 @@ void Chainer::teardown() {
         }
         continue;
       }
-      ASSERT(list != NULL);
+      TRITONSORT_ASSERT(list != NULL);
 
       writeListToBuffer(bufferTable, list, lblContainer);
       emitWorkUnit(lblContainer);
@@ -141,7 +141,7 @@ void Chainer::run(WorkQueue& workQueue) {
         workQueue.pop();
 
         const std::set<uint64_t>& jobIDs = workUnit->getJobIDs();
-        ASSERT(jobIDs.size() == 1, "Expected this buffer to have exactly one "
+        TRITONSORT_ASSERT(jobIDs.size() == 1, "Expected this buffer to have exactly one "
                "job ID");
 
         uint64_t currentJobID = *(jobIDs.begin());
@@ -183,7 +183,7 @@ void Chainer::run(WorkQueue& workQueue) {
 
         pthread_rwlock_unlock(&bufferTablesLock);
 
-        ASSERT(bufferTable != NULL, "Should have assigned buffer table at this "
+        TRITONSORT_ASSERT(bufferTable != NULL, "Should have assigned buffer table at this "
                "point");
 
         bufferTable->insert(workUnit);
@@ -261,7 +261,7 @@ void Chainer::writeFullLists(
 
       BufferList<ListableKVPairBuffer>* list =
         bufferTable->getLargestListForDisk(diskID);
-      ASSERT(list != NULL);
+      TRITONSORT_ASSERT(list != NULL);
       writeListToBuffer(bufferTable, list, lblContainer);
       emitWorkUnit(lblContainer);
     } else {

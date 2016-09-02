@@ -42,7 +42,7 @@ public:
   JobInfo* getJobInfo(uint64_t jobID);
 
   /// \sa CoordinatorClientInterface::getOutputDirectory
-  const URL& getOutputDirectory(uint64_t jobID);
+  const themis::URL& getOutputDirectory(uint64_t jobID);
 
   RecoveryInfo* getRecoveryInfo(uint64_t jobID);
 
@@ -65,7 +65,7 @@ public:
   uint64_t getNumPartitions(uint64_t jobID);
 
 private:
-  typedef std::map<uint64_t, URL> OutputDirectoryMap;
+  typedef std::map<uint64_t, themis::URL> OutputDirectoryMap;
 
   ReadRequest* parseReadRequest(redisReply& reply, bool& halt);
 

@@ -50,7 +50,7 @@ JobInfo* DebugCoordinatorClient::getJobInfo(uint64_t jobID) {
   return jobInfo;
 }
 
-const URL& DebugCoordinatorClient::getOutputDirectory(uint64_t jobID) {
+const themis::URL& DebugCoordinatorClient::getOutputDirectory(uint64_t jobID) {
   return outputDirectory;
 }
 

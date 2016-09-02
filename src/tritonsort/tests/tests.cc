@@ -47,6 +47,7 @@ int main(int argc, char** argv) {
   } else {
     std::string defaultTestWriteLoc("/tmp/themis_tests");
     TEST_WRITE_ROOT = defaultTestWriteLoc.c_str();
+    mkdir(TEST_WRITE_ROOT, 0777);
   }
 
   char command[2550];

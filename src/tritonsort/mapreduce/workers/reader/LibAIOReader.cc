@@ -81,7 +81,7 @@ bool LibAIOReader::issueNextRead(const uint8_t* buffer) {
 
 void LibAIOReader::waitForReadsToComplete(uint64_t numReads) {
   uint64_t inFlightIOs = numReadsInProgress();
-  ASSERT(numReads <= inFlightIOs,
+  TRITONSORT_ASSERT(numReads <= inFlightIOs,
          "Blocking until %llu IOs complete but there are only %llu IOs",
          numReads, inFlightIOs);
 
@@ -105,7 +105,7 @@ void LibAIOReader::waitForReadsToComplete(uint64_t numReads) {
 
     // Look up the buffer corresponding to this read.
     BufferMap::iterator iter = outstandingReadBuffers.find(controlBlock);
-    ASSERT(iter != outstandingReadBuffers.end(), "Missing read map entry.");
+    TRITONSORT_ASSERT(iter != outstandingReadBuffers.end(), "Missing read map entry.");
     const uint8_t* buffer = iter->second;
 
     // Make sure the number of bytes read matches the size of read call.

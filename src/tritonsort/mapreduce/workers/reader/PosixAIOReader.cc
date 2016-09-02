@@ -75,7 +75,7 @@ bool PosixAIOReader::issueNextRead(const uint8_t* buffer) {
         break;
       }
     }
-    ASSERT(i < asynchronousIODepth,
+    TRITONSORT_ASSERT(i < asynchronousIODepth,
            "Could not find a free slot in the aiocb list.");
     return true;
   }
@@ -85,7 +85,7 @@ bool PosixAIOReader::issueNextRead(const uint8_t* buffer) {
 }
 
 void PosixAIOReader::waitForReadsToComplete(uint64_t numReads) {
-  ASSERT(numReads <= numReadsInProgress(),
+  TRITONSORT_ASSERT(numReads <= numReadsInProgress(),
          "Blocking until %llu IOs complete but there are only %llu IOs",
          numReads, numReadsInProgress());
   uint64_t completedReads = 0;
@@ -124,7 +124,7 @@ void PosixAIOReader::waitForReadsToComplete(uint64_t numReads) {
             break;
           }
         }
-        ASSERT(i < asynchronousIODepth, "Could not find the control block "
+        TRITONSORT_ASSERT(i < asynchronousIODepth, "Could not find the control block "
                "associated with a completed read in the aiocb list.");
 
         delete controlBlock;

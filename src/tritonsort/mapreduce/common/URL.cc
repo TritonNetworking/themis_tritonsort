@@ -3,6 +3,8 @@
 #include "core/TritonSortAssert.h"
 #include "mapreduce/common/URL.h"
 
+namespace themis {
+
 URL::URL(const std::string& url)
   : _fullURL(url) {
   // URL scheme is <scheme>://<hostname>(:<port>)/<path>
@@ -57,3 +59,5 @@ const std::string& URL::path() const {
 const std::string& URL::fullURL() const {
   return _fullURL;
 }
+
+}  // namespace themis

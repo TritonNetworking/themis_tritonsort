@@ -107,7 +107,7 @@ void BaseBuffer::stealMemory(BaseBuffer& otherBuffer) {
 }
 
 void BaseBuffer::seekForward(uint64_t offset) {
-  ASSERT(offset <= capacity,
+  TRITONSORT_ASSERT(offset <= capacity,
          "Tried to seek forward %llu bytes, but capacity is %llu", offset,
          capacity);
   buffer += offset;
@@ -116,7 +116,7 @@ void BaseBuffer::seekForward(uint64_t offset) {
 }
 
 void BaseBuffer::seekBackward(uint64_t offset) {
-  ASSERT(capacity + offset <= maximumCapacity,
+  TRITONSORT_ASSERT(capacity + offset <= maximumCapacity,
          "Tried to seek backward %llu bytes, but this would put us before the "
          "start of the buffer by %llu bytes", offset,
          capacity + offset - maximumCapacity);
@@ -126,11 +126,11 @@ void BaseBuffer::seekBackward(uint64_t offset) {
 }
 
 const uint8_t* BaseBuffer::setupAppend(uint64_t maximumAppendLength) {
-  ASSERT(currentSize + maximumAppendLength <= capacity, "The append you're "
+  TRITONSORT_ASSERT(currentSize + maximumAppendLength <= capacity, "The append you're "
          "about to do could append off the end of the buffer. You want %llu "
          "bytes and the buffer has %llu left (%llu / %llu)",
          maximumAppendLength, capacity - currentSize, currentSize, capacity);
-  ASSERT(pendingAppendPtr == NULL, "Tried to do an append while another append "
+  TRITONSORT_ASSERT(pendingAppendPtr == NULL, "Tried to do an append while another append "
          "was outstanding");
 
   pendingAppendPtr = buffer + currentSize;
@@ -140,9 +140,9 @@ const uint8_t* BaseBuffer::setupAppend(uint64_t maximumAppendLength) {
 }
 
 void BaseBuffer::commitAppend(const uint8_t* ptr, uint64_t actualAppendLength) {
-  ASSERT(ptr == pendingAppendPtr, "Tried to commit an append using a different "
+  TRITONSORT_ASSERT(ptr == pendingAppendPtr, "Tried to commit an append using a different "
          "pointer than the one used to setup the append");
-  ASSERT(actualAppendLength <= pendingAppendLength, "Appended more data to the "
+  TRITONSORT_ASSERT(actualAppendLength <= pendingAppendLength, "Appended more data to the "
          "buffer than you promised you would.");
   currentSize += actualAppendLength;
   pendingAppendPtr = NULL;
@@ -163,7 +163,7 @@ uint64_t BaseBuffer::getCurrentSize() const {
 }
 
 void BaseBuffer::setCurrentSize(uint64_t size) {
-  ASSERT(size <= capacity, "Can't set size to be bigger than the capacity of "
+  TRITONSORT_ASSERT(size <= capacity, "Can't set size to be bigger than the capacity of "
          "the buffer");
   currentSize = size;
 }

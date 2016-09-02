@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 
+namespace themis {
 /**
    This class parses a URL string into its component parts, making it easy to
    access pieces of a URL
@@ -43,6 +44,8 @@ private:
 
   std::string _fullURL;
 };
+
+}  // namespace themis
 
 
 #endif // THEMIS_COMMON_URL_H

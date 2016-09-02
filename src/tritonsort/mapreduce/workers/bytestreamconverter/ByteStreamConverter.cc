@@ -19,7 +19,7 @@ ByteStreamConverter::ByteStreamConverter(
 }
 
 void ByteStreamConverter::teardown() {
-  ASSERT(formatReaders.empty(),
+  TRITONSORT_ASSERT(formatReaders.empty(),
          "%llu streams were open during teardown.", formatReaders.size());
 }
 

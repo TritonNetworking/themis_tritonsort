@@ -18,7 +18,7 @@ void NGramMapFunction::map(
   uint32_t nGramLengths[nGramSize];
 
   memset(nGramStartIndices, 0, sizeof(uint64_t) * nGramSize);
-  memset(nGramLengths, 0, sizeof(uint64_t) * nGramSize);
+  memset(nGramLengths, 0, sizeof(uint32_t) * nGramSize);
 
   uint64_t words = 0;
 

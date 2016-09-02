@@ -75,7 +75,7 @@ private:
                errno, strerror(errno));
       // Since status == 0 only when timeouts expire, it ought to be safe for
       // to make this an assert rather than an abort.
-      ASSERT(status != 0, "Unexpected select() return code 0: no data "
+      TRITONSORT_ASSERT(status != 0, "Unexpected select() return code 0: no data "
              "available despite no timeout having been set");
 
       // Read from each available socket

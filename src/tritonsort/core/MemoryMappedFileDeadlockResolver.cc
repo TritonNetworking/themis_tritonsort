@@ -38,7 +38,7 @@ MemoryMappedFileDeadlockResolver::~MemoryMappedFileDeadlockResolver() {
   ResourceMonitor::unregisterClient(this);
   IntervalStatLogger::unregisterClient(this);
 
-  ASSERT(memoryMappedFiles.empty(),
+  TRITONSORT_ASSERT(memoryMappedFiles.empty(),
          "There should be no more memory mapped files at destruction time.");
   // Free disk list.
   for (SortedDiskList::iterator iter = disks.begin(); iter != disks.end();
@@ -87,7 +87,7 @@ void* MemoryMappedFileDeadlockResolver::resolveRequest(uint64_t size) {
   file->open(File::READ_WRITE, true);
   file->preallocate(size);
   uint64_t fileSize = file->getCurrentSize();
-  ASSERT(fileSize == size,
+  TRITONSORT_ASSERT(fileSize == size,
          "Tried to preallocate %llu bytes but file is only %llu bytes.",
          size, fileSize);
 

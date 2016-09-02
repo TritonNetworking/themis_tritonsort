@@ -103,7 +103,7 @@ void IntervalStatLogger::teardown() {
       return;
     }
 
-    ASSERT(spawned, "Can't teardown an interval stat logger that hasn't been "
+    TRITONSORT_ASSERT(spawned, "Can't teardown an interval stat logger that hasn't been "
            "spawned");
     stop = true;
     initialized = false;

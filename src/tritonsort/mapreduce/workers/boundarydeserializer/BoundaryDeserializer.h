@@ -62,7 +62,8 @@ private:
   const uint64_t numPartitionGroups;
 
   uint64_t coalescedBufferSize;
-  std::queue<KVPairBuffer*> buffers;
+  typedef std::vector<std::queue<KVPairBuffer*> > BufferVector;
+  BufferVector buffers;
 
   KVPairBufferFactory bufferFactory;
 

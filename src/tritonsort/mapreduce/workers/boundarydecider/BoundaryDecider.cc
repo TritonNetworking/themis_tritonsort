@@ -6,9 +6,8 @@
 BoundaryDecider::BoundaryDecider(
   uint64_t id, const std::string& stageName,
   MemoryAllocatorInterface& memoryAllocator, uint64_t defaultBufferSize,
-  uint64_t alignmentSize, uint64_t _numNodes, bool _isCoordinatorNode)
+  uint64_t alignmentSize, uint64_t _numNodes)
   : MultiQueueRunnable(id, stageName),
-    isCoordinatorNode(_isCoordinatorNode),
     numNodes(_numNodes),
     jobID(0),
     bufferFactory(*this, memoryAllocator, defaultBufferSize, alignmentSize),
@@ -21,11 +20,6 @@ BoundaryDecider::BoundaryDecider(
 }
 
 void BoundaryDecider::run() {
-  if (!isCoordinatorNode) {
-    // This node isn't the coordinator.
-    return;
-  }
-
   // Make sure we get boundary buffers from all peers before beginning.
   startWaitForWorkTimer();
   uint64_t peerID = 0;
@@ -168,13 +162,8 @@ BaseWorker* BoundaryDecider::newInstance(
 
   uint64_t numNodes = params.get<uint64_t>("NUM_PEERS");
 
-  uint64_t coordinatorNodeID = params.get<uint64_t>("MERGE_NODE_ID");
-  bool isCoordinatorNode = (
-    params.get<uint64_t>("MYPEERID") == coordinatorNodeID);
-
   BoundaryDecider* decider = new BoundaryDecider(
-    id, stageName, memoryAllocator, defaultBufferSize, alignmentSize, numNodes,
-    isCoordinatorNode);
+    id, stageName, memoryAllocator, defaultBufferSize, alignmentSize, numNodes);
 
   return decider;
 }

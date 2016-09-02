@@ -3,6 +3,7 @@
 import argparse, ConfigParser, json, os, plumbum, string, sys,\
     tempfile, redis, getpass
 from plumbum.cmd import gcloud, gsutil
+from plumbum import BG
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 CLOUD_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
@@ -16,8 +17,8 @@ sys.path.append(os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir)))
 import utils
 
 def run_instances(
-        instance_type, num_instances, local_ssds, image, network, zone,
-        cluster_name, node_type, bucket, project, cluster_ID):
+        instance_type, num_instances, local_ssds, persistent_ssds, image,
+        network, zone, cluster_name, node_type, bucket, project, cluster_ID):
     userdata = {}
     userdata["cluster_ID"] = cluster_ID
     userdata["cluster_name"] = cluster_name
@@ -25,13 +26,14 @@ def run_instances(
     userdata["bucket"] = bucket
 
     local_ssds = int(local_ssds)
+    persistent_ssds = int(persistent_ssds) if persistent_ssds else 0
     assert local_ssds in xrange(5), "Must specify 0-4 local SSDs per node"
     devices = []
-    # nvme devices come up preformatted as /dev/nvme0nX where X is the index
-    # of the device starting at 1. However the NVME debian image appears buggy,
-    # so launch SSDs as SCSI devices, which come up as /dev/sdb and onward.
-    for l in string.lowercase[1:(local_ssds + 1)]:
-        devices.append("/dev/sd%s" % (l))
+    # devices come up preformatted as /dev/disk/by-id/google-local-ssd-X
+    for i in range(local_ssds):
+        devices.append("/dev/disk/by-id/google-local-ssd-%d" % (i))
+    for i in range(persistent_ssds):
+        devices.append("/dev/disk/by-id/google-themis-persistent-disk-%d" % i)
     userdata["devices"] = ",".join(devices)
 
     cmd = gcloud["compute"]["--project"][project]["instances"]["create"]
@@ -40,22 +42,42 @@ def run_instances(
 
     cmd = cmd["--zone"][zone]["--machine-type"][instance_type]\
           ["--network"][network]\
-          ["--metadata"]["userdata=%s" % json.dumps(userdata)]\
-          ["--scopes"]["https://www.googleapis.com/auth/compute"]\
-          ["https://www.googleapis.com/auth/devstorage.full_control"]\
+          ["--scopes"]["https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/devstorage.full_control"]\
+          ["--metadata"]["^;^userdata=%s" % json.dumps(userdata)]\
           ["--image"]\
           ["https://www.googleapis.com/compute/v1/projects/%s/global/images/%s"\
            % (project, image)]
 
     for i in xrange(local_ssds):
-        # As noted above, launch with 'SCSI' interface instead of 'nvme'
-        # interface
-        cmd = cmd["--local-ssd"]["interface=SCSI"]
+        cmd = cmd["--local-ssd"]["interface=nvme"]
 
     cmd()
 
+    # If there's any persistent disks, add them now.
+    if persistent_ssds:
+        make_disk_cmd = gcloud["compute"]["--project"][project]["disks"]["create"]
+        for i in xrange(num_instances):
+            for s in xrange(persistent_ssds):
+                persistent_disk = "cluster-%d-%s-%d-disk-%d" % (cluster_ID, node_type, i, s)
+                make_disk_cmd = make_disk_cmd[persistent_disk]
+        make_disk_cmd = make_disk_cmd["--size"]["750"]["--type"]["pd-ssd"]["--zone"][zone]
+        make_disk_cmd()
+
+        pending_add_cmds = []
+        add_disk_cmd_base = gcloud["compute"]["instances"]["attach-disk"]["--zone"][zone]
+        for i in xrange(num_instances):
+            for s in xrange(persistent_ssds):
+                instance = "cluster-%d-%s-%d" % (cluster_ID, node_type, i)
+                persistent_disk = "cluster-%d-%s-%d-disk-%d" % (cluster_ID, node_type, i, s)
+                dev_name = "themis-persistent-disk-%d" % s
+                add_disk_cmd = add_disk_cmd_base[instance]["--disk"][persistent_disk]["--device-name"][dev_name] & BG
+                pending_add_cmds.append(add_disk_cmd)
+        for pending_cmd in pending_add_cmds:
+            pending_cmd.wait()
+
+
 def launch_google_cluster(
-        cluster_name, cluster_size, instance_type, local_ssds, image,
+        cluster_name, cluster_size, instance_type, local_ssds, persistent_ssds, image,
         master_instance_type, network, zone, bucket, private_key, public_key,
         themis_config_directory, provider_info, redis_client):
     private_key = os.path.expanduser(private_key)
@@ -160,6 +182,7 @@ def launch_google_cluster(
         parser.set("google", "master_instance_type", master_instance_type)
         parser.set("google", "instance_type", instance_type)
         parser.set("google", "local_ssds", local_ssds)
+        parser.set("google", "persistent_ssds", persistent_ssds)
         parser.set("google", "bucket", bucket)
 
         parser.write(google_config_file)
@@ -190,6 +213,8 @@ def launch_google_cluster(
         "cluster:%d" % cluster_ID, "instance_type", instance_type)
     redis_client.hset(
         "cluster:%d" % cluster_ID, "local_ssds", local_ssds)
+    redis_client.hset(
+        "cluster:%d" % cluster_ID, "persistent_ssds", persistent_ssds)
     redis_client.hset(
         "cluster:%d" % cluster_ID, "cluster_size", "%d" % cluster_size)
     redis_client.hset(
@@ -224,14 +249,15 @@ def launch_google_cluster(
     # Launch master node.
     print "Launching master node..."
     run_instances(
-        master_instance_type, 1, 0, image, network, zone, cluster_name,
+        master_instance_type, 1, 0, 0, image, network, zone, cluster_name,
         "master", bucket, provider_info["project"], cluster_ID)
 
     # Launch slave nodes.
     print "Launching %d slave nodes..." % cluster_size
     run_instances(
-        instance_type, cluster_size, local_ssds, image, network, zone,
-        cluster_name, "slave", bucket, provider_info["project"], cluster_ID)
+        instance_type, cluster_size, local_ssds, persistent_ssds, image,
+        network, zone, cluster_name, "slave", bucket, provider_info["project"],
+        cluster_ID)
 
     return 0
 
@@ -248,6 +274,8 @@ def main():
         "instance_type", help="VM instance type of the worker nodes")
     parser.add_argument(
         "local_ssds", help="Number of local SSDs to add to each node", type=int)
+    parser.add_argument(
+        "persistent_ssds", help="Number of persistent SSDs to add to each node", type=int)
     parser.add_argument("image", help="Google Cloud Compute Engine VM Image")
     parser.add_argument(
         "master_instance_type", help="VM instance type of the master node")
@@ -274,8 +302,8 @@ def main():
 
     return launch_google_cluster(
         args.cluster_name, args.cluster_size, args.instance_type,
-        args.local_ssds, args.image, args.master_instance_type, args.network,
-        args.zone, args.bucket, args.private_key, args.public_key,
+        args.local_ssds, args.persistent_ssds, args.image, args.master_instance_type,
+        args.network, args.zone, args.bucket, args.private_key, args.public_key,
         args.themis_config_directory, provider_info, redis_client)
 
 if __name__ == "__main__":

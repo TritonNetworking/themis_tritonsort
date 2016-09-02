@@ -66,54 +66,27 @@ PhaseZeroOutputData* executePhaseZero(
     CoordinatorClientFactory::newCoordinatorClient(*params, phaseName, "", 0);
   coordinatorClient->waitOnBarrier("phase_start");
 
-  // Configure network connections:
-  // Most nodes don't receive coordinator connections.
-  uint64_t numCoordinatorConnections = 0;
-
-  bool thisNodeIsTheMerger = params->get<uint64_t>("MYPEERID") ==
-    params->get<uint64_t>("MERGE_NODE_ID");
-
-  if (thisNodeIsTheMerger) {
-    // The coordinator receives coordinator connections from all peers.
-    numCoordinatorConnections = peers.size();
-  }
-
-  // Coordinators send to node 0.
-  IPList coordinatorSenderPeers;
-  coordinatorSenderPeers.assign(peers.begin(), peers.begin() + 1);
-
-  // All nodes receive broadcast connections from the coordinator.
-  uint64_t numBroadcastConnections = 1;
-
-  // Most nodes don't send broadcast connections to anyone.
-  IPList broadcastSenderPeers;
-
-  if (thisNodeIsTheMerger) {
-    // The coordinator sends broadcast connections to all peers.
-    broadcastSenderPeers.assign(peers.begin(), peers.end());
-  }
-
-  // Open TCP sockets for coordinator and broadcast connections.
-  SocketArray coordinatorSenderSockets;
-  SocketArray coordinatorReceiverSockets;
-  openAllSockets(
-    params->get<std::string>("COORDINATOR_PORT"), numCoordinatorConnections,
-    *params, phaseName, "coordinator_sender", coordinatorSenderPeers, peers,
-    coordinatorSenderSockets, coordinatorReceiverSockets);
-
-  SocketArray broadcastSenderSockets;
-  SocketArray broadcastReceiverSockets;
-  openAllSockets(
-    params->get<std::string>("RECEIVER_PORT"), numBroadcastConnections,
-    *params, phaseName, "broadcast_sender", broadcastSenderPeers, peers,
-    broadcastSenderSockets, broadcastReceiverSockets);
-
+  // Open TCP sockets.
   SocketArray shuffleSenderSockets;
   SocketArray shuffleReceiverSockets;
   openAllSockets(
     params->get<std::string>("SHUFFLE_PORT"), peers.size(), *params,
     phaseName, "shuffle_sender", peers, peers, shuffleSenderSockets,
     shuffleReceiverSockets);
+
+  SocketArray scannerSenderSockets;
+  SocketArray scannerReceiverSockets;
+  openAllSockets(
+    params->get<std::string>("SCANNER_PORT"), peers.size(), *params,
+    phaseName, "scanner_sender", peers, peers, scannerSenderSockets,
+    scannerReceiverSockets);
+
+  SocketArray deciderSenderSockets;
+  SocketArray deciderReceiverSockets;
+  openAllSockets(
+    params->get<std::string>("DECIDER_PORT"), peers.size(), *params,
+    phaseName, "decider_sender", peers, peers, deciderSenderSockets,
+    deciderReceiverSockets);
 
   // Block until all nodes have connected TCP sockets.
   coordinatorClient->waitOnBarrier("sockets_connected");
@@ -144,19 +117,19 @@ PhaseZeroOutputData* executePhaseZero(
     *params, phaseName, "sorter", &queueingPolicyFactory);
   QuotaEnforcingWorkerTracker boundaryScannerTracker(
     *params, phaseName, "boundary_scanner", &queueingPolicyFactory);
-  QuotaEnforcingWorkerTracker coordinatorSenderTracker(
-    *params, phaseName, "coordinator_sender", &queueingPolicyFactory);
+  QuotaEnforcingWorkerTracker scannerSenderTracker(
+    *params, phaseName, "scanner_sender", &queueingPolicyFactory);
 
 
-  WorkerTracker coordinatorReceiverTracker(
-    *params, phaseName, "coordinator_receiver", &queueingPolicyFactory);
+  WorkerTracker scannerReceiverTracker(
+    *params, phaseName, "scanner_receiver", &queueingPolicyFactory);
   QuotaEnforcingWorkerTracker boundaryDeciderTracker(
     *params, phaseName, "boundary_decider", &queueingPolicyFactory);
-  QuotaEnforcingWorkerTracker broadcastSenderTracker(
-    *params, phaseName, "broadcast_sender", &queueingPolicyFactory);
+  QuotaEnforcingWorkerTracker deciderSenderTracker(
+    *params, phaseName, "decider_sender", &queueingPolicyFactory);
 
-  WorkerTracker broadcastReceiverTracker(
-    *params, phaseName, "broadcast_receiver", &queueingPolicyFactory);
+  WorkerTracker deciderReceiverTracker(
+    *params, phaseName, "decider_receiver", &queueingPolicyFactory);
   WorkerTracker boundaryDeserializerTracker(
     *params, phaseName, "boundary_deserializer", &queueingPolicyFactory);
   WorkerTracker boundaryHolderTracker(
@@ -176,11 +149,11 @@ PhaseZeroOutputData* executePhaseZero(
   MemoryQuota sorterQuota(
     "sorter_quota", params->get<uint64_t>("MEMORY_QUOTAS.phase_zero.sorter"));
   MemoryQuota boundaryScannerQuota(
-    "boundary_scanner_quota",
+    "scanner_quota",
     params->get<uint64_t>("MEMORY_QUOTAS.phase_zero.boundary_scanner"));
-  MemoryQuota coordinatorReceiverQuota(
-    "coordinator_receiver_quota",
-    params->get<uint64_t>("MEMORY_QUOTAS.phase_zero.coordinator_receiver"));
+  MemoryQuota scannerReceiverQuota(
+    "scanner_receiver_quota",
+    params->get<uint64_t>("MEMORY_QUOTAS.phase_zero.scanner_receiver"));
   MemoryQuota boundaryDeciderQuota(
     "boundary_decider_quota",
     params->get<uint64_t>("MEMORY_QUOTAS.phase_zero.boundary_decider"));
@@ -195,12 +168,12 @@ PhaseZeroOutputData* executePhaseZero(
   bufferCombinerTracker.addConsumerQuota(shuffleReceiverQuota);
   boundaryScannerTracker.addProducerQuota(sorterQuota);
   boundaryScannerTracker.addConsumerQuota(sorterQuota);
-  coordinatorSenderTracker.addProducerQuota(boundaryScannerQuota);
-  coordinatorSenderTracker.addConsumerQuota(boundaryScannerQuota);
-  boundaryDeciderTracker.addProducerQuota(coordinatorReceiverQuota);
-  boundaryDeciderTracker.addConsumerQuota(coordinatorReceiverQuota);
-  broadcastSenderTracker.addProducerQuota(boundaryDeciderQuota);
-  broadcastSenderTracker.addConsumerQuota(boundaryDeciderQuota);
+  scannerSenderTracker.addProducerQuota(boundaryScannerQuota);
+  scannerSenderTracker.addConsumerQuota(boundaryScannerQuota);
+  boundaryDeciderTracker.addProducerQuota(scannerReceiverQuota);
+  boundaryDeciderTracker.addConsumerQuota(scannerReceiverQuota);
+  deciderSenderTracker.addProducerQuota(boundaryDeciderQuota);
+  deciderSenderTracker.addConsumerQuota(boundaryDeciderQuota);
 
   TrackerSet phaseZeroTrackers;
   phaseZeroTrackers.addTracker(&readerTracker, true);
@@ -213,10 +186,10 @@ PhaseZeroOutputData* executePhaseZero(
   phaseZeroTrackers.addTracker(&mapperTracker);
   phaseZeroTrackers.addTracker(&sorterTracker);
   phaseZeroTrackers.addTracker(&boundaryScannerTracker);
-  phaseZeroTrackers.addTracker(&coordinatorSenderTracker);
-  phaseZeroTrackers.addTracker(&broadcastSenderTracker);
-  phaseZeroTrackers.addTracker(&broadcastReceiverTracker, true);
-  phaseZeroTrackers.addTracker(&coordinatorReceiverTracker, true);
+  phaseZeroTrackers.addTracker(&scannerSenderTracker);
+  phaseZeroTrackers.addTracker(&deciderSenderTracker);
+  phaseZeroTrackers.addTracker(&deciderReceiverTracker, true);
+  phaseZeroTrackers.addTracker(&scannerReceiverTracker, true);
   phaseZeroTrackers.addTracker(&boundaryDeciderTracker);
   phaseZeroTrackers.addTracker(&boundaryDeserializerTracker);
   phaseZeroTrackers.addTracker(&boundaryHolderTracker);
@@ -231,12 +204,12 @@ PhaseZeroOutputData* executePhaseZero(
   bufferCombinerTracker.addDownstreamTracker(&mapperTracker);
   mapperTracker.addDownstreamTracker(&sorterTracker);
   sorterTracker.addDownstreamTracker(&boundaryScannerTracker);
-  boundaryScannerTracker.addDownstreamTracker(&coordinatorSenderTracker);
-  coordinatorReceiverTracker.isSourceTracker();
-  coordinatorReceiverTracker.addDownstreamTracker(&boundaryDeciderTracker);
-  broadcastReceiverTracker.isSourceTracker();
-  broadcastReceiverTracker.addDownstreamTracker(&boundaryDeserializerTracker);
-  boundaryDeciderTracker.addDownstreamTracker(&broadcastSenderTracker);
+  boundaryScannerTracker.addDownstreamTracker(&scannerSenderTracker);
+  scannerReceiverTracker.isSourceTracker();
+  scannerReceiverTracker.addDownstreamTracker(&boundaryDeciderTracker);
+  deciderReceiverTracker.isSourceTracker();
+  deciderReceiverTracker.addDownstreamTracker(&boundaryDeserializerTracker);
+  boundaryDeciderTracker.addDownstreamTracker(&deciderSenderTracker);
   boundaryDeserializerTracker.addDownstreamTracker(&boundaryHolderTracker);
 
   // Make sure the reader tracker gets its read requests.
@@ -263,13 +236,13 @@ PhaseZeroOutputData* executePhaseZero(
 
   boundaryScannerTracker.setFactory(
     &workerFactory, "mapreduce", "boundary_scanner");
-  coordinatorSenderTracker.setFactory(
+  scannerSenderTracker.setFactory(
     &workerFactory, "mapreduce", "kv_pair_buf_sender");
 
-  coordinatorReceiverTracker.setFactory(
+  scannerReceiverTracker.setFactory(
     &workerFactory, "mapreduce", "kv_pair_buf_receiver");
 
-  broadcastReceiverTracker.setFactory(
+  deciderReceiverTracker.setFactory(
     &workerFactory, "mapreduce", "kv_pair_buf_receiver");
 
   boundaryDeciderTracker.setFactory(
@@ -278,7 +251,7 @@ PhaseZeroOutputData* executePhaseZero(
   boundaryDeserializerTracker.setFactory(
     &workerFactory, "mapreduce", "boundary_deserializer");
 
-  broadcastSenderTracker.setFactory(
+  deciderSenderTracker.setFactory(
     &workerFactory, "mapreduce", "kv_pair_buf_sender");
 
   boundaryHolderTracker.setFactory(
@@ -301,14 +274,14 @@ PhaseZeroOutputData* executePhaseZero(
 
   // Inject dependencies into factories
   workerFactory.addDependency(
-    "coordinator_sender", "sockets", &coordinatorSenderSockets);
+    "scanner_sender", "sockets", &scannerSenderSockets);
   workerFactory.addDependency(
-    "coordinator_receiver", "sockets", &coordinatorReceiverSockets);
+    "scanner_receiver", "sockets", &scannerReceiverSockets);
 
   workerFactory.addDependency(
-    "broadcast_sender", "sockets", &broadcastSenderSockets);
+    "decider_sender", "sockets", &deciderSenderSockets);
   workerFactory.addDependency(
-    "broadcast_receiver", "sockets", &broadcastReceiverSockets);
+    "decider_receiver", "sockets", &deciderReceiverSockets);
 
   std::string readerConverterStageName("reader_converter");
   workerFactory.addDependency("reader", "filename_to_stream_id_map",
@@ -754,7 +727,7 @@ void executePhaseThree(
 
   for (std::list<uint64_t>::iterator jobIter = jobIDList.begin();
          jobIter != jobIDList.end(); jobIter++) {
-    const URL& outputDirectory =
+    const themis::URL& outputDirectory =
       coordinatorClient->getOutputDirectory(*jobIter);
     ABORT_IF(outputDirectory.scheme() != "local",
              "Intermediate files can only be read from local disk");
@@ -849,8 +822,6 @@ void executePhaseThree(
   // LibAIOReader implementation.
   params->add<std::string>(
     "WORKER_IMPLS.phase_three.mergereduce_reader", "LibAIOReader");
-  // Write merged partitions back to the phase two output directory.
-  params->add<bool>("FORCE_PHASE_TWO_OUTPUT_DIR", true);
 
   MapReduceWorkQueueingPolicyFactory mergeReduceQueueingPolicyFactory;
   mergeReduceQueueingPolicyFactory.setChunkMap(&chunkMap);
@@ -993,7 +964,7 @@ void executePhaseThree(
 
   for (std::list<uint64_t>::iterator jobIter = jobIDList.begin();
          jobIter != jobIDList.end(); jobIter++) {
-    const URL& outputDirectory =
+    const themis::URL& outputDirectory =
       coordinatorClient->getOutputDirectory(*jobIter);
     ABORT_IF(outputDirectory.scheme() != "local",
              "Intermediate files can only be read from local disk");
@@ -1146,6 +1117,11 @@ void deriveAdditionalParams(
   if (params.get<bool>("DIRECT_IO.phase_one.writer")) {
     // Reducer comes before the writer.
     params.add<uint64_t>("ALIGNMENT.phase_one.reducer", alignmentMultiple);
+    // Replica receiver needs to be aligned as well, since it feeds into writer.
+    params.add<uint64_t>("ALIGNMENT.phase_one.replica_receiver",
+                         alignmentMultiple);
+    // Demux ALSO feeds into writer.
+    params.add<uint64_t>("ALIGNMENT.phase_one.demux", alignmentMultiple);
     // Writer needs to know that it should write with alignment.
     params.add<uint64_t>("ALIGNMENT.phase_one.writer", alignmentMultiple);
   }
@@ -1170,6 +1146,8 @@ void deriveAdditionalParams(
 
   if (params.get<bool>("DIRECT_IO.phase_three.mergereduce_writer")) {
     params.add<uint64_t>("ALIGNMENT.phase_three.reducer", alignmentMultiple);
+    params.add<uint64_t>("ALIGNMENT.phase_three.replica_receiver",
+                         alignmentMultiple);
     params.add<uint64_t>(
       "ALIGNMENT.phase_three.mergereduce_writer", alignmentMultiple);
   }
@@ -1183,8 +1161,8 @@ void deriveAdditionalParams(
 
   // Phase zero senders and phase two replica sender require data to be received
   // in-order, so force a single TCP connection per peer.
-  params.add<uint64_t>("SOCKETS_PER_PEER.phase_zero.coordinator_sender", 1);
-  params.add<uint64_t>("SOCKETS_PER_PEER.phase_zero.broadcast_sender", 1);
+  params.add<uint64_t>("SOCKETS_PER_PEER.phase_zero.scanner_sender", 1);
+  params.add<uint64_t>("SOCKETS_PER_PEER.phase_zero.decider_sender", 1);
   params.add<uint64_t>("SOCKETS_PER_PEER.phase_one.replica_sender", 1);
   params.add<uint64_t>("SOCKETS_PER_PEER.phase_three.replica_sender", 1);
 }
@@ -1239,7 +1217,8 @@ int main(int argc, char** argv) {
   mainLogger->logDatum("num_intermediate_disks", intermediateDiskList.size());
 
   StringList outputDiskList;
-  getDiskList(outputDiskList, "OUTPUT_DISK_LIST", &params);
+  // For ioSort, we want the output disks to be the same as the intermediates.
+  getDiskList(outputDiskList, "INTERMEDIATE_DISK_LIST", &params);
 
   // Calculate additional params based on the existing parameter set
   deriveAdditionalParams(params, intermediateDiskList, outputDiskList);

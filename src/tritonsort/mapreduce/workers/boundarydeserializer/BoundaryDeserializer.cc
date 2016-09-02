@@ -15,13 +15,14 @@ BoundaryDeserializer::BoundaryDeserializer(
     numNodes(_numNodes),
     numPartitionGroups(_numPartitionGroups),
     coalescedBufferSize(0),
+    buffers(numNodes),
     bufferFactory(*this, memoryAllocator, 0, alignmentSize),
     partitionMap(params, phaseName) {
 }
 
 void BoundaryDeserializer::run(KVPairBuffer* buffer) {
   coalescedBufferSize += buffer->getCurrentSize();
-  buffers.push(buffer);
+  buffers[buffer->getNode()].push(buffer);
 }
 
 void BoundaryDeserializer::teardown() {
@@ -29,27 +30,31 @@ void BoundaryDeserializer::teardown() {
   KVPairBuffer* buffer = bufferFactory.newInstance(coalescedBufferSize);
 
   uint64_t jobID = std::numeric_limits<uint64_t>::max();
-  while (!buffers.empty()) {
-    KVPairBuffer* nextBuffer = buffers.front();
-    buffers.pop();
+  for (BufferVector::iterator iter = buffers.begin(); iter != buffers.end();
+       iter++) {
+    while (!iter->empty()) {
+      KVPairBuffer* nextBuffer = iter->front();
+      iter->pop();
 
-    if (jobID == std::numeric_limits<uint64_t>::max()) {
-      const std::set<uint64_t>& jobIDs = nextBuffer->getJobIDs();
+      if (jobID == std::numeric_limits<uint64_t>::max()) {
+        const std::set<uint64_t>& jobIDs = nextBuffer->getJobIDs();
 
-      ASSERT(jobIDs.size() == 1, "Expected the first buffer entering the "
-             "deserializer to have exactly one job ID; this one has %llu",
-             jobIDs.size());
-      jobID = *(jobIDs.begin());
+        TRITONSORT_ASSERT(jobIDs.size() == 1,
+                          "Expected the first buffer entering the deserializer "
+                          "to have exactly one job ID; this one has %llu",
+                          jobIDs.size());
+        jobID = *(jobIDs.begin());
+      }
+
+      const uint8_t* appendPtr = buffer->setupAppend(
+        nextBuffer->getCurrentSize());
+      memcpy(
+        const_cast<uint8_t*>(appendPtr), nextBuffer->getRawBuffer(),
+        nextBuffer->getCurrentSize());
+      buffer->commitAppend(appendPtr, nextBuffer->getCurrentSize());
+
+      delete nextBuffer;
     }
-
-    const uint8_t* appendPtr = buffer->setupAppend(
-      nextBuffer->getCurrentSize());
-    memcpy(
-      const_cast<uint8_t*>(appendPtr), nextBuffer->getRawBuffer(),
-      nextBuffer->getCurrentSize());
-    buffer->commitAppend(appendPtr, nextBuffer->getCurrentSize());
-
-    delete nextBuffer;
   }
 
   uint64_t numPartitions = partitionMap.getNumPartitions(jobID);

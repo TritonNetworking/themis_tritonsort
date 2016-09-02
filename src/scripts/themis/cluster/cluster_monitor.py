@@ -80,7 +80,7 @@ def dfs_lookup(path):
     files = []
     total_size = 0
     for host, results in stdout.iteritems():
-        results = results.split("\r\n")
+        results = results.split("\n")
         results = [x for x in results if len(x) > 0]
 
         for result in results:
@@ -321,12 +321,18 @@ def data_generation_post():
         files_per_disk = int(bottle.request.POST.files_per_disk)
 
         generate_data_size = unitconversion.convert(data_size, unit, "B")
-
+        skewed_data = bool(bottle.request.POST.skewed_data)
+        replica_data = bool(bottle.request.POST.replica_data)
+        extra_args = ""
+        if skewed_data:
+            extra_args += "-s "
+        if replica_data:
+            extra_args += "-r 2 "
         generate_command = parallel_ssh_cmd[
-            "%s --no_sudo -g -n%d %d%s gensort" % (
+            "%s --no_sudo %s-g -n%d %d%s gensort" % (
                 os.path.join(SCRIPT_DIR, os.pardir,
                              "generate_graysort_inputs.py"),
-                files_per_disk, data_size, unit)] & BG
+                extra_args, files_per_disk, data_size, unit)] & BG
 
     elif bottle.request.POST.abort_data_generation:
         print "Aborting data generation"

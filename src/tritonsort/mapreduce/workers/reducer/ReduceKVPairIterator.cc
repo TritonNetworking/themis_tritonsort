@@ -28,7 +28,7 @@ bool ReduceKVPairIterator::startNextKey(
     while (next(kvPair)) {
     }
 
-    ASSERT(nextKeyStartPositionKnown, "After iterating to the end of a key, we "
+    TRITONSORT_ASSERT(nextKeyStartPositionKnown, "After iterating to the end of a key, we "
            "don't know the start position for the next key; this indicates a "
            "problem with the iterator logic somewhere");
   }
@@ -69,7 +69,7 @@ bool ReduceKVPairIterator::startNextKey(
 }
 
 bool ReduceKVPairIterator::next(KeyValuePair& kvPair) {
-  ASSERT(!doneWithKeyGroup,
+  TRITONSORT_ASSERT(!doneWithKeyGroup,
          "Should not be calling next() after the end of a key group.");
 
   uint64_t recordStartIteratorPosition = buffer.getIteratorPosition();

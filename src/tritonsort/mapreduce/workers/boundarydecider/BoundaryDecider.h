@@ -14,7 +14,7 @@
 /**
    BoundaryDecider is responsible for deciding upon the job-wide partition
    boundary list. Each node picks its own version of the boundary list in the
-   BoundaryScanner. Those lists are funneled to a single BoundaryDecider, which
+   BoundaryScanner. Those lists are funneled into a single BoundaryDecider, which
    chooses the median key for each partition as the official boundary key.
  */
 class BoundaryDecider : public MultiQueueRunnable<KVPairBuffer> {
@@ -34,13 +34,11 @@ public:
      \param alignmentSize the memory alignment of output buffers
 
      \param numNodes the number of nodes in the cluster
-
-     \param isCoordinatorNode if true, this node is the coordinator
    */
   BoundaryDecider(
     uint64_t id, const std::string& stageName,
     MemoryAllocatorInterface& memoryAllocator, uint64_t defaultBufferSize,
-    uint64_t alignmentSize, uint64_t numNodes, bool isCoordinatorNode);
+    uint64_t alignmentSize, uint64_t numNodes);
 
   /**
      Take in boundary buffers from all nodes and, for each partition, sort the
@@ -66,7 +64,6 @@ private:
    */
   void broadcastOutputChunk(KVPairBuffer* outputChunk);
 
-  const bool isCoordinatorNode;
   const uint64_t numNodes;
 
   uint64_t jobID;
