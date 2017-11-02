@@ -1,0 +1,267 @@
+Themis
+The Runbook
+Author: Rob McGuinness
+Edits: Mike Conley
+Last updated: 11/02/17
+
+What the heck is this?
+-----
+Themis is a configurable MapReduce framework optimized for the SortBenchmark
+competition (http://sortbenchmark.org). The contest is run every year with a
+number of different formats, and has entrants from companies and researchers
+alike all over the world. Themis implements a highly pipelined architecture and
+satisfies the 2 I/O property in order to achieve a very high total end-to-end
+throughput per node.
+
+Themis Architecture Overview
+-----
+Each node in a Themis run has a slice of the total set of data to be
+sorted. Themis has four distinct phases, named simply phase zero, phase one,
+phase two, and phase three. Themis also comes in two distinct flavors, Mapreduce
+and Minutesort. The phases generally are the same across different the two
+flavors, with a couple minor differences:
+
+* Mapreduce: Satisfies 2 I/O property (data is read/written to disk at most
+  twice).
+* Minutesort: Satisfies 1 I/O property (data is read/written to disk at most
+  once). To achieve this, phase one does not write intermediate files to disk,
+  but keeps the data in memory; this requires that the entire amount of RAM
+  available is greater than the total amount of data being sorted.
+
+There's also two distinct formats of data used in the SortBenchmark competition,
+Indy and Daytona:
+
+Indy: Architecture may assume a uniform stochastic distribution of 100-byte
+records with 10-byte keys.
+Daytona: Architecture may make no assumption about record size or data
+distribution.
+
+Each phase in Themis represents a barrier that all nodes must complete before
+moving on to the next. The phases are as follows:
+
+* Zero: Sample the data available on disk and decide on boundaries for the key
+  ranges that will be assigned to each node. The amount of data sampled and the
+  maximum range of the boundaries can be configured. The key range assignments
+  are distributed to each node.
+* One: Map the keys in the partition saved on this node's disk(s) and send each
+  record to the node containing the boundary that matches the record's key. This
+  is the shuffle phase in a standard Mapreduce framework.
+* Two: Sort the keys that this node received in the boundaries it owned, and
+  write them out to disk. If a partition ends up being too large, simply flush
+  it to disk and push it to phase three.
+* Three: For any local partitions that were too large in phase two (which
+  possibly would have resulted in out of memory errors), perform an external
+  sort locally on those partitions. This ensures all partitions outputted by
+  Themis are under the maximum output partition size.
+
+Each phase has a number of workers that are pipelined together to achieve the
+phase's overall goal. For example, phase one has a reader, mapper, sender,
+receiver, demux, chainer, coalescer, and writer. Generally, more workers of a
+given type can be added; for example, it's usually a good idea to have multiple
+sorter worker threads in phase two.
+
+Themis Configuration Files
+-----
+Themis uses two types of configuration files to determine how it should run a
+job:
+
+* YAML files are used to determine most runtime configuration variables, such as
+  partition size, number of workers, memory quotas, buffer sizes, connection
+  ports, and more.
+* JSON files are for additional parameters used by both the management scripts
+  and Themis itself, such as phases to run, data format type, and I/O
+  directories.
+
+Each Themis run requires both a YAML and a JSON file, used by different
+scripts. The src/scripts/themis/cloud/default_configs/ directory has some
+examples of YAML and JSON configs. JSON configs can also be generated for jobs
+using src/scripts/themis/job_runner/job_spec_generators.
+
+Setting up Themis Nodes for Private Clusters
+-----
+For private clusters, you'll need to set up each node with a cluster.conf file,
+which should live in your home directory. This file should look something like
+
+[cluster]
+disk_mountpoint=/path/to/disks
+username=myusername
+master_internal_address=hostname
+master_external_address=hostname_usually_the_same_as_above
+log_directory=/path/to/logs
+themis_directory=/path/where/themis/is/installed
+keyfile=/path/to/ssh/key/if/applicable
+
+Setting up Themis Nodes in the Cloud
+-----
+To use a cloud provider, create a cloud.conf file that contains either an
+[amazon] or [google] section containing user names, project names, and key
+information. Run themis/src/scripts/themis/cloud/provision_cloud.py
+path_to/cloud.conf. If you don't know what goes in the config file- don't worry!
+Running that command will let you know if anything is missing.
+
+Once the script is running, it will start a web server on port 4281 that can
+create Amazon and Google clusters to use with Themis.
+
+You will want to create a VM image from an existing instance using
+themis/src/scripts/themis/cloud/install_themis.py path_to/cloud.conf
+{amazon,google} instance_ip version_string
+https://github.com/TritonNetworking/themis_tritonsort --scp_themis .
+This will show up in the web interface above when creating Themis instances.
+
+When the instances are created, use the "Bring Online" button to complete setup.
+
+Themis Management
+-----
+Once the Themis nodes are up and running, you'll need to run and access the
+cluster monitor to set interfaces, disk mount points, and nodes used in the
+cluster.
+
+For a private cluster, pick a master. Run a redis server and cluster_monitor.py
+on that host. For cloud, the cluster provisioner will make a master for you that
+is already running a redis server and the cluster monitor, and is already
+populated.
+
+In both cases, connect to the master node on port 4280 over HTTP. You'll see an
+interface that allows you to add nodes to the cluster, and configure the
+cluster. Fill in the sections in "Configure Cluster", then add nodes in the main
+window.
+
+Next, you'll need to go to the "Data Generation" page after the cluster is
+configured to actually get data to sort. Simply enter the data size and check
+any options you want for the data set, and wait for the data to be
+generated. You can click the "Data Generation" link again to see the current
+progress.
+
+WARNING: There's a known bug in the data generator that will cause the progress
+to show all the data was generated, but the command will never complete. Simply
+click "Abort Data Generation" once the data is at 100% generated to bypass this
+bug.
+
+Running Themis
+-----
+Okay, now for the big part! There's two major parts to run Themis- the cluster
+coordinator, and the job submitter. To start, run the cluster coordinator on the
+master node that you're running the cluster monitor on.
+
+Run cluster_coordinator.py {minutesort,daytona_minutesort,mapreduce}
+/path/to/themis/yamls/some.yaml, making sure that you use the correct binary for
+the YAML you choose (for example, use the daytona_minutesort binary for a
+daytona minutesort YAML).
+
+Once the cluster coordinator starts up, it'll contact all the nodes you added to
+the cluster monitor and start the node coordinator on them. Once it reports all
+are alive and can contact the Redis server running on the master node, the main
+loop will start. It's at this point you can run the job submitter to actually
+submit a job.
+
+Run run_job.py /path/to/themis/jsons/some.json, where the JSON file corresponds
+to the job type you set up the cluster coordinator with.
+
+After that, sit back and watch it run! Any errors will be reported to the
+cluster coordinator. You can go look in the stderr files to see what failed, or
+look at the individual stats files.
+
+Checking Themis Output
+-----
+Themis completed its run! Yay! But how do you know whether or not it
+successfully sorted the data? There's a script, validate.py, that checks this
+for you!
+
+This script comes with a number of options to validate different forms of data,
+so it's recommended you run it with --help and briefly review the options. It
+can validate input data, intermediate data (required for minutesort runs), pick
+specific jobs to validate, and more!
+
+Run validate.py /path/to/themis/jsons/some.json <options>, where the JSON file
+is the same one you used when running Themis.
+
+Note that for minutesort runs, the output is in the intermediate disks, so make
+sure to use the -i options when running validation.
+
+Configuring and Optimizing Themis
+-----
+So you ran themis, and it either crashed or was slow. There are a number of ways
+to investigate what happens during a Themis run, and a large number of variables
+to change in the YAML files that can significantly change how Themis works.
+
+To start, logs need to be downloaded on the master node. For cloud you'll need
+to click "Persist Logs to Storage" on the cloud provisioner. The logs are either
+persisted to S3 or a GCP bucket, depending on what you used as the cloud
+provider.
+
+The runtime stat viewer is very helpful for optimizing Themis. This parses
+Themis log files for you and shows a bunch of statistics, particularly what the
+throughput of each of the workers in each stage was, which is the first step to
+solving any bottlenecks. Run runtime_stat_viewer.py /path/to/log/directory.
+
+Once that's done, connect to the master on port 9090 over HTTP. You'll be able
+to browse the log directory and select a batch that you want to inspect, which
+will open up a view where you can see the workers in each stage and how they
+did. You can click into a stage to see how each node did on that stage
+individually.
+
+Generally, the first step to optimizing Themis is to identify the worker that
+was waiting for work and waiting to enqueue work the least; this means they were
+the bottleneck. Depending on the worker, a different part of the system may be
+the bottleneck (one of CPU, disk, or network). For example, if the sorter isn't
+waiting for work or waiting to enqueue work more than 5% of the time, it's
+likely CPU bound, and adding more sorter threads in the YAML file will fix
+this. If the sender/receiver is the bottleneck, the network is slower than the
+disk + CPU throughput. If the reader/writer is the bottleneck, the disk is the
+bottleneck.
+
+Fixing CPU bottlenecks is easy- simply add more worker threads to the slow
+worker. Fixing disk bottlenecks can be a bit more difficult- adding more disks,
+more threads/disk, or I/O depth can help. Fixing network bottlenecks is the most
+difficult- adding more sockets per peer can help, but you may be limited by the
+network Themis is running in, which can't be fixed via the YAML file. Network
+sysctl options may also help alleviate network bottlenecks.
+
+In addition to solving these bottlenecks as above, there's a few other parts of
+the YAML that can affect Themis performance. The first is memory buffer sizes,
+which affect the size of a single buffer passed from one stage to another. For
+example, a mapper buffer of 64KB means the mapper will create a 64KB buffer of
+data before passing it on to the next stage. The second is memory quotas, which
+affect the total amount of outstanding buffers a stage can have. For example, if
+all the mapper threads had collectively emitted 1GB of 64KB buffers that had yet
+to be accepted by the worker they were emitted to, and had a quota of 1GB, the
+mapper threads would not be able to emit any more buffers until the worker they
+were emitted to had accepted and freed some of the outstanding buffers.
+
+The combination of these two can be very important for some Themis bottlenecks,
+and even cause deadlocks if improperly set. For example, receiver workers emit
+buffers to demux workers, but demux worker generally needs at least one piece of
+data from every node in the system before it can emit a buffer of its own (and
+thus free a receiver buffer); this means that the receiver quota must be at
+least the size of its memory buffer times the number of nodes (minus 1) in the
+system. If not, Themis will deadlock.
+
+Generally, quota deadlocks can be found by viewing the $NODENAME_stats.log files
+generated by Themis runs. It contains lines about how much quota each set of
+workers is using, and finding the worker latest in the pipeline that has full
+quota will reveal what worker needs more quota (or smaller buffer sizes).
+
+Additionally, it can be helpful to understand the sampling settings depending on
+the data being sorted. Setting SAMPLE_RATE determines the probability a sample
+will be selected, and SAMPLES_PER_FILE determines the total number of samples
+that are chosen in a file. Less samples is better for uniform stochastic data,
+and more is better for more skewed data.
+
+Themis Benchmarks
+-----
+There are also two Themis benchmarks that can help work out performance issues
+with the network and disks, as they are specifically network and disk benchmarks
+that use a small part of the Themis pipeline. They require a slightly different
+process to run; specifically, they do not go through the cluster
+coordinator. Instead, they use a specific script run on a single node.
+
+Run
+themis/src/tritonsort/benchmarks/{networkbench,storagebench}/run_benchmark.py on
+the master node, using the host string you put into the cluster monitor as an
+argument. On cloud, you'll need to supply the list of IPs of the nodes you wish
+to use in the benchmark as a comma separated list.
+
+These benchmarks will generate logs that can be used just like Themis logs in
+the runtime stat viewer to find any bottlenecks. Generally, CPU shouldn't be an
+issue with these, but if things don't look right (say, networkbench is way
+slower than netperf), checking the logs is the best thing to do.
